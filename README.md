@@ -1,6 +1,8 @@
 # BookSphere Mobile
 
-Task: BS-APP-01 - Initialize Flutter Project
+Tasks:
+- BS-APP-01 - Initialize Flutter Project
+- BS-APP-02 - Configure Dependencies
 
 Coder: maidanghuy
 
@@ -16,7 +18,29 @@ Coder: maidanghuy
 - Material 3
 - Android support
 - iOS scaffold for future expansion
-- Dependencies declared for future tasks: flutter_riverpod, dio, go_router, flutter_secure_storage, shared_preferences, intl, json_annotation, json_serializable, build_runner
+- Runtime dependencies: flutter_riverpod, go_router, dio, flutter_secure_storage, shared_preferences, intl, json_annotation
+- Dev dependencies: flutter_lints, build_runner, json_serializable, mocktail
+
+## Dependencies
+
+BS-APP-02 - Cấu hình Dependencies
+
+Coder: maidanghuy
+
+Runtime dependencies:
+- flutter_riverpod
+- go_router
+- dio
+- flutter_secure_storage
+- shared_preferences
+- intl
+- json_annotation
+
+Dev dependencies:
+- flutter_lints
+- build_runner
+- json_serializable
+- mocktail
 
 ## Folder Structure
 
@@ -73,6 +97,15 @@ flutter run
 ```
 
 ```bash
+flutter build apk
+```
+
+Dependency validation:
+
+```bash
+flutter pub get
+flutter analyze
+flutter test
 flutter build apk
 ```
 
