@@ -10,6 +10,8 @@
   "checkingSession": "Đang kiểm tra phiên đăng nhập...",
   "theme": "Giao diện",
   "language": "Ngôn ngữ",
+  "selectTheme": "Chọn giao diện",
+  "selectLanguage": "Chọn ngôn ngữ",
   "lightMode": "Sáng",
   "darkMode": "Tối",
   "systemMode": "Theo hệ thống",

@@ -160,6 +160,18 @@ abstract class AppLocalizations {
   /// **'Ngôn ngữ'**
   String get language;
 
+  /// No description provided for @selectTheme.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn giao diện'**
+  String get selectTheme;
+
+  /// No description provided for @selectLanguage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn ngôn ngữ'**
+  String get selectLanguage;
+
   /// No description provided for @lightMode.
   ///
   /// In vi, this message translates to:

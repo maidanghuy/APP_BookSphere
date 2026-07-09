@@ -8,6 +8,7 @@ Tasks:
 - BS-APP-06 - Splash Screen and Auth Guard
 - BS-APP-07 - Login Screen
 - BS-APP-07A - Theme, Localization, Message Constants and API Endpoint Constants
+- BS-APP-07B - UI Theme & Language Switcher
 - BS-APP-08 - Register Screen
 - BS-APP-09 - Logout
 
@@ -148,6 +149,19 @@ Coder: maidanghuy
 - Storage keys are defined in `StorageKeys`.
 - UI text, user-facing messages, and API paths are not hard-coded across feature files.
 
+## UI Theme And Language Switcher
+
+BS-APP-07B - UI Theme & Language Switcher
+
+Coder: maidanghuy
+
+- Theme and language controls are compact icons in the top-left corner.
+- The language action supports Vietnamese (`vi`), English (`en`), and Japanese (`ja`).
+- The theme action supports System, Light, and Dark modes.
+- The switcher reuses `LocaleProvider`, `ThemeModeProvider`, and existing local storage.
+- The switcher is wrapped in `SafeArea` to avoid the status bar and device notch.
+- UI labels and tooltips come from localization files and are not hard-coded in screens.
+
 ## Register Screen
 
 BS-APP-08 - Register Screen
@@ -223,7 +237,10 @@ APP_BookSphere/
 |   |   |   |-- error_message_mapper.dart
 |   |   |   `-- jwt_utils.dart
 |   |   `-- widgets/
+|   |       |-- app_top_left_actions.dart
+|   |       |-- language_icon_button.dart
 |   |       |-- language_selector.dart
+|   |       |-- theme_mode_icon_button.dart
 |   |       `-- theme_mode_selector.dart
 |   |-- l10n/
 |   |   |-- app_en.arb

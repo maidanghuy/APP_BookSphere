@@ -39,6 +39,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get language => '言語';
 
   @override
+  String get selectTheme => 'テーマを選択';
+
+  @override
+  String get selectLanguage => '言語を選択';
+
+  @override
   String get lightMode => 'ライト';
 
   @override

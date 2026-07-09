@@ -10,6 +10,8 @@
   "checkingSession": "Checking session...",
   "theme": "Theme",
   "language": "Language",
+  "selectTheme": "Select theme",
+  "selectLanguage": "Select language",
   "lightMode": "Light",
   "darkMode": "Dark",
   "systemMode": "System",
