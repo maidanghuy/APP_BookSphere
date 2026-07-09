@@ -1,0 +1,481 @@
+{
+  "info": {
+    "_postman_id": "b5f2f454-61a8-45f5-9fb6-3f5a90f3f4d7",
+    "name": "BookSphere - Config Server",
+    "description": "Postman collection for validating BookSphere Config Server health and centralized configuration endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Health & Metadata",
+      "item": [
+        {
+          "name": "Health - Config Server",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Health status is UP', function () {",
+                  "  pm.expect(body.status).to.eql('UP');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/actuator/health",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Info - Config Server",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is JSON object', function () {",
+                  "  pm.expect(pm.response.json()).to.be.an('object');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/actuator/info",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "info"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unknown Actuator Endpoint - 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404 Not Found', function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/actuator/not-found",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "not-found"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Shared Config",
+      "item": [
+        {
+          "name": "Application Default Config",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Config application name is application', function () {",
+                  "  pm.expect(body.name).to.eql('application');",
+                  "});",
+                  "pm.test('Default profile is included', function () {",
+                  "  pm.expect(body.profiles).to.include(pm.environment.get('configProfile'));",
+                  "});",
+                  "pm.test('Property sources are returned', function () {",
+                  "  pm.expect(body.propertySources).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/application/{{configProfile}}",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "application",
+                "{{configProfile}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - Service Config JSON",
+      "item": [
+        {
+          "name": "API Gateway Config",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Config name matches api-gateway', function () {",
+                  "  pm.expect(body.name).to.eql('api-gateway');",
+                  "});",
+                  "pm.test('Gateway config contains property sources', function () {",
+                  "  pm.expect(body.propertySources).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/api-gateway/{{configProfile}}",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "api-gateway",
+                "{{configProfile}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auth Service Config",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Config name matches auth-service', function () {",
+                  "  pm.expect(body.name).to.eql('auth-service');",
+                  "});",
+                  "pm.test('Auth config contains property sources', function () {",
+                  "  pm.expect(body.propertySources).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/auth-service/{{configProfile}}",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "auth-service",
+                "{{configProfile}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Book Service Config",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Config name matches book-service', function () {",
+                  "  pm.expect(body.name).to.eql('book-service');",
+                  "});",
+                  "pm.test('Book config contains Redis settings', function () {",
+                  "  const json = JSON.stringify(body);",
+                  "  pm.expect(json).to.include('redis');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/book-service/{{configProfile}}",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "book-service",
+                "{{configProfile}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrow Service Config",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Config name matches borrow-service', function () {",
+                  "  pm.expect(body.name).to.eql('borrow-service');",
+                  "});",
+                  "pm.test('Borrow config contains property sources', function () {",
+                  "  pm.expect(body.propertySources).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/borrow-service/{{configProfile}}",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "borrow-service",
+                "{{configProfile}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Fine Service Config",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Config name matches fine-service', function () {",
+                  "  pm.expect(body.name).to.eql('fine-service');",
+                  "});",
+                  "pm.test('Fine config contains property sources', function () {",
+                  "  pm.expect(body.propertySources).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/fine-service/{{configProfile}}",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "fine-service",
+                "{{configProfile}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Notification Service Config",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Config name matches notification-service', function () {",
+                  "  pm.expect(body.name).to.eql('notification-service');",
+                  "});",
+                  "pm.test('Notification config contains property sources', function () {",
+                  "  pm.expect(body.propertySources).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/notification-service/{{configProfile}}",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "notification-service",
+                "{{configProfile}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 - Service Config YAML",
+      "item": [
+        {
+          "name": "API Gateway YAML",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('YAML contains gateway route config', function () {",
+                  "  pm.expect(pm.response.text()).to.include('gateway');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/api-gateway-{{configProfile}}.yml",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "api-gateway-{{configProfile}}.yml"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Book Service YAML",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('YAML contains book-service settings', function () {",
+                  "  const text = pm.response.text();",
+                  "  pm.expect(text).to.include('book-service');",
+                  "  pm.expect(text).to.include('redis');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{configServerBaseUrl}}/book-service-{{configProfile}}.yml",
+              "host": [
+                "{{configServerBaseUrl}}"
+              ],
+              "path": [
+                "book-service-{{configProfile}}.yml"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": []
+}

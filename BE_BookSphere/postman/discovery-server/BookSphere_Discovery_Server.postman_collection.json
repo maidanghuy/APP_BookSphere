@@ -1,0 +1,465 @@
+{
+  "info": {
+    "_postman_id": "c5a08178-8f42-45ce-a5e2-786ff899a9bd",
+    "name": "BookSphere - Discovery Server",
+    "description": "Postman collection for validating BookSphere Eureka Discovery Server health, dashboard, registry read, and dummy registry lifecycle endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Health & Dashboard",
+      "item": [
+        {
+          "name": "Health - Discovery Server",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Health status is UP', function () {",
+                  "  pm.expect(body.status).to.eql('UP');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{discoveryServerBaseUrl}}/actuator/health",
+              "host": [
+                "{{discoveryServerBaseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Info - Discovery Server",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is JSON object', function () {",
+                  "  pm.expect(pm.response.json()).to.be.an('object');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{discoveryServerBaseUrl}}/actuator/info",
+              "host": [
+                "{{discoveryServerBaseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "info"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eureka Dashboard HTML",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Dashboard response is HTML', function () {",
+                  "  pm.expect(pm.response.text()).to.include('Instances currently registered with Eureka');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/html"
+              }
+            ],
+            "url": {
+              "raw": "{{discoveryServerBaseUrl}}/",
+              "host": [
+                "{{discoveryServerBaseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Eureka Registry Read",
+      "item": [
+        {
+          "name": "List Applications - JSON",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Response has applications object', function () {",
+                  "  pm.expect(body).to.have.property('applications');",
+                  "  pm.expect(body.applications).to.be.an('object');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{discoveryServerBaseUrl}}/eureka/apps",
+              "host": [
+                "{{discoveryServerBaseUrl}}"
+              ],
+              "path": [
+                "eureka",
+                "apps"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Registered App - Optional",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 if app is running, otherwise 404', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  pm.test('Response has application payload', function () {",
+                  "    pm.expect(body).to.have.property('application');",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{discoveryServerBaseUrl}}/eureka/apps/{{registeredAppName}}",
+              "host": [
+                "{{discoveryServerBaseUrl}}"
+              ],
+              "path": [
+                "eureka",
+                "apps",
+                "{{registeredAppName}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Missing App - 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404 Not Found', function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{discoveryServerBaseUrl}}/eureka/apps/{{missingAppName}}",
+              "host": [
+                "{{discoveryServerBaseUrl}}"
+              ],
+              "path": [
+                "eureka",
+                "apps",
+                "{{missingAppName}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - Eureka Dummy Registry Lifecycle",
+      "description": "Run this folder in order. It registers a dummy instance, sends heartbeat, reads it back, then removes it from Eureka.",
+      "item": [
+        {
+          "name": "Register Dummy Instance",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 204 No Content', function () {",
+                  "  pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "pm.environment.set('dummyInstanceRegistered', 'true');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"instance\": {\n    \"instanceId\": \"{{dummyInstanceId}}\",\n    \"hostName\": \"{{dummyHostName}}\",\n    \"app\": \"{{dummyAppName}}\",\n    \"ipAddr\": \"{{dummyIpAddr}}\",\n    \"status\": \"UP\",\n    \"port\": {\n      \"$\": {{dummyPort}},\n      \"@enabled\": \"true\"\n    },\n    \"securePort\": {\n      \"$\": 443,\n      \"@enabled\": \"false\"\n    },\n    \"homePageUrl\": \"http://{{dummyHostName}}:{{dummyPort}}/\",\n    \"statusPageUrl\": \"http://{{dummyHostName}}:{{dummyPort}}/actuator/info\",\n    \"healthCheckUrl\": \"http://{{dummyHostName}}:{{dummyPort}}/actuator/health\",\n    \"vipAddress\": \"{{dummyAppName}}\",\n    \"dataCenterInfo\": {\n      \"@class\": \"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo\",\n      \"name\": \"MyOwn\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{discoveryServerBaseUrl}}/eureka/apps/{{dummyAppName}}",
+              "host": [
+                "{{discoveryServerBaseUrl}}"
+              ],
+              "path": [
+                "eureka",
+                "apps",
+                "{{dummyAppName}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Heartbeat Dummy Instance",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{discoveryServerBaseUrl}}/eureka/apps/{{dummyAppName}}/{{dummyInstanceId}}",
+              "host": [
+                "{{discoveryServerBaseUrl}}"
+              ],
+              "path": [
+                "eureka",
+                "apps",
+                "{{dummyAppName}}",
+                "{{dummyInstanceId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Dummy App",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Dummy application is returned', function () {",
+                  "  pm.expect(body.application.name).to.eql(pm.environment.get('dummyAppName'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{discoveryServerBaseUrl}}/eureka/apps/{{dummyAppName}}",
+              "host": [
+                "{{discoveryServerBaseUrl}}"
+              ],
+              "path": [
+                "eureka",
+                "apps",
+                "{{dummyAppName}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Dummy Instance",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.environment.set('dummyInstanceRegistered', 'false');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{discoveryServerBaseUrl}}/eureka/apps/{{dummyAppName}}/{{dummyInstanceId}}",
+              "host": [
+                "{{discoveryServerBaseUrl}}"
+              ],
+              "path": [
+                "eureka",
+                "apps",
+                "{{dummyAppName}}",
+                "{{dummyInstanceId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Dummy App After Cancel - 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404 Not Found', function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{discoveryServerBaseUrl}}/eureka/apps/{{dummyAppName}}",
+              "host": [
+                "{{discoveryServerBaseUrl}}"
+              ],
+              "path": [
+                "eureka",
+                "apps",
+                "{{dummyAppName}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": []
+}

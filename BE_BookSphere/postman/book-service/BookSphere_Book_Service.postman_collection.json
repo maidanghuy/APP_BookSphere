@@ -1,0 +1,1507 @@
+{
+  "info": {
+    "_postman_id": "booksphere-book-service-collection",
+    "name": "BookSphere - Book Service",
+    "description": "Postman collection for Book Service (BS-BE-05).\n\nCovers:\n- Category API (CRUD + soft delete)\n- Book API (CRUD + search/pagination/sort)\n- Internal Saga API (stock decrease/increase)\n- Via API Gateway (JWT) and Direct Service (role headers)\n- Error branches (403, 404, 409, 422)\n\nPrerequisites:\n1. MySQL, Discovery Server, Config Server running\n2. Auth Service, Book Service, API Gateway running\n3. Run \"00 - Auth Setup\" folder first to obtain tokens",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00 - Auth Setup",
+      "description": "Login via API Gateway to obtain JWT tokens. Run these requests before testing Gateway routes.",
+      "item": [
+        {
+          "name": "Login as ADMIN",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data && json.data.accessToken) {",
+                  "        pm.environment.set('accessTokenAdmin', json.data.accessToken);",
+                  "        console.log('accessTokenAdmin saved');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with admin account. Token is saved to `accessTokenAdmin`."
+          }
+        },
+        {
+          "name": "Login as LIBRARIAN",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data && json.data.accessToken) {",
+                  "        pm.environment.set('accessTokenLibrarian', json.data.accessToken);",
+                  "        console.log('accessTokenLibrarian saved');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{librarianUsername}}\",\n  \"password\": \"{{librarianPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with librarian account. Token is saved to `accessTokenLibrarian`."
+          }
+        },
+        {
+          "name": "Login as MEMBER",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data && json.data.accessToken) {",
+                  "        pm.environment.set('accessTokenMember', json.data.accessToken);",
+                  "        console.log('accessTokenMember saved');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{memberUsername}}\",\n  \"password\": \"{{memberPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with member account. Token is saved to `accessTokenMember`."
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 - Category API - Via Gateway",
+      "description": "Public Category endpoints routed through API Gateway (port 8080) with JWT.",
+      "item": [
+        {
+          "name": "GET List Active Categories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response has ApiResponse structure', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/categories",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "categories"]
+            }
+          }
+        },
+        {
+          "name": "GET Category By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/categories/{{categoryId}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "categories", "{{categoryId}}"]
+            }
+          }
+        },
+        {
+          "name": "GET Category By ID - Not Found (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 404', function () { pm.response.to.have.status(404); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/categories/99999",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "categories", "99999"]
+            },
+            "description": "Inactive or non-existent category returns 404."
+          }
+        },
+        {
+          "name": "POST Create Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "if (pm.response.code === 201) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data && json.data.id) {",
+                  "        pm.environment.set('categoryId', json.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{newCategoryName}}\",\n  \"description\": \"Sách khoa học máy tính\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/categories",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "categories"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Category - Duplicate Name (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 409', function () { pm.response.to.have.status(409); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Programming\",\n  \"description\": \"Duplicate category name test\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/categories",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "categories"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Category - MEMBER Forbidden (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Unauthorized Category\",\n  \"description\": \"Should be forbidden for MEMBER\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/categories",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "categories"]
+            }
+          }
+        },
+        {
+          "name": "PUT Update Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenLibrarian}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{newCategoryName}}\",\n  \"description\": \"Updated description for computer science books\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/categories/{{categoryId}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "categories", "{{categoryId}}"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Soft Delete Category - Has Active Books (422)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 422', function () { pm.response.to.have.status(422); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/categories/1",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "categories", "1"]
+            },
+            "description": "Category 1 (Programming) has active books - cannot soft delete."
+          }
+        },
+        {
+          "name": "DELETE Soft Delete Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/categories/{{categoryId}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "categories", "{{categoryId}}"]
+            },
+            "description": "Soft delete a category with no active books (use category created in POST)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Category API - Direct Service",
+      "description": "Direct service calls using role headers from API Gateway convention.",
+      "item": [
+        {
+          "name": "GET List Active Categories (ADMIN header)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "1" },
+              { "key": "X-Username", "value": "adminsys" },
+              { "key": "X-User-Email", "value": "admin@booksphere.com" },
+              { "key": "X-User-Role", "value": "ADMIN" }
+            ],
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/categories",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "categories"]
+            }
+          }
+        },
+        {
+          "name": "GET Category By ID (MEMBER header)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "3" },
+              { "key": "X-Username", "value": "huy.member" },
+              { "key": "X-User-Email", "value": "huy@booksphere.com" },
+              { "key": "X-User-Role", "value": "MEMBER" }
+            ],
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/categories/1",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "categories", "1"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Category (LIBRARIAN header)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-User-Id", "value": "2" },
+              { "key": "X-Username", "value": "librarian01" },
+              { "key": "X-User-Email", "value": "librarian01@booksphere.com" },
+              { "key": "X-User-Role", "value": "LIBRARIAN" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Direct Test Category\",\n  \"description\": \"Created via direct Book Service call\"\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/categories",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "categories"]
+            }
+          }
+        },
+        {
+          "name": "PUT Update Category (ADMIN header)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "X-User-Id", "value": "1" },
+              { "key": "X-Username", "value": "adminsys" },
+              { "key": "X-User-Email", "value": "admin@booksphere.com" },
+              { "key": "X-User-Role", "value": "ADMIN" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Direct Test Category\",\n  \"description\": \"Updated via direct call\"\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/categories/{{categoryId}}",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "categories", "{{categoryId}}"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Soft Delete Category (ADMIN header)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "X-User-Id", "value": "1" },
+              { "key": "X-Username", "value": "adminsys" },
+              { "key": "X-User-Email", "value": "admin@booksphere.com" },
+              { "key": "X-User-Role", "value": "ADMIN" }
+            ],
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/categories/{{categoryId}}",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "categories", "{{categoryId}}"]
+            }
+          }
+        },
+        {
+          "name": "GET List - Missing Role (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/categories",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "categories"]
+            },
+            "description": "No X-User-Role header should return 403 Forbidden."
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Book API - Via Gateway",
+      "description": "Book endpoints through API Gateway with JWT authentication.",
+      "item": [
+        {
+          "name": "GET Search Books (default pagination)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Has paginated data', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.data.content).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books?page=0&size=10&sortBy=id&sortDir=asc",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "sortBy", "value": "id" },
+                { "key": "sortDir", "value": "asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Search Books by Keyword",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books?keyword=clean&page=0&size=10&sortBy=title&sortDir=asc",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books"],
+              "query": [
+                { "key": "keyword", "value": "clean" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "sortBy", "value": "title" },
+                { "key": "sortDir", "value": "asc" }
+              ]
+            },
+            "description": "Search by title, author, or ISBN."
+          }
+        },
+        {
+          "name": "GET Search Books by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books?categoryId=1&page=0&size=10",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books"],
+              "query": [
+                { "key": "categoryId", "value": "1" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Search Books - Keyword + Category + Sort desc",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books?keyword=java&categoryId=1&page=0&size=5&sortBy=title&sortDir=desc",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books"],
+              "query": [
+                { "key": "keyword", "value": "java" },
+                { "key": "categoryId", "value": "1" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "5" },
+                { "key": "sortBy", "value": "title" },
+                { "key": "sortDir", "value": "desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Book By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books/{{bookId}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books", "{{bookId}}"]
+            }
+          }
+        },
+        {
+          "name": "GET Book By ID - Not Found (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 404', function () { pm.response.to.have.status(404); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books/99999",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books", "99999"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Book",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "if (pm.response.code === 201) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data && json.data.id) {",
+                  "        pm.environment.set('bookId', json.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Refactoring\",\n  \"author\": \"Martin Fowler\",\n  \"isbn\": \"{{newBookIsbn}}\",\n  \"publisher\": \"Addison-Wesley\",\n  \"publishedYear\": 1999,\n  \"categoryId\": 1,\n  \"totalQuantity\": 5,\n  \"availableQuantity\": 5,\n  \"description\": \"Improving the design of existing code\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Book - Duplicate ISBN (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 409', function () { pm.response.to.have.status(409); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Refactoring Duplicate\",\n  \"author\": \"Martin Fowler\",\n  \"isbn\": \"{{newBookIsbn}}\",\n  \"categoryId\": 1,\n  \"totalQuantity\": 1,\n  \"availableQuantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Book - Inactive Category (422)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 422', function () { pm.response.to.have.status(422); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Book In Inactive Category\",\n  \"author\": \"Test Author\",\n  \"isbn\": \"TEST-INACTIVE-CAT-001\",\n  \"categoryId\": {{categoryId}},\n  \"totalQuantity\": 1,\n  \"availableQuantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books"]
+            },
+            "description": "Use a soft-deleted categoryId. Run DELETE category first if needed."
+          }
+        },
+        {
+          "name": "POST Create Book - MEMBER Forbidden (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Unauthorized Book\",\n  \"author\": \"Test\",\n  \"isbn\": \"TEST-MEMBER-001\",\n  \"categoryId\": 1,\n  \"totalQuantity\": 1,\n  \"availableQuantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Book - Validation Error (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"author\": \"\",\n  \"isbn\": \"\",\n  \"categoryId\": 1,\n  \"totalQuantity\": -1\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books"]
+            }
+          }
+        },
+        {
+          "name": "PUT Update Book",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenLibrarian}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Refactoring (2nd Edition)\",\n  \"publisher\": \"Addison-Wesley Professional\",\n  \"totalQuantity\": 8,\n  \"availableQuantity\": 5\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books/{{bookId}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books", "{{bookId}}"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Soft Delete Book",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books/{{bookId}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books", "{{bookId}}"]
+            },
+            "description": "After soft delete, GET same bookId should return 404."
+          }
+        },
+        {
+          "name": "GET Book After Soft Delete (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 404', function () { pm.response.to.have.status(404); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/books/{{bookId}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "books", "{{bookId}}"]
+            },
+            "description": "Run after DELETE Soft Delete Book."
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Book API - Direct Service",
+      "description": "Direct service calls with X-User-* role headers.",
+      "item": [
+        {
+          "name": "GET Search Books (ADMIN header)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "1" },
+              { "key": "X-Username", "value": "adminsys" },
+              { "key": "X-User-Email", "value": "admin@booksphere.com" },
+              { "key": "X-User-Role", "value": "ADMIN" }
+            ],
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/books?keyword=clean&page=0&size=10&sortBy=title&sortDir=asc",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "books"],
+              "query": [
+                { "key": "keyword", "value": "clean" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "sortBy", "value": "title" },
+                { "key": "sortDir", "value": "asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Book By ID (MEMBER header)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "3" },
+              { "key": "X-Username", "value": "huy.member" },
+              { "key": "X-User-Email", "value": "huy@booksphere.com" },
+              { "key": "X-User-Role", "value": "MEMBER" }
+            ],
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/books/1",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "books", "1"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Book (LIBRARIAN header)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-User-Id", "value": "2" },
+              { "key": "X-Username", "value": "librarian01" },
+              { "key": "X-User-Email", "value": "librarian01@booksphere.com" },
+              { "key": "X-User-Role", "value": "LIBRARIAN" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Direct Service Book\",\n  \"author\": \"Test Author\",\n  \"isbn\": \"DIRECT-BOOK-ISBN-001\",\n  \"categoryId\": 2,\n  \"totalQuantity\": 3,\n  \"availableQuantity\": 3\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/books",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "books"]
+            }
+          }
+        },
+        {
+          "name": "PUT Update Book (ADMIN header)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "X-User-Id", "value": "1" },
+              { "key": "X-Username", "value": "adminsys" },
+              { "key": "X-User-Email", "value": "admin@booksphere.com" },
+              { "key": "X-User-Role", "value": "ADMIN" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated via direct Book Service call\"\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/books/1",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "books", "1"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Soft Delete Book (ADMIN header)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "X-User-Id", "value": "1" },
+              { "key": "X-Username", "value": "adminsys" },
+              { "key": "X-User-Email", "value": "admin@booksphere.com" },
+              { "key": "X-User-Role", "value": "ADMIN" }
+            ],
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/books/{{bookId}}",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "books", "{{bookId}}"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Book - MEMBER Forbidden (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-User-Id", "value": "3" },
+              { "key": "X-Username", "value": "huy.member" },
+              { "key": "X-User-Email", "value": "huy@booksphere.com" },
+              { "key": "X-User-Role", "value": "MEMBER" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Forbidden Direct Book\",\n  \"author\": \"Test\",\n  \"isbn\": \"DIRECT-FORBIDDEN-001\",\n  \"categoryId\": 1,\n  \"totalQuantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/api/books",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["api", "books"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Internal API - Direct Service",
+      "description": "Internal endpoints for Borrow Saga. Call directly on port 8082 (not routed via Gateway).",
+      "item": [
+        {
+          "name": "GET Internal Book By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Book is active with active category', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.data.isActive).to.eql(true);",
+                  "    pm.expect(json.data.categoryActive).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/internal/books/{{bookId}}",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["internal", "books", "{{bookId}}"]
+            }
+          }
+        },
+        {
+          "name": "GET Internal Book - Not Found (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 404', function () { pm.response.to.have.status(404); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/internal/books/99999",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["internal", "books", "99999"]
+            }
+          }
+        },
+        {
+          "name": "PUT Decrease Stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Stock decreased', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.data.action).to.eql('DECREASE');",
+                  "    pm.expect(json.data.idempotent).to.eql(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sagaId\": \"{{sagaId}}\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/internal/books/{{bookId}}/decrease-stock",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["internal", "books", "{{bookId}}", "decrease-stock"]
+            },
+            "description": "Atomic decrease stock for Borrow Saga step."
+          }
+        },
+        {
+          "name": "PUT Decrease Stock - Idempotent Retry",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Idempotent retry', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.data.idempotent).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sagaId\": \"{{sagaId}}\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/internal/books/{{bookId}}/decrease-stock",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["internal", "books", "{{bookId}}", "decrease-stock"]
+            },
+            "description": "Retry same sagaId - should not decrease stock twice."
+          }
+        },
+        {
+          "name": "PUT Increase Stock (Compensation / Return)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Stock increased', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.data.action).to.eql('INCREASE');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sagaId\": \"{{sagaIdCompensate}}\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/internal/books/{{bookId}}/increase-stock",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["internal", "books", "{{bookId}}", "increase-stock"]
+            }
+          }
+        },
+        {
+          "name": "PUT Increase Stock - Idempotent Retry",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Idempotent retry', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.data.idempotent).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sagaId\": \"{{sagaIdCompensate}}\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/internal/books/{{bookId}}/increase-stock",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["internal", "books", "{{bookId}}", "increase-stock"]
+            }
+          }
+        },
+        {
+          "name": "PUT Decrease Stock - Out of Stock (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 409', function () { pm.response.to.have.status(409); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sagaId\": \"{{sagaIdOutOfStock}}\",\n  \"quantity\": 999999\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/internal/books/{{bookId}}/decrease-stock",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["internal", "books", "{{bookId}}", "decrease-stock"]
+            }
+          }
+        },
+        {
+          "name": "PUT Decrease Stock - Invalid Quantity (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sagaId\": \"TEST-SAGA-INVALID-QTY\",\n  \"quantity\": 0\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/internal/books/{{bookId}}/decrease-stock",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["internal", "books", "{{bookId}}", "decrease-stock"]
+            }
+          }
+        },
+        {
+          "name": "PUT Decrease Stock - Inactive Book (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 409', function () { pm.response.to.have.status(409); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sagaId\": \"TEST-SAGA-INACTIVE-BOOK\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/internal/books/{{bookId}}/decrease-stock",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["internal", "books", "{{bookId}}", "decrease-stock"]
+            },
+            "description": "Run after soft-deleting the book. Uses {{bookId}} from environment."
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Health Check",
+      "item": [
+        {
+          "name": "Book Service Actuator Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{bookServiceBaseUrl}}/actuator/health",
+              "host": ["{{bookServiceBaseUrl}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "gatewayBaseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "bookServiceBaseUrl",
+      "value": "http://localhost:8082"
+    }
+  ]
+}

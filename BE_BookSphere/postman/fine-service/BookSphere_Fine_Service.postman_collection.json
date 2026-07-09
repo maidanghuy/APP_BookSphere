@@ -1,0 +1,1593 @@
+{
+  "info": {
+    "_postman_id": "booksphere-fine-service-collection",
+    "name": "BookSphere - Fine Service",
+    "description": "Postman collection for Fine Service (BS-BE-07).\n\nRecommended run order:\n1. 00 - Auth Setup\n2. 01 - Internal Fine API - Direct Service\n3. 02 - Fine Query - Via Gateway\n4. 03 - Payment Flow - Via Gateway\n5. 04 - Fine API - Direct Service\n6. 05 - Gateway Security\n\nPrerequisites: Auth, Borrow, Fine, Gateway running. Seed fine id=1 UNPAID.\nNote: Payment SUCCESS marks fine as PAID; reset DB to rerun payment folder.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00 - Auth Setup",
+      "description": "Obtain JWT tokens.",
+      "item": [
+        {
+          "name": "Login as ADMIN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set('tokenVar', 'accessTokenAdmin');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data && json.data.accessToken) {",
+                  "        pm.environment.set(pm.variables.get('tokenVar'), json.data.accessToken);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as LIBRARIAN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{librarianUsername}}\",\n  \"password\": \"{{librarianPassword}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set('tokenVar', 'accessTokenLibrarian');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data && json.data.accessToken) {",
+                  "        pm.environment.set(pm.variables.get('tokenVar'), json.data.accessToken);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as MEMBER (huy.member)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{memberUsername}}\",\n  \"password\": \"{{memberPassword}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set('tokenVar', 'accessTokenMember');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data && json.data.accessToken) {",
+                  "        pm.environment.set(pm.variables.get('tokenVar'), json.data.accessToken);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as MEMBER Owner (hien.member)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{memberOwnerUsername}}\",\n  \"password\": \"{{memberOwnerPassword}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set('tokenVar', 'accessTokenMemberOwner');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data && json.data.accessToken) {",
+                  "        pm.environment.set(pm.variables.get('tokenVar'), json.data.accessToken);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Internal Fine API - Direct Service",
+      "item": [
+        {
+          "name": "POST Create Fine - LATE_RETURN Idempotent (200)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{fineServiceBaseUrl}}/internal/fines",
+              "host": [
+                "{{fineServiceBaseUrl}}"
+              ],
+              "path": [
+                "internal",
+                "fines"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowId\": {{borrowId}},\n  \"userId\": {{seedFineUserId}},\n  \"dueDate\": \"2026-06-27T23:59:59\",\n  \"returnDate\": \"2026-06-30T14:00:00\",\n  \"daysOverdue\": 3,\n  \"createdFrom\": \"LATE_RETURN\",\n  \"reason\": \"Trả sách trễ 3 ngày\"\n}"
+            },
+            "description": "Seed borrow_id=2 already has a fine."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Idempotent message', function () { pm.expect(pm.response.json().message).to.include('already exists'); });",
+                  "pm.test('borrowId matches', function () { pm.expect(pm.response.json().data.borrowId).to.eql(parseInt(pm.environment.get('borrowId'))); });",
+                  "pm.test('status is UNPAID', function () { pm.expect(pm.response.json().data.status).to.eql('UNPAID'); });",
+                  "pm.test('Response has no Jackson @class metadata', function () {",
+                  "    pm.expect(JSON.stringify(pm.response.json())).to.not.include('@class');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Fine - Validation Missing borrowId (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{fineServiceBaseUrl}}/internal/fines",
+              "host": [
+                "{{fineServiceBaseUrl}}"
+              ],
+              "path": [
+                "internal",
+                "fines"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 4,\n  \"createdFrom\": \"LATE_RETURN\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('success is false', function () { pm.expect(pm.response.json().success).to.eql(false); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Fine - Invalid createdFrom (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{fineServiceBaseUrl}}/internal/fines",
+              "host": [
+                "{{fineServiceBaseUrl}}"
+              ],
+              "path": [
+                "internal",
+                "fines"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowId\": 2,\n  \"userId\": 4,\n  \"createdFrom\": \"INVALID_SOURCE\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Error code VALIDATION_FAILED', function () { pm.expect(pm.response.json().errors[0].code).to.eql('VALIDATION_FAILED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Fine - Borrow Not Found (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{fineServiceBaseUrl}}/internal/fines",
+              "host": [
+                "{{fineServiceBaseUrl}}"
+              ],
+              "path": [
+                "internal",
+                "fines"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowId\": {{invalidBorrowId}},\n  \"userId\": 4,\n  \"daysOverdue\": 1,\n  \"createdFrom\": \"LATE_RETURN\"\n}"
+            },
+            "description": "Requires Borrow Service running."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Error code BORROW_NOT_FOUND', function () { pm.expect(pm.response.json().errors[0].code).to.eql('BORROW_NOT_FOUND'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Fine - Borrow Not Eligible LATE_RETURN (422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{fineServiceBaseUrl}}/internal/fines",
+              "host": [
+                "{{fineServiceBaseUrl}}"
+              ],
+              "path": [
+                "internal",
+                "fines"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowId\": {{borrowingBorrowId}},\n  \"userId\": 3,\n  \"dueDate\": \"2026-07-08T23:59:59\",\n  \"daysOverdue\": 1,\n  \"createdFrom\": \"LATE_RETURN\"\n}"
+            },
+            "description": "borrow_id=1 is BORROWING."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('Error code FINE_BORROW_NOT_ELIGIBLE', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FINE_BORROW_NOT_ELIGIBLE'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Fine - OVERDUE_SCHEDULER Not Eligible (422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{fineServiceBaseUrl}}/internal/fines",
+              "host": [
+                "{{fineServiceBaseUrl}}"
+              ],
+              "path": [
+                "internal",
+                "fines"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowId\": {{borrowingBorrowId}},\n  \"userId\": 3,\n  \"dueDate\": \"2026-07-08T23:59:59\",\n  \"daysOverdue\": 1,\n  \"createdFrom\": \"OVERDUE_SCHEDULER\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('Error code FINE_BORROW_NOT_ELIGIBLE', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FINE_BORROW_NOT_ELIGIBLE'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Fine Query - Via Gateway",
+      "item": [
+        {
+          "name": "GET List Fines - ADMIN",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines?page=0&size=10&sortBy=createdAt&sortDir=desc",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines"
+              ],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "sortBy", "value": "createdAt" },
+                { "key": "sortDir", "value": "desc" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Paged data present', function () { const d = pm.response.json().data; pm.expect(d.content).to.be.an('array'); pm.expect(d).to.have.property('totalElements'); });",
+                  "if (pm.response.json().data.content.length) { pm.environment.set('fineId', pm.response.json().data.content[0].id); }",
+                  "pm.test('Response has no Jackson @class metadata', function () {",
+                  "    pm.expect(JSON.stringify(pm.response.json())).to.not.include('@class');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Fines - Filter status UNPAID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines?status=UNPAID&page=0&size=10",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines"
+              ],
+              "query": [
+                { "key": "status", "value": "UNPAID" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('All items UNPAID', function () { pm.response.json().data.content.forEach(function (f) { pm.expect(f.status).to.eql('UNPAID'); }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Fines - Filter userId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines?userId={{seedFineUserId}}&page=0&size=10",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines"
+              ],
+              "query": [
+                { "key": "userId", "value": "{{seedFineUserId}}" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('All items belong to user', function () { pm.response.json().data.content.forEach(function (f) { pm.expect(f.userId).to.eql(parseInt(pm.environment.get('seedFineUserId'))); }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Fines - Filter borrowId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines?borrowId={{borrowId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines"
+              ],
+              "query": [
+                { "key": "borrowId", "value": "{{borrowId}}" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('borrowId filter applied', function () { pm.response.json().data.content.forEach(function (f) { pm.expect(f.borrowId).to.eql(parseInt(pm.environment.get('borrowId'))); }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Fine By ID - ADMIN",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{fineId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Fine detail fields', function () { const f = pm.response.json().data; pm.expect(f).to.have.property('amount'); pm.expect(f).to.have.property('createdFrom'); pm.expect(f).to.have.property('createdAt'); });",
+                  "pm.test('Response has no Jackson @class metadata', function () {",
+                  "    pm.expect(JSON.stringify(pm.response.json())).to.not.include('@class');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Fine By ID - Not Found (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{invalidFineId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{invalidFineId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Error code FINE_NOT_FOUND', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FINE_NOT_FOUND'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Fines - No Auth (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Fines - Invalid Status (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines?status=INVALID",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines"
+              ],
+              "query": [
+                { "key": "status", "value": "INVALID" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Error code FINE_INVALID_STATUS', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FINE_INVALID_STATUS'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Fine By ID - MEMBER Owner (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMemberOwner}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{fineId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Owner userId matches', function () { pm.expect(pm.response.json().data.userId).to.eql(parseInt(pm.environment.get('seedFineUserId'))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Fine By ID - MEMBER Other User (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{fineId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('Error code FORBIDDEN', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FORBIDDEN'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Fines - MEMBER Scoped",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines?page=0&size=50",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines"
+              ],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "50" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Only own fines returned', function () { pm.response.json().data.content.forEach(function (f) { pm.expect(f.userId).to.eql(parseInt(pm.environment.get('otherMemberUserId'))); }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Fines - LIBRARIAN",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenLibrarian}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines?page=0&size=10",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines"
+              ],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Payment Flow - Via Gateway",
+      "item": [
+        {
+          "name": "POST Pay Fine - Payment FAILED (fine stays UNPAID)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{fineId}}/pay",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}",
+                "pay"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"CASH\",\n  \"paymentStatus\": \"FAILED\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Payment status FAILED', function () { pm.expect(pm.response.json().data.paymentStatus).to.eql('FAILED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Pay Fine - Payment PENDING (fine stays UNPAID)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{fineId}}/pay",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}",
+                "pay"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"BANK_TRANSFER\",\n  \"paymentStatus\": \"PENDING\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Payment status PENDING', function () { pm.expect(pm.response.json().data.paymentStatus).to.eql('PENDING'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Pay Fine - Invalid Amount (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{fineId}}/pay",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}",
+                "pay"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"CASH\",\n  \"amount\": 1,\n  \"paymentStatus\": \"SUCCESS\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Error code FINE_INVALID_AMOUNT', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FINE_INVALID_AMOUNT'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Pay Fine - Invalid paymentMethod (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{fineId}}/pay",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}",
+                "pay"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"INVALID\",\n  \"paymentStatus\": \"SUCCESS\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Error code VALIDATION_FAILED', function () { pm.expect(pm.response.json().errors[0].code).to.eql('VALIDATION_FAILED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Pay Fine - MEMBER Other User Forbidden (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{fineId}}/pay",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}",
+                "pay"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"CASH\",\n  \"paymentStatus\": \"SUCCESS\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('Error code FORBIDDEN', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FORBIDDEN'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Pay Fine - MEMBER Owner SUCCESS",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMemberOwner}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{fineId}}/pay",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}",
+                "pay"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"E_WALLET\",\n  \"paymentStatus\": \"SUCCESS\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Payment SUCCESS', function () { pm.expect(pm.response.json().data.paymentStatus).to.eql('SUCCESS'); });",
+                  "pm.test('Payment method E_WALLET', function () { pm.expect(pm.response.json().data.paymentMethod).to.eql('E_WALLET'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Fine After Payment - status PAID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{fineId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Fine status PAID', function () { pm.expect(pm.response.json().data.status).to.eql('PAID'); });",
+                  "pm.test('paidAt is set', function () { pm.expect(pm.response.json().data.paidAt).to.not.be.null; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Pay Fine - Already PAID (422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{fineId}}/pay",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}",
+                "pay"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"CASH\",\n  \"paymentStatus\": \"SUCCESS\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('Error code FINE_ALREADY_PAID', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FINE_ALREADY_PAID'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Pay Fine - Not Found (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/fines/{{invalidFineId}}/pay",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{invalidFineId}}",
+                "pay"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"CASH\",\n  \"paymentStatus\": \"SUCCESS\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Error code FINE_NOT_FOUND', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FINE_NOT_FOUND'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Fine API - Direct Service",
+      "item": [
+        {
+          "name": "GET List Fines (ADMIN headers)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Id",
+                "value": "1"
+              },
+              {
+                "key": "X-Username",
+                "value": "adminsys"
+              },
+              {
+                "key": "X-User-Email",
+                "value": "admin@booksphere.com"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ],
+            "url": {
+              "raw": "{{fineServiceBaseUrl}}/api/fines?page=0&size=10",
+              "host": [
+                "{{fineServiceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines"
+              ],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Fine By ID (MEMBER owner headers)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Id",
+                "value": "4"
+              },
+              {
+                "key": "X-Username",
+                "value": "hien.member"
+              },
+              {
+                "key": "X-User-Email",
+                "value": "hien@booksphere.com"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "MEMBER"
+              }
+            ],
+            "url": {
+              "raw": "{{fineServiceBaseUrl}}/api/fines/{{fineId}}",
+              "host": [
+                "{{fineServiceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Fine By ID - Missing Role Header (401)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Id",
+                "value": "4"
+              }
+            ],
+            "url": {
+              "raw": "{{fineServiceBaseUrl}}/api/fines/{{fineId}}",
+              "host": [
+                "{{fineServiceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Fine By ID - MEMBER Other User (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Id",
+                "value": "3"
+              },
+              {
+                "key": "X-Username",
+                "value": "huy.member"
+              },
+              {
+                "key": "X-User-Email",
+                "value": "huy@booksphere.com"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "MEMBER"
+              }
+            ],
+            "url": {
+              "raw": "{{fineServiceBaseUrl}}/api/fines/{{fineId}}",
+              "host": [
+                "{{fineServiceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('Error code FORBIDDEN', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FORBIDDEN'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Pay Fine (LIBRARIAN headers)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Id",
+                "value": "2"
+              },
+              {
+                "key": "X-Username",
+                "value": "librarian01"
+              },
+              {
+                "key": "X-User-Email",
+                "value": "librarian01@booksphere.com"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "LIBRARIAN"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{fineServiceBaseUrl}}/api/fines/{{fineId}}/pay",
+              "host": [
+                "{{fineServiceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fines",
+                "{{fineId}}",
+                "pay"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"CASH\",\n  \"paymentStatus\": \"SUCCESS\"\n}"
+            },
+            "description": "Expect 422 if fine already PAID."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 or 422', function () { pm.expect([200, 422]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Gateway Security",
+      "item": [
+        {
+          "name": "POST Internal Fine Via Gateway - Blocked",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/internal/fines",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "internal",
+                "fines"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowId\": 2,\n  \"userId\": 4,\n  \"createdFrom\": \"LATE_RETURN\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403 or 404', function () { pm.expect([403, 404]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
