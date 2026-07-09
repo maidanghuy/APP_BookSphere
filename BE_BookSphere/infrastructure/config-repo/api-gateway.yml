@@ -1,0 +1,188 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: ${REDIS_TIMEOUT:2000ms}
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+
+        - id: book-service
+          uri: lb://book-service
+          predicates:
+            - Path=/api/books/**
+
+        - id: book-service-categories
+          uri: lb://book-service
+          predicates:
+            - Path=/api/categories/**
+
+        - id: borrow-service
+          uri: lb://borrow-service
+          predicates:
+            - Path=/api/borrows/**
+
+        - id: fine-service
+          uri: lb://fine-service
+          predicates:
+            - Path=/api/fines/**
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    gateway:
+      enabled: true
+    health:
+      show-details: always
+
+booksphere:
+  jwt:
+    secret: ${JWT_SECRET:change-this-secret-key-for-local-development-only-change-in-production}
+    access-token-expiration-minutes: ${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES:15}
+  rate-limit:
+    enabled: ${RATE_LIMIT_ENABLED:true}
+    policies:
+      - id: auth-login
+        method: POST
+        path: /api/auth/login
+        key-type: IP
+        limit-per-minute: 5
+        limit-per-hour: 20
+
+      - id: auth-register
+        method: POST
+        path: /api/auth/register
+        key-type: IP
+        limit-per-minute: 3
+        limit-per-hour: 10
+
+      - id: auth-refresh
+        method: POST
+        path: /api/auth/refresh
+        key-type: IP_OR_USER
+        limit-per-minute: 10
+        limit-per-hour: 100
+
+      - id: auth-logout
+        method: POST
+        path: /api/auth/logout
+        key-type: USER
+        limit-per-minute: 20
+        limit-per-hour: 100
+
+      - id: books-get
+        method: GET
+        path: /api/books/**
+        key-type: IP_OR_USER
+        limit-per-minute: 120
+        limit-per-hour: 3000
+
+      - id: books-create
+        method: POST
+        path: /api/books/**
+        key-type: USER
+        limit-per-minute: 30
+        limit-per-hour: 500
+
+      - id: books-update
+        method: PUT
+        path: /api/books/**
+        key-type: USER
+        limit-per-minute: 30
+        limit-per-hour: 500
+
+      - id: books-delete
+        method: DELETE
+        path: /api/books/**
+        key-type: USER
+        limit-per-minute: 20
+        limit-per-hour: 300
+
+      - id: borrows-return
+        method: POST
+        path: /api/borrows/*/return
+        key-type: USER
+        limit-per-minute: 10
+        limit-per-hour: 100
+
+      - id: borrows-create
+        method: POST
+        path: /api/borrows
+        key-type: USER
+        limit-per-minute: 10
+        limit-per-hour: 100
+
+      - id: borrows-get
+        method: GET
+        path: /api/borrows/**
+        key-type: USER
+        limit-per-minute: 60
+        limit-per-hour: 1000
+
+      - id: fines-pay
+        method: POST
+        path: /api/fines/*/pay
+        key-type: USER
+        limit-per-minute: 5
+        limit-per-hour: 50
+
+      - id: fines-get
+        method: GET
+        path: /api/fines/**
+        key-type: USER
+        limit-per-minute: 60
+        limit-per-hour: 1000
+
+      - id: notifications-get
+        method: GET
+        path: /api/notifications/**
+        key-type: USER
+        limit-per-minute: 120
+        limit-per-hour: 3000
+
+      - id: notifications-update
+        method: PUT
+        path: /api/notifications/**
+        key-type: USER
+        limit-per-minute: 60
+        limit-per-hour: 1000
+
+      - id: swagger-ui
+        method: ALL
+        path: /swagger-ui/**
+        key-type: IP
+        limit-per-minute: 30
+        limit-per-hour: 300
+
+      - id: api-docs
+        method: ALL
+        path: /v3/api-docs/**
+        key-type: IP
+        limit-per-minute: 30
+        limit-per-hour: 300
+
+      - id: default
+        method: ALL
+        path: /**
+        key-type: IP_OR_USER
+        limit-per-minute: 60
+        limit-per-hour: 1000

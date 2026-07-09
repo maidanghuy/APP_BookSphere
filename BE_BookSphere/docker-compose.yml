@@ -1,0 +1,275 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: booksphere-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_USER: ${MYSQL_USER:-booksphere}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-booksphere123}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - booksphere_mysql_data:/var/lib/mysql
+      - ./infrastructure/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - booksphere-network
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: booksphere-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - booksphere_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - booksphere-network
+
+  zipkin:
+    image: openzipkin/zipkin:3
+    container_name: booksphere-zipkin
+    restart: unless-stopped
+    ports:
+      - "${ZIPKIN_PORT:-9411}:9411"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9411/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - booksphere-network
+
+  discovery-server:
+    build:
+      context: ./discovery-server
+    image: booksphere/discovery-server:local
+    container_name: booksphere-discovery-server
+    restart: unless-stopped
+    environment:
+      EUREKA_INSTANCE_HOSTNAME: discovery-server
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+    ports:
+      - "${DISCOVERY_SERVER_PORT:-8761}:8761"
+    networks:
+      - booksphere-network
+
+  config-server:
+    build:
+      context: ./config-server
+    image: booksphere/config-server:local
+    container_name: booksphere-config-server
+    restart: unless-stopped
+    environment:
+      CONFIG_REPO_LOCATION: file:/config-repo
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+    ports:
+      - "${CONFIG_SERVER_PORT:-8888}:8888"
+    volumes:
+      - ./infrastructure/config-repo:/config-repo:ro
+    depends_on:
+      discovery-server:
+        condition: service_started
+    networks:
+      - booksphere-network
+
+  auth-service:
+    build:
+      context: ./auth-service
+    image: booksphere/auth-service:local
+    container_name: booksphere-auth-service
+    restart: unless-stopped
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+      AUTH_DB_URL: jdbc:mysql://mysql:3306/DBAuth?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      MYSQL_USER: ${MYSQL_USER:-booksphere}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-booksphere123}
+      JWT_SECRET: ${JWT_SECRET:-change-this-secret-key-for-local-development-only-change-in-production}
+      JWT_ACCESS_TOKEN_EXPIRATION_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES:-15}
+      JWT_REFRESH_TOKEN_EXPIRATION_DAYS: ${JWT_REFRESH_TOKEN_EXPIRATION_DAYS:-7}
+    ports:
+      - "${AUTH_SERVICE_PORT:-8081}:8081"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    networks:
+      - booksphere-network
+
+  book-service:
+    build:
+      context: ./book-service
+    image: booksphere/book-service:local
+    container_name: booksphere-book-service
+    restart: unless-stopped
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+      BOOK_DB_URL: jdbc:mysql://mysql:3306/DBBook?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      MYSQL_USER: ${MYSQL_USER:-booksphere}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-booksphere123}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_TIMEOUT: ${REDIS_TIMEOUT:-2000ms}
+      BOOK_CACHE_DEFAULT_TTL: ${BOOK_CACHE_DEFAULT_TTL:-10m}
+      BOOK_CACHE_BOOK_LIST_TTL: ${BOOK_CACHE_BOOK_LIST_TTL:-5m}
+      BOOK_CACHE_BOOK_DETAIL_TTL: ${BOOK_CACHE_BOOK_DETAIL_TTL:-10m}
+      BOOK_CACHE_CATEGORY_TTL: ${BOOK_CACHE_CATEGORY_TTL:-30m}
+    ports:
+      - "${BOOK_SERVICE_PORT:-8082}:8082"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    networks:
+      - booksphere-network
+
+  borrow-service:
+    build:
+      context: ./borrow-service
+    image: booksphere/borrow-service:local
+    container_name: booksphere-borrow-service
+    restart: unless-stopped
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+      BORROW_DB_URL: jdbc:mysql://mysql:3306/DBBorrow?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      MYSQL_USER: ${MYSQL_USER:-booksphere}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-booksphere123}
+    ports:
+      - "${BORROW_SERVICE_PORT:-8083}:8083"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+      book-service:
+        condition: service_started
+      fine-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+    networks:
+      - booksphere-network
+
+  fine-service:
+    build:
+      context: ./fine-service
+    image: booksphere/fine-service:local
+    container_name: booksphere-fine-service
+    restart: unless-stopped
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+      FINE_DB_URL: jdbc:mysql://mysql:3306/DBFine?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      MYSQL_USER: ${MYSQL_USER:-booksphere}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-booksphere123}
+    ports:
+      - "${FINE_SERVICE_PORT:-8084}:8084"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    networks:
+      - booksphere-network
+
+  notification-service:
+    build:
+      context: ./notification-service
+    image: booksphere/notification-service:local
+    container_name: booksphere-notification-service
+    restart: unless-stopped
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+      NOTIFICATION_DB_URL: jdbc:mysql://mysql:3306/DBNotification?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      MYSQL_USER: ${MYSQL_USER:-booksphere}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-booksphere123}
+    ports:
+      - "${NOTIFICATION_SERVICE_PORT:-8085}:8085"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    networks:
+      - booksphere-network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    image: booksphere/api-gateway:local
+    container_name: booksphere-api-gateway
+    restart: unless-stopped
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_TIMEOUT: ${REDIS_TIMEOUT:-2000ms}
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
+      JWT_SECRET: ${JWT_SECRET:-change-this-secret-key-for-local-development-only-change-in-production}
+      JWT_ACCESS_TOKEN_EXPIRATION_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES:-15}
+    ports:
+      - "${API_GATEWAY_PORT:-8080}:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+      auth-service:
+        condition: service_started
+      book-service:
+        condition: service_started
+      borrow-service:
+        condition: service_started
+      fine-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+    networks:
+      - booksphere-network
+
+volumes:
+  booksphere_mysql_data:
+  booksphere_redis_data:
+
+networks:
+  booksphere-network:
+    driver: bridge

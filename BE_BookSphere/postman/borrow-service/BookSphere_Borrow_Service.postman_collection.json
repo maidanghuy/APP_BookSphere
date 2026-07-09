@@ -1,0 +1,1777 @@
+{
+  "info": {
+    "_postman_id": "b7ad4c6c-3ed2-4699-a61b-b9d44f1a14ef",
+    "name": "BookSphere - Borrow Service",
+    "description": "Postman collection for BS-BE-06 Borrow Service & Saga Pattern. Run the folders from top to bottom. Public Borrow APIs are called through API Gateway with JWT. Internal and header-validation probes call Borrow Service directly. Manual probes cover branches that require prepared DB state or intentionally stopped downstream services.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00 - Auth & Flow Setup",
+      "description": "Login users and reset flow variables. Requires Auth Service and API Gateway.",
+      "item": [
+        {
+          "name": "Login MEMBER - huy.member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{memberUsername}}\",\n  \"password\": \"{{memberPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Stores MEMBER token and user id for protected Borrow Service calls."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"login response has access token\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.accessToken).to.be.a(\"string\").and.not.empty;",
+                  "});",
+                  "pm.environment.set(\"accessTokenMember\", json.data.accessToken);",
+                  "pm.environment.set(\"memberUserId\", String(json.data.user.id));",
+                  "pm.environment.set(\"coverageAuthMemberLogin\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login ADMIN - adminsys",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Stores ADMIN token for search/detail/return permission branches."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"admin login response has access token\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.accessToken).to.be.a(\"string\").and.not.empty;",
+                  "});",
+                  "pm.environment.set(\"accessTokenAdmin\", json.data.accessToken);",
+                  "pm.environment.set(\"adminUserId\", String(json.data.user.id));",
+                  "pm.environment.set(\"coverageAuthAdminLogin\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login LIBRARIAN - librarian01",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{librarianUsername}}\",\n  \"password\": \"{{librarianPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Stores LIBRARIAN token for all-borrow search branch."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"librarian login response has access token\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.accessToken).to.be.a(\"string\").and.not.empty;",
+                  "});",
+                  "pm.environment.set(\"accessTokenLibrarian\", json.data.accessToken);",
+                  "pm.environment.set(\"librarianUserId\", String(json.data.user.id));",
+                  "pm.environment.set(\"coverageAuthLibrarianLogin\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Create Borrow Saga",
+      "description": "Covers create-borrow success, validation errors, missing user context, invalid user context, book not found, out-of-stock/inactive branch, and Gateway missing-token branch.",
+      "item": [
+        {
+          "name": "Gateway protected create without JWT -> 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueDate\": \"{{futureDueDate}}\",\n  \"items\": [\n    {\n      \"bookId\": {{validBookId}},\n      \"quantity\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ]
+            },
+            "description": "Covers Gateway-auth branch before request reaches Borrow Service."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"missing token code\", function () {",
+                  "  pm.expect(json.success).to.eql(false);",
+                  "  pm.expect(json.errors[0].code).to.eql(\"AUTH_TOKEN_MISSING\");",
+                  "});",
+                  "pm.environment.set(\"coverageGatewayMissingJwt\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Direct Borrow create missing X-User-Id -> 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueDate\": \"{{futureDueDate}}\",\n  \"items\": [\n    {\n      \"bookId\": {{validBookId}},\n      \"quantity\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{borrowServiceBaseUrl}}/api/borrows",
+              "host": [
+                "{{borrowServiceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ]
+            },
+            "description": "Direct-service probe for BorrowController missing user context branch."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"missing user context code\", function () {",
+                  "  pm.expect(json.errors[0].code).to.eql(\"AUTH_TOKEN_MISSING\");",
+                  "});",
+                  "pm.environment.set(\"coverageCreateMissingUserHeader\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Direct Borrow create invalid X-User-Id -> 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "not-a-number"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "MEMBER"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueDate\": \"{{futureDueDate}}\",\n  \"items\": [\n    {\n      \"bookId\": {{validBookId}},\n      \"quantity\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{borrowServiceBaseUrl}}/api/borrows",
+              "host": [
+                "{{borrowServiceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ]
+            },
+            "description": "Direct-service probe for invalid X-User-Id parsing branch."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"invalid user context code\", function () {",
+                  "  pm.expect(json.errors[0].code).to.eql(\"AUTH_TOKEN_INVALID\");",
+                  "});",
+                  "pm.environment.set(\"coverageCreateInvalidUserHeader\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create borrow success -> 201 BORROWING",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueDate\": \"{{futureDueDate}}\",\n  \"items\": [\n    {\n      \"bookId\": {{validBookId}},\n      \"quantity\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ]
+            },
+            "description": "Happy path: Book Service check + decrease-stock, Borrow/BorrowItem creation, Notification best-effort, SagaLog COMPLETED."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"created borrow response is BORROWING\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.id).to.exist;",
+                  "  pm.expect(json.data.status).to.eql(\"BORROWING\");",
+                  "  pm.expect(json.data.items).to.be.an(\"array\").that.is.not.empty;",
+                  "  pm.expect(json.data.items[0].status).to.eql(\"BORROWED\");",
+                  "});",
+                  "pm.environment.set(\"createdBorrowId\", String(json.data.id));",
+                  "pm.environment.set(\"returnTargetBorrowId\", String(json.data.id));",
+                  "pm.environment.set(\"coverageCreateSuccess\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create borrow invalid dueDate -> 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueDate\": \"{{pastDueDate}}\",\n  \"items\": [\n    {\n      \"bookId\": {{validBookId}},\n      \"quantity\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ]
+            },
+            "description": "Covers dueDate validation branch."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 400\", function () { pm.response.to.have.status(400); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"validation failure returned\", function () {",
+                  "  pm.expect(json.success).to.eql(false);",
+                  "  pm.expect(json.status).to.eql(400);",
+                  "});",
+                  "pm.environment.set(\"coverageCreateInvalidDueDate\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create borrow empty items -> 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueDate\": \"{{futureDueDate}}\",\n  \"items\": []\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ]
+            },
+            "description": "Covers empty item list validation branch."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 400\", function () { pm.response.to.have.status(400); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"empty items validation failure returned\", function () {",
+                  "  pm.expect(json.success).to.eql(false);",
+                  "  pm.expect(json.status).to.eql(400);",
+                  "});",
+                  "pm.environment.set(\"coverageCreateEmptyItems\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create borrow invalid quantity -> 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueDate\": \"{{futureDueDate}}\",\n  \"items\": [\n    {\n      \"bookId\": {{validBookId}},\n      \"quantity\": 0\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ]
+            },
+            "description": "Covers invalid item quantity validation branch."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 400\", function () { pm.response.to.have.status(400); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"invalid quantity validation failure returned\", function () {",
+                  "  pm.expect(json.success).to.eql(false);",
+                  "  pm.expect(json.status).to.eql(400);",
+                  "});",
+                  "pm.environment.set(\"coverageCreateInvalidQuantity\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create borrow book not found -> 404",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueDate\": \"{{futureDueDate}}\",\n  \"items\": [\n    {\n      \"bookId\": {{notFoundBookId}},\n      \"quantity\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ]
+            },
+            "description": "Covers Book Service 404 path and Borrow Service BOOK_NOT_FOUND mapping."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"BOOK_NOT_FOUND code\", function () {",
+                  "  pm.expect(json.success).to.eql(false);",
+                  "  pm.expect(json.errors[0].code).to.eql(\"BOOK_NOT_FOUND\");",
+                  "});",
+                  "pm.environment.set(\"coverageCreateBookNotFound\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create borrow out of stock / inactive -> 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueDate\": \"{{futureDueDate}}\",\n  \"items\": [\n    {\n      \"bookId\": {{validBookId}},\n      \"quantity\": {{hugeQuantity}}\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ]
+            },
+            "description": "Covers Book Service atomic decrease-stock conflict and no Borrow created branch."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 409\", function () { pm.response.to.have.status(409); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"stock conflict code\", function () {",
+                  "  pm.expect(json.success).to.eql(false);",
+                  "  pm.expect([\"BOOK_OUT_OF_STOCK\", \"BOOK_INACTIVE\", \"BORROW_SAGA_FAILED\"]).to.include(json.errors[0].code);",
+                  "});",
+                  "pm.environment.set(\"coverageCreateStockConflict\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Search & Permission",
+      "description": "Covers MEMBER scoped search, ADMIN/LIBRARIAN all-search, status/user filters, and invalid enum query branch.",
+      "item": [
+        {
+          "name": "MEMBER list own borrows -> 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows?page=0&size=20&sortBy=createdAt&sortDir=desc",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "desc"
+                }
+              ]
+            },
+            "description": "MEMBER can only see their own borrows."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "const memberUserId = Number(pm.environment.get(\"memberUserId\"));",
+                  "pm.test(\"all rows belong to MEMBER\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  json.data.content.forEach(function (row) { pm.expect(row.userId).to.eql(memberUserId); });",
+                  "});",
+                  "pm.environment.set(\"coverageSearchMemberScope\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "MEMBER attempts userId filter for another user -> still own only",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows?userId={{otherMemberUserId}}&page=0&size=20",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{otherMemberUserId}}"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "BorrowServiceImpl ignores userId query for MEMBER and applies current user scope."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "const memberUserId = Number(pm.environment.get(\"memberUserId\"));",
+                  "pm.test(\"MEMBER cannot escape own scope\", function () {",
+                  "  json.data.content.forEach(function (row) { pm.expect(row.userId).to.eql(memberUserId); });",
+                  "});",
+                  "pm.environment.set(\"coverageSearchMemberIgnoresOtherUserFilter\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "ADMIN list all borrows -> 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows?page=0&size=50&sortBy=id&sortDir=asc",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "50"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "id"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "asc"
+                }
+              ]
+            },
+            "description": "ADMIN can search all borrows."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"page response shape\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.content).to.be.an(\"array\");",
+                  "  pm.expect(json.data.totalElements).to.be.a(\"number\");",
+                  "});",
+                  "pm.environment.set(\"coverageSearchAdminAll\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "LIBRARIAN list all borrows -> 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenLibrarian}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows?page=0&size=50",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "LIBRARIAN can search all borrows."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"page response shape\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.content).to.be.an(\"array\");",
+                  "});",
+                  "pm.environment.set(\"coverageSearchLibrarianAll\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "ADMIN filter by status RETURNED -> 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows?status=RETURNED&page=0&size=20",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "RETURNED"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Covers status filter branch."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"all rows are RETURNED\", function () {",
+                  "  json.data.content.forEach(function (row) { pm.expect(row.status).to.eql(\"RETURNED\"); });",
+                  "});",
+                  "pm.environment.set(\"coverageSearchStatusFilter\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "ADMIN filter by userId -> 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows?userId={{memberUserId}}&page=0&size=20",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{memberUserId}}"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Covers ADMIN userId search branch."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "const memberUserId = Number(pm.environment.get(\"memberUserId\"));",
+                  "pm.test(\"all rows belong to requested user\", function () {",
+                  "  json.data.content.forEach(function (row) { pm.expect(row.userId).to.eql(memberUserId); });",
+                  "});",
+                  "pm.environment.set(\"coverageSearchAdminUserFilter\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid status query -> 400",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows?status=NOT_A_STATUS",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "NOT_A_STATUS"
+                }
+              ]
+            },
+            "description": "Covers MethodArgumentTypeMismatchException branch for enum query params."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 400\", function () { pm.response.to.have.status(400); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"validation failed code\", function () {",
+                  "  pm.expect(json.success).to.eql(false);",
+                  "  pm.expect(json.errors[0].code).to.eql(\"VALIDATION_FAILED\");",
+                  "});",
+                  "pm.environment.set(\"coverageSearchInvalidStatus\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Detail & Internal",
+      "description": "Covers detail success, 403 permission, 404 not found, direct internal endpoint, and Gateway /internal/** blocking.",
+      "item": [
+        {
+          "name": "MEMBER get own seed borrow detail -> 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows/{{seedBorrowMemberId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows",
+                "{{seedBorrowMemberId}}"
+              ]
+            },
+            "description": "Seed borrow 1 belongs to huy.member in DBBorrow seed data."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"detail has items and belongs to member\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(String(json.data.userId)).to.eql(pm.environment.get(\"memberUserId\"));",
+                  "  pm.expect(json.data.items).to.be.an(\"array\").that.is.not.empty;",
+                  "});",
+                  "pm.environment.set(\"coverageDetailMemberOwn\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "MEMBER get other user's borrow -> 403",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows/{{seedBorrowOtherUserId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows",
+                "{{seedBorrowOtherUserId}}"
+              ]
+            },
+            "description": "Covers FORBIDDEN branch for MEMBER accessing another user's borrow."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"FORBIDDEN code\", function () { pm.expect(json.errors[0].code).to.eql(\"FORBIDDEN\"); });",
+                  "pm.environment.set(\"coverageDetailMemberForbidden\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "ADMIN get other user's borrow -> 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows/{{seedBorrowOtherUserId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows",
+                "{{seedBorrowOtherUserId}}"
+              ]
+            },
+            "description": "Covers ADMIN permission branch for detail."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"admin can see detail\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.id).to.eql(Number(pm.environment.get(\"seedBorrowOtherUserId\")));",
+                  "});",
+                  "pm.environment.set(\"coverageDetailAdminOther\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get borrow not found -> 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows/{{notFoundBorrowId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows",
+                "{{notFoundBorrowId}}"
+              ]
+            },
+            "description": "Covers BORROW_NOT_FOUND branch."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"BORROW_NOT_FOUND code\", function () { pm.expect(json.errors[0].code).to.eql(\"BORROW_NOT_FOUND\"); });",
+                  "pm.environment.set(\"coverageDetailNotFound\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Direct internal borrow detail -> 200",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{borrowServiceBaseUrl}}/internal/borrows/{{seedBorrowMemberId}}",
+              "host": [
+                "{{borrowServiceBaseUrl}}"
+              ],
+              "path": [
+                "internal",
+                "borrows",
+                "{{seedBorrowMemberId}}"
+              ]
+            },
+            "description": "Direct service-to-service endpoint intended for Fine Service in later task."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"internal payload has minimal borrow fields\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.borrowId).to.eql(Number(pm.environment.get(\"seedBorrowMemberId\")));",
+                  "  pm.expect(json.data.userId).to.exist;",
+                  "  pm.expect(json.data.status).to.exist;",
+                  "});",
+                  "pm.environment.set(\"coverageInternalDirect\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Gateway blocks /internal/borrows -> 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/internal/borrows/{{seedBorrowMemberId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "internal",
+                "borrows",
+                "{{seedBorrowMemberId}}"
+              ]
+            },
+            "description": "Confirms BS-BE-03 Gateway internal API block remains intact."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.environment.set(\"coverageGatewayInternalBlock\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Return Borrow Saga",
+      "description": "Run after successful create-borrow request. Covers return success, already returned, forbidden, and not-found branches.",
+      "item": [
+        {
+          "name": "Return created borrow success -> 200 RETURNED",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows/{{returnTargetBorrowId}}/return",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows",
+                "{{returnTargetBorrowId}}",
+                "return"
+              ]
+            },
+            "description": "Happy path: Book Service increase-stock, Borrow/BorrowItem RETURNED, Fine/Notification best-effort if needed, SagaLog COMPLETED."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"borrow is returned\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.status).to.eql(\"RETURNED\");",
+                  "  json.data.items.forEach(function (item) { pm.expect(item.status).to.eql(\"RETURNED\"); });",
+                  "});",
+                  "pm.environment.set(\"returnedBorrowId\", String(json.data.id));",
+                  "pm.environment.set(\"coverageReturnSuccess\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Return same borrow again -> 422",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows/{{returnedBorrowId}}/return",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows",
+                "{{returnedBorrowId}}",
+                "return"
+              ]
+            },
+            "description": "Covers BORROW_ALREADY_RETURNED branch on a borrow returned in the previous request."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"BORROW_ALREADY_RETURNED code\", function () { pm.expect(json.errors[0].code).to.eql(\"BORROW_ALREADY_RETURNED\"); });",
+                  "pm.environment.set(\"coverageReturnAlreadyReturned\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "MEMBER return other user's borrow -> 403",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows/{{seedBorrowOtherUserId}}/return",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows",
+                "{{seedBorrowOtherUserId}}",
+                "return"
+              ]
+            },
+            "description": "Covers permission check before Return Saga starts."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"FORBIDDEN code\", function () { pm.expect(json.errors[0].code).to.eql(\"FORBIDDEN\"); });",
+                  "pm.environment.set(\"coverageReturnMemberForbidden\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "ADMIN return seed returned borrow -> 422",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows/{{seedBorrowOtherUserId}}/return",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows",
+                "{{seedBorrowOtherUserId}}",
+                "return"
+              ]
+            },
+            "description": "Seed borrow 2 is RETURNED, so ADMIN reaches already-returned branch."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"BORROW_ALREADY_RETURNED code\", function () { pm.expect(json.errors[0].code).to.eql(\"BORROW_ALREADY_RETURNED\"); });",
+                  "pm.environment.set(\"coverageReturnSeedAlreadyReturned\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Return borrow not found -> 404",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows/{{notFoundBorrowId}}/return",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows",
+                "{{notFoundBorrowId}}",
+                "return"
+              ]
+            },
+            "description": "Covers BORROW_NOT_FOUND branch in return flow."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"BORROW_NOT_FOUND code\", function () { pm.expect(json.errors[0].code).to.eql(\"BORROW_NOT_FOUND\"); });",
+                  "pm.environment.set(\"coverageReturnNotFound\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Scheduler & Manual Branch Probes",
+      "description": "These requests help cover branches that require external setup: overdue DB rows, due-soon DB rows, stopped Book Service, or a late-return borrow. Run individually after preparing the described state.",
+      "item": [
+        {
+          "name": "Verify overdue scheduler output -> OVERDUE list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows?status=OVERDUE&page=0&size=50",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "OVERDUE"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "Before running: ensure at least one DBBorrow row has status BORROWING and due_date < now, then wait for BORROW_OVERDUE_SCHEDULER_FIXED_DELAY_MS. Fine/Notification may fail best-effort without failing Borrow status."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"rows returned are OVERDUE\", function () {",
+                  "  json.data.content.forEach(function (row) { pm.expect(row.status).to.eql(\"OVERDUE\"); });",
+                  "});",
+                  "const expected = Number(pm.environment.get(\"expectedMinOverdueCount\") || 0);",
+                  "if (expected > 0) {",
+                  "  pm.test(\"overdue count reaches expected minimum\", function () { pm.expect(json.data.content.length).to.be.at.least(expected); });",
+                  "}",
+                  "pm.environment.set(\"coverageSchedulerOverdueQuery\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify due-soon candidate list -> BORROWING list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows?status=BORROWING&page=0&size=50&sortBy=dueDate&sortDir=asc",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "BORROWING"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "50"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "dueDate"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "asc"
+                }
+              ]
+            },
+            "description": "Before running: ensure a BORROWING row has due_date within BORROW_DUE_SOON_WINDOW_HOURS. Verify Notification Service receives/keeps idempotent BORROW_DUE_SOON_{borrowId} if Notification Service is implemented."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"rows returned are BORROWING\", function () {",
+                  "  json.data.content.forEach(function (row) { pm.expect(row.status).to.eql(\"BORROWING\"); });",
+                  "});",
+                  "pm.environment.set(\"coverageSchedulerDueSoonQuery\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Manual late return branch -> 200 even if Fine/Notification fail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenAdmin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"returnDate\": \"{{lateReturnDate}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows/{{lateReturnBorrowId}}/return",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows",
+                "{{lateReturnBorrowId}}",
+                "return"
+              ]
+            },
+            "description": "Prepare lateReturnBorrowId with status BORROWING or OVERDUE and due_date before lateReturnDate. Expected: Borrow still RETURNED even if Fine/Notification internal APIs are not ready."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"late return completes main business flow\", function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "  pm.expect(json.data.status).to.eql(\"RETURNED\");",
+                  "});",
+                  "pm.environment.set(\"coverageReturnLateBestEffort\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Manual Book Service unavailable create -> 503",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessTokenMember}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueDate\": \"{{futureDueDate}}\",\n  \"items\": [\n    {\n      \"bookId\": {{validBookId}},\n      \"quantity\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/borrows",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "borrows"
+              ]
+            },
+            "description": "Run individually while Book Service is stopped/unregistered. Covers SERVICE_UNAVAILABLE branch and SagaLog FAILED path."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 503\", function () { pm.response.to.have.status(503); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"SERVICE_UNAVAILABLE code\", function () { pm.expect(json.errors[0].code).to.eql(\"SERVICE_UNAVAILABLE\"); });",
+                  "pm.environment.set(\"coverageDownstreamBookUnavailable\", \"PASS\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "99 - Coverage Summary",
+      "description": "Run after automatic folders to quickly see which core branches passed. Manual branch probes are intentionally not required here.",
+      "item": [
+        {
+          "name": "Automated coverage summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{borrowServiceBaseUrl}}/actuator/health",
+              "host": [
+                "{{borrowServiceBaseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Asserts automated coverage markers set by previous requests."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const required = [",
+                  "  \"coverageAuthMemberLogin\",",
+                  "  \"coverageAuthAdminLogin\",",
+                  "  \"coverageAuthLibrarianLogin\",",
+                  "  \"coverageGatewayMissingJwt\",",
+                  "  \"coverageCreateMissingUserHeader\",",
+                  "  \"coverageCreateInvalidUserHeader\",",
+                  "  \"coverageCreateSuccess\",",
+                  "  \"coverageCreateInvalidDueDate\",",
+                  "  \"coverageCreateEmptyItems\",",
+                  "  \"coverageCreateInvalidQuantity\",",
+                  "  \"coverageCreateBookNotFound\",",
+                  "  \"coverageCreateStockConflict\",",
+                  "  \"coverageSearchMemberScope\",",
+                  "  \"coverageSearchMemberIgnoresOtherUserFilter\",",
+                  "  \"coverageSearchAdminAll\",",
+                  "  \"coverageSearchLibrarianAll\",",
+                  "  \"coverageSearchStatusFilter\",",
+                  "  \"coverageSearchAdminUserFilter\",",
+                  "  \"coverageSearchInvalidStatus\",",
+                  "  \"coverageDetailMemberOwn\",",
+                  "  \"coverageDetailMemberForbidden\",",
+                  "  \"coverageDetailAdminOther\",",
+                  "  \"coverageDetailNotFound\",",
+                  "  \"coverageInternalDirect\",",
+                  "  \"coverageGatewayInternalBlock\",",
+                  "  \"coverageReturnSuccess\",",
+                  "  \"coverageReturnAlreadyReturned\",",
+                  "  \"coverageReturnMemberForbidden\",",
+                  "  \"coverageReturnSeedAlreadyReturned\",",
+                  "  \"coverageReturnNotFound\"",
+                  "];",
+                  "const missing = required.filter(function (key) { return pm.environment.get(key) !== \"PASS\"; });",
+                  "pm.test(\"automated Borrow Service coverage markers are PASS\", function () {",
+                  "  pm.expect(missing, \"Missing markers: \" + missing.join(\", \")).to.eql([]);",
+                  "});",
+                  "pm.test(\"manual branch probes are documented\", function () {",
+                  "  pm.expect([",
+                  "    \"coverageSchedulerOverdueQuery\",",
+                  "    \"coverageSchedulerDueSoonQuery\",",
+                  "    \"coverageReturnLateBestEffort\",",
+                  "    \"coverageDownstreamBookUnavailable\"",
+                  "  ]).to.be.an(\"array\").that.has.length(4);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}

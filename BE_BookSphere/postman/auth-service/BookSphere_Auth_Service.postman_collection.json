@@ -1,0 +1,572 @@
+{
+  "info": {
+    "_postman_id": "booksphere-auth-service-collection",
+    "name": "BookSphere - Auth Service",
+    "description": "Postman collection for Auth Service.\n\nCovers:\n- Register\n- Login\n- Refresh token\n- Logout\n- Basic validation and security error cases\n- Via API Gateway and Direct Service checks\n\nRecommended run order:\n1. 00 - Auth API - Via Gateway\n2. 01 - Auth API - Direct Service\n3. 02 - Validation & Error Cases\n\nPrerequisites: Auth Service and API Gateway running.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00 - Auth API - Via Gateway",
+      "description": "Public Auth APIs through API Gateway.",
+      "item": [
+        {
+          "name": "POST Register Member - Via Gateway",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Postman Registered Member\",\n  \"username\": \"postman.member.{{$timestamp}}\",\n  \"email\": \"postman.member.{{$timestamp}}@booksphere.com\",\n  \"password\": \"@1\",\n  \"phone\": \"0901234567\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/register",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('Register returns 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Register response has tokens', function () {",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.data.accessToken).to.be.a('string');",
+                  "  pm.expect(body.data.refreshToken).to.be.a('string');",
+                  "});",
+                  "pm.environment.set('registeredAccessToken', body.data.accessToken);",
+                  "pm.environment.set('registeredRefreshToken', body.data.refreshToken);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Login ADMIN - Via Gateway",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('Login ADMIN returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Login ADMIN has ADMIN role', function () {",
+                  "  pm.expect(body.data.user.roles).to.include('ADMIN');",
+                  "});",
+                  "pm.environment.set('accessTokenAdmin', body.data.accessToken);",
+                  "pm.environment.set('refreshTokenAdmin', body.data.refreshToken);",
+                  "pm.environment.set('adminUserId', body.data.user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Login LIBRARIAN - Via Gateway",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{librarianUsername}}\",\n  \"password\": \"{{librarianPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('Login LIBRARIAN returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Login LIBRARIAN has LIBRARIAN role', function () {",
+                  "  pm.expect(body.data.user.roles).to.include('LIBRARIAN');",
+                  "});",
+                  "pm.environment.set('accessTokenLibrarian', body.data.accessToken);",
+                  "pm.environment.set('refreshTokenLibrarian', body.data.refreshToken);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Login MEMBER - Via Gateway",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{memberUsername}}\",\n  \"password\": \"{{memberPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('Login MEMBER returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Login MEMBER has MEMBER role', function () {",
+                  "  pm.expect(body.data.user.roles).to.include('MEMBER');",
+                  "});",
+                  "pm.environment.set('accessTokenMember', body.data.accessToken);",
+                  "pm.environment.set('refreshTokenMember', body.data.refreshToken);",
+                  "pm.environment.set('memberUserId', body.data.user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Refresh ADMIN Token - Via Gateway",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshTokenAdmin}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/refresh",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('Refresh returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Refresh response has new access token', function () {",
+                  "  pm.expect(body.data.accessToken).to.be.a('string');",
+                  "});",
+                  "pm.environment.set('accessTokenAdmin', body.data.accessToken);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Logout Registered User - Via Gateway",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{registeredRefreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/logout",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('Logout returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Logout response succeeds', function () { pm.expect(body.success).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Auth API - Direct Service",
+      "description": "Direct Auth Service calls for service-level checks.",
+      "item": [
+        {
+          "name": "POST Login MEMBER - Direct Service",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{memberUsername}}\",\n  \"password\": \"{{memberPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{authServiceBaseUrl}}/api/auth/login",
+              "host": [
+                "{{authServiceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Direct login returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Direct login has standard ApiResponse', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.status).to.eql(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Refresh MEMBER Token - Direct Service",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshTokenMember}}\"\n}"
+            },
+            "url": {
+              "raw": "{{authServiceBaseUrl}}/api/auth/refresh",
+              "host": [
+                "{{authServiceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Direct refresh returns 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Validation & Error Cases",
+      "description": "Basic Auth error branches through API Gateway.",
+      "item": [
+        {
+          "name": "POST Login Invalid Password - 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"wrong-password\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Invalid password returns 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Login Disabled Member - 403",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{disabledUsername}}\",\n  \"password\": \"{{disabledPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Disabled member returns 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Register Duplicate Username - 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Duplicate Admin\",\n  \"username\": \"{{adminUsername}}\",\n  \"email\": \"duplicate.admin.{{$timestamp}}@booksphere.com\",\n  \"password\": \"@1\",\n  \"phone\": \"0907654321\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/register",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Duplicate username returns 409', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Refresh Invalid Token - 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"invalid-refresh-token\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/refresh",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Invalid refresh token returns 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Register Validation Error - 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"\",\n  \"username\": \"\",\n  \"email\": \"not-an-email\",\n  \"password\": \"1\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/register",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Register validation returns 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "gatewayBaseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "authServiceBaseUrl",
+      "value": "http://localhost:8081"
+    }
+  ]
+}

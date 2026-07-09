@@ -1,0 +1,1380 @@
+{
+  "info": {
+    "_postman_id": "booksphere-notification-service-collection",
+    "name": "BookSphere - Notification Service",
+    "description": "Postman collection for Notification Service (BS-BE-08).\n\nRecommended run order:\n1. 00 - Auth Setup\n2. 01 - Internal Notification API - Direct Service\n3. 02 - My Notifications - Via Gateway\n4. 03 - Search All Notifications - Via Gateway\n5. 04 - Detail & Mark Read - Via Gateway\n6. 05 - Notification API - Direct Service\n7. 06 - Gateway Security\n\nPrerequisites: Auth, Notification, Gateway, Discovery running.\nSeed data: notification id=1 (user 3), id=2 (user 4), id=3 (user 3).\nNote: Mark-read tests may change is_read state; reset DBNotification to rerun folder 04.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00 - Auth Setup",
+      "description": "Obtain JWT tokens for all roles.",
+      "item": [
+        {
+          "name": "Login as ADMIN",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": { "type": "text/javascript", "exec": ["pm.variables.set('tokenVar', 'accessTokenAdmin');"] }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    pm.test('Has accessToken', function () { pm.expect(json.data.accessToken).to.be.a('string'); });",
+                  "    pm.environment.set(pm.variables.get('tokenVar'), json.data.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as LIBRARIAN",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{librarianUsername}}\",\n  \"password\": \"{{librarianPassword}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": { "type": "text/javascript", "exec": ["pm.variables.set('tokenVar', 'accessTokenLibrarian');"] }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) { pm.environment.set(pm.variables.get('tokenVar'), pm.response.json().data.accessToken); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as MEMBER (huy.member)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{memberUsername}}\",\n  \"password\": \"{{memberPassword}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": { "type": "text/javascript", "exec": ["pm.variables.set('tokenVar', 'accessTokenMember');"] }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) { pm.environment.set(pm.variables.get('tokenVar'), pm.response.json().data.accessToken); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as MEMBER Owner (hien.member)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/login",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{memberOwnerUsername}}\",\n  \"password\": \"{{memberOwnerPassword}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": { "type": "text/javascript", "exec": ["pm.variables.set('tokenVar', 'accessTokenMemberOwner');"] }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) { pm.environment.set(pm.variables.get('tokenVar'), pm.response.json().data.accessToken); }"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Internal Notification API - Direct Service",
+      "description": "POST /internal/notifications — idempotent create, all notification types, validation.",
+      "item": [
+        {
+          "name": "POST Create Notification BORROW (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/internal/notifications",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["internal", "notifications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{seedMemberUserId}},\n  \"title\": \"Mượn sách thành công\",\n  \"content\": \"Bạn đã mượn sách thành công.\",\n  \"type\": \"BORROW\",\n  \"referenceId\": {{referenceId}},\n  \"eventKey\": \"{{testEventKey}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('success true', function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test('type BORROW', function () { pm.expect(pm.response.json().data.type).to.eql('BORROW'); });",
+                  "pm.test('isRead false', function () { pm.expect(pm.response.json().data.isRead).to.eql(false); });",
+                  "pm.test('eventKey matches', function () { pm.expect(pm.response.json().data.eventKey).to.eql(pm.environment.get('testEventKey')); });",
+                  "if (pm.response.json().data && pm.response.json().data.id) { pm.environment.set('createdNotificationId', pm.response.json().data.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Notification - Idempotent Same eventKey (200)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/internal/notifications",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["internal", "notifications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{seedMemberUserId}},\n  \"title\": \"Mượn sách thành công\",\n  \"content\": \"Bạn đã mượn sách thành công.\",\n  \"type\": \"BORROW\",\n  \"referenceId\": {{referenceId}},\n  \"eventKey\": \"{{testEventKey}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Message already exists', function () { pm.expect(pm.response.json().message).to.include('already exists'); });",
+                  "pm.test('Same eventKey returned', function () { pm.expect(pm.response.json().data.eventKey).to.eql(pm.environment.get('testEventKey')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Notification RETURN (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/internal/notifications",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["internal", "notifications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{seedMemberUserId}},\n  \"title\": \"Trả sách thành công\",\n  \"content\": \"Bạn đã trả sách thành công.\",\n  \"type\": \"RETURN\",\n  \"referenceId\": {{referenceId}},\n  \"eventKey\": \"{{testEventKeyReturn}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('type RETURN', function () { pm.expect(pm.response.json().data.type).to.eql('RETURN'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Notification FINE (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/internal/notifications",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["internal", "notifications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{seedMemberOwnerUserId}},\n  \"title\": \"Bạn có khoản phạt chưa thanh toán\",\n  \"content\": \"Vui lòng thanh toán khoản phạt.\",\n  \"type\": \"FINE\",\n  \"referenceId\": {{referenceId}},\n  \"eventKey\": \"{{testEventKeyFine}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('type FINE', function () { pm.expect(pm.response.json().data.type).to.eql('FINE'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Notification PAYMENT (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/internal/notifications",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["internal", "notifications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{seedMemberOwnerUserId}},\n  \"title\": \"Thanh toán phạt thành công\",\n  \"content\": \"Khoản phạt đã được thanh toán.\",\n  \"type\": \"PAYMENT\",\n  \"referenceId\": {{referenceId}},\n  \"eventKey\": \"{{testEventKeyPayment}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('type PAYMENT', function () { pm.expect(pm.response.json().data.type).to.eql('PAYMENT'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Notification OVERDUE (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/internal/notifications",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["internal", "notifications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{seedMemberUserId}},\n  \"title\": \"Sách quá hạn trả\",\n  \"content\": \"Phiếu mượn đã quá hạn.\",\n  \"type\": \"OVERDUE\",\n  \"referenceId\": {{referenceId}},\n  \"eventKey\": \"{{testEventKeyOverdue}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('type OVERDUE', function () { pm.expect(pm.response.json().data.type).to.eql('OVERDUE'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Notification DUE_SOON (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/internal/notifications",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["internal", "notifications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{seedMemberUserId}},\n  \"title\": \"Sách sắp đến hạn trả\",\n  \"content\": \"Vui lòng trả sách trước hạn.\",\n  \"type\": \"DUE_SOON\",\n  \"referenceId\": {{referenceId}},\n  \"eventKey\": \"{{testEventKeyDueSoon}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('type DUE_SOON', function () { pm.expect(pm.response.json().data.type).to.eql('DUE_SOON'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Notification SYSTEM (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/internal/notifications",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["internal", "notifications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{seedMemberUserId}},\n  \"title\": \"Thông báo hệ thống\",\n  \"content\": \"Bảo trì hệ thống vào cuối tuần.\",\n  \"type\": \"SYSTEM\",\n  \"eventKey\": \"{{testEventKeySystem}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('type SYSTEM', function () { pm.expect(pm.response.json().data.type).to.eql('SYSTEM'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Notification - Missing Required Fields (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/internal/notifications",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["internal", "notifications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{seedMemberUserId}},\n  \"type\": \"BORROW\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Validation failed', function () { pm.expect(pm.response.json().message).to.include('Validation failed'); });",
+                  "pm.test('Has VALIDATION_FAILED errors', function () {",
+                  "    const errors = pm.response.json().errors || [];",
+                  "    pm.expect(errors.some(function (e) { return e.code === 'VALIDATION_FAILED'; })).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Create Notification - Invalid Type (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/internal/notifications",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["internal", "notifications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{seedMemberUserId}},\n  \"title\": \"Invalid type test\",\n  \"type\": \"INVALID_TYPE\",\n  \"eventKey\": \"INVALID_TYPE_TEST_KEY\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Error code NOTIFICATION_INVALID_TYPE', function () { pm.expect(pm.response.json().errors[0].code).to.eql('NOTIFICATION_INVALID_TYPE'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - My Notifications - Via Gateway",
+      "description": "GET /api/notifications/my — MEMBER (huy.member, userId=3).",
+      "item": [
+        {
+          "name": "GET My Notifications (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/my?page=0&size=20&sortBy=createdAt&sortDir=desc",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "my"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "sortBy", "value": "createdAt" },
+                { "key": "sortDir", "value": "desc" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('success true', function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test('All items belong to current user', function () {",
+                  "    pm.response.json().data.content.forEach(function (n) {",
+                  "        pm.expect(n.userId).to.eql(parseInt(pm.environment.get('seedMemberUserId')));",
+                  "    });",
+                  "});",
+                  "pm.test('Response has no Jackson @class metadata', function () {",
+                  "    pm.expect(JSON.stringify(pm.response.json())).to.not.include('@class');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET My Notifications - Filter isRead=false",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/my?isRead=false&page=0&size=20",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "my"],
+              "query": [
+                { "key": "isRead", "value": "false" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('All items unread', function () {",
+                  "    pm.response.json().data.content.forEach(function (n) { pm.expect(n.isRead).to.eql(false); });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET My Notifications - Filter type BORROW",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/my?type=BORROW&page=0&size=20",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "my"],
+              "query": [
+                { "key": "type", "value": "BORROW" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('All items type BORROW', function () {",
+                  "    pm.response.json().data.content.forEach(function (n) { pm.expect(n.type).to.eql('BORROW'); });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET My Notifications - Invalid Type (400)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/my?type=INVALID",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "my"],
+              "query": [{ "key": "type", "value": "INVALID" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Error code NOTIFICATION_INVALID_TYPE', function () { pm.expect(pm.response.json().errors[0].code).to.eql('NOTIFICATION_INVALID_TYPE'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Search All Notifications - Via Gateway",
+      "description": "GET /api/notifications — ADMIN/LIBRARIAN search all; MEMBER scoped access.",
+      "item": [
+        {
+          "name": "GET All Notifications - ADMIN (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenAdmin}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications?page=0&size=20&sortBy=createdAt&sortDir=desc",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "sortBy", "value": "createdAt" },
+                { "key": "sortDir", "value": "desc" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Has paginated content', function () { pm.expect(pm.response.json().data.content).to.be.an('array'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET All Notifications - Filter userId (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenAdmin}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications?userId={{seedMemberUserId}}&page=0&size=20",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                { "key": "userId", "value": "{{seedMemberUserId}}" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('All items match userId filter', function () {",
+                  "    pm.response.json().data.content.forEach(function (n) {",
+                  "        pm.expect(n.userId).to.eql(parseInt(pm.environment.get('seedMemberUserId')));",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET All Notifications - Filter type FINE (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenAdmin}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications?type=FINE&page=0&size=20",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                { "key": "type", "value": "FINE" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('All items type FINE', function () {",
+                  "    pm.response.json().data.content.forEach(function (n) { pm.expect(n.type).to.eql('FINE'); });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET All Notifications - Filter isRead=false (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenAdmin}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications?isRead=false&page=0&size=20",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                { "key": "isRead", "value": "false" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('All items unread', function () {",
+                  "    pm.response.json().data.content.forEach(function (n) { pm.expect(n.isRead).to.eql(false); });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET All Notifications - LIBRARIAN (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenLibrarian}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications?page=0&size=20",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('LIBRARIAN sees multiple users', function () {",
+                  "    const ids = pm.response.json().data.content.map(function (n) { return n.userId; });",
+                  "    pm.expect(ids.length).to.be.at.least(1);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET All Notifications - MEMBER Scoped (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications?page=0&size=50",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "50" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('MEMBER only sees own notifications', function () {",
+                  "    pm.response.json().data.content.forEach(function (n) {",
+                  "        pm.expect(n.userId).to.eql(parseInt(pm.environment.get('seedMemberUserId')));",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET All Notifications - MEMBER Filter Other userId (403)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications?userId={{seedMemberOwnerUserId}}&page=0&size=10",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                { "key": "userId", "value": "{{seedMemberOwnerUserId}}" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('Error code NOTIFICATION_ACCESS_DENIED', function () { pm.expect(pm.response.json().errors[0].code).to.eql('NOTIFICATION_ACCESS_DENIED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET All Notifications - Invalid Type (400)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenAdmin}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications?type=INVALID",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [{ "key": "type", "value": "INVALID" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Error code NOTIFICATION_INVALID_TYPE', function () { pm.expect(pm.response.json().errors[0].code).to.eql('NOTIFICATION_INVALID_TYPE'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Detail & Mark Read - Via Gateway",
+      "description": "GET /api/notifications/{id}, PUT read, PUT read-all. May mutate is_read — reset DB to rerun.",
+      "item": [
+        {
+          "name": "GET Notification By ID - MEMBER Owner (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/{{notificationId}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "{{notificationId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Belongs to member', function () {",
+                  "    pm.expect(pm.response.json().data.userId).to.eql(parseInt(pm.environment.get('seedMemberUserId')));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Notification By ID - MEMBER Other User (403)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/{{notificationIdMemberOwner}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "{{notificationIdMemberOwner}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('Error code NOTIFICATION_ACCESS_DENIED', function () { pm.expect(pm.response.json().errors[0].code).to.eql('NOTIFICATION_ACCESS_DENIED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Notification By ID - Not Found (404)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenAdmin}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/{{invalidNotificationId}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "{{invalidNotificationId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Error code NOTIFICATION_NOT_FOUND', function () { pm.expect(pm.response.json().errors[0].code).to.eql('NOTIFICATION_NOT_FOUND'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Notification By ID - ADMIN Any (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenAdmin}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/{{notificationIdMemberOwner}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "{{notificationIdMemberOwner}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('ADMIN can view any notification', function () { pm.expect(pm.response.json().data.id).to.eql(parseInt(pm.environment.get('notificationIdMemberOwner'))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Mark Read - MEMBER Own Notification (200)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/{{notificationIdDueSoon}}/read",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "{{notificationIdDueSoon}}", "read"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('isRead true', function () { pm.expect(pm.response.json().data.isRead).to.eql(true); });",
+                  "pm.test('readAt is set', function () { pm.expect(pm.response.json().data.readAt).to.not.be.null; });",
+                  "if (pm.response.json().data.readAt) { pm.environment.set('lastReadAt', pm.response.json().data.readAt); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Mark Read - Idempotent Same Notification (200)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/{{notificationIdDueSoon}}/read",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "{{notificationIdDueSoon}}", "read"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Still isRead true', function () { pm.expect(pm.response.json().data.isRead).to.eql(true); });",
+                  "pm.test('readAt unchanged on repeat', function () {",
+                  "    const prev = pm.environment.get('lastReadAt');",
+                  "    if (prev) { pm.expect(pm.response.json().data.readAt).to.eql(prev); }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Mark Read - MEMBER Other User Notification (403)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/{{notificationIdMemberOwner}}/read",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "{{notificationIdMemberOwner}}", "read"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('Error code NOTIFICATION_ACCESS_DENIED', function () { pm.expect(pm.response.json().errors[0].code).to.eql('NOTIFICATION_ACCESS_DENIED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Mark Read - ADMIN Any Notification (200)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenAdmin}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/{{notificationId}}/read",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "{{notificationId}}", "read"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('isRead true', function () { pm.expect(pm.response.json().data.isRead).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Mark Read All - MEMBER (200)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/read-all",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "read-all"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Has updatedCount', function () { pm.expect(pm.response.json().data.updatedCount).to.be.a('number'); });",
+                  "pm.environment.set('lastUpdatedCount', pm.response.json().data.updatedCount);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Mark Read All - Idempotent No Unread Left (200)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/read-all",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "read-all"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('updatedCount is 0 when all already read', function () { pm.expect(pm.response.json().data.updatedCount).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET My Notifications - All Read After read-all",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMember}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/my?isRead=false&page=0&size=50",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "my"],
+              "query": [
+                { "key": "isRead", "value": "false" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "50" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('No unread notifications left for member', function () { pm.expect(pm.response.json().data.content.length).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Notification By ID - MEMBER Owner (hien.member) (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMemberOwner}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/{{notificationIdMemberOwner}}",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "{{notificationIdMemberOwner}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Belongs to hien.member', function () {",
+                  "    pm.expect(pm.response.json().data.userId).to.eql(parseInt(pm.environment.get('seedMemberOwnerUserId')));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Mark Read All - MEMBER Owner hien.member (200)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessTokenMemberOwner}}" }],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/read-all",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "read-all"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('updatedCount is number', function () { pm.expect(pm.response.json().data.updatedCount).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Notification API - Direct Service",
+      "description": "Call Notification Service directly with X-User-* headers (bypass Gateway JWT).",
+      "item": [
+        {
+          "name": "GET My Notifications - Missing X-User-Id (401)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-User-Role", "value": "MEMBER" }],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/api/notifications/my?page=0&size=10",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["api", "notifications", "my"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('Error code AUTH_HEADER_MISSING', function () { pm.expect(pm.response.json().errors[0].code).to.eql('AUTH_HEADER_MISSING'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET My Notifications - MEMBER Headers (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "{{seedMemberUserId}}" },
+              { "key": "X-Username", "value": "huy.member" },
+              { "key": "X-User-Email", "value": "huy@booksphere.com" },
+              { "key": "X-User-Role", "value": "MEMBER" }
+            ],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/api/notifications/my?page=0&size=10",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["api", "notifications", "my"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Only own notifications', function () {",
+                  "    pm.response.json().data.content.forEach(function (n) {",
+                  "        pm.expect(n.userId).to.eql(parseInt(pm.environment.get('seedMemberUserId')));",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET All Notifications - ADMIN Headers (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "1" },
+              { "key": "X-Username", "value": "adminsys" },
+              { "key": "X-User-Email", "value": "admin@booksphere.com" },
+              { "key": "X-User-Role", "value": "ADMIN" }
+            ],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/api/notifications?page=0&size=10",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Notification By ID - MEMBER Access Denied Headers (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "{{seedMemberUserId}}" },
+              { "key": "X-Username", "value": "huy.member" },
+              { "key": "X-User-Email", "value": "huy@booksphere.com" },
+              { "key": "X-User-Role", "value": "MEMBER" }
+            ],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/api/notifications/{{notificationIdMemberOwner}}",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["api", "notifications", "{{notificationIdMemberOwner}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('Error code NOTIFICATION_ACCESS_DENIED', function () { pm.expect(pm.response.json().errors[0].code).to.eql('NOTIFICATION_ACCESS_DENIED'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Mark Read - LIBRARIAN Headers (200)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "X-User-Id", "value": "2" },
+              { "key": "X-Username", "value": "librarian01" },
+              { "key": "X-User-Email", "value": "librarian01@booksphere.com" },
+              { "key": "X-User-Role", "value": "LIBRARIAN" }
+            ],
+            "url": {
+              "raw": "{{notificationServiceBaseUrl}}/api/notifications/{{notificationIdMemberOwner}}/read",
+              "host": ["{{notificationServiceBaseUrl}}"],
+              "path": ["api", "notifications", "{{notificationIdMemberOwner}}", "read"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('LIBRARIAN can mark any notification read', function () { pm.expect(pm.response.json().data.isRead).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 - Gateway Security",
+      "description": "JWT required on public routes; internal API must not be exposed via Gateway.",
+      "item": [
+        {
+          "name": "GET My Notifications - No JWT (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications/my?page=0&size=10",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["api", "notifications", "my"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Internal Notification Via Gateway - Blocked",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessTokenAdmin}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/internal/notifications",
+              "host": ["{{gatewayBaseUrl}}"],
+              "path": ["internal", "notifications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 3,\n  \"title\": \"Blocked\",\n  \"type\": \"SYSTEM\",\n  \"eventKey\": \"BLOCKED_TEST\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403 or 404', function () { pm.expect([403, 404]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

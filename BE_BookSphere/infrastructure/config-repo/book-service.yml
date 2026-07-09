@@ -1,0 +1,40 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: book-service
+  datasource:
+    url: ${BOOK_DB_URL:jdbc:mysql://localhost:3306/DBBook?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${MYSQL_USER:booksphere}
+    password: ${MYSQL_PASSWORD:booksphere123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: ${REDIS_TIMEOUT:2000ms}
+  cache:
+    type: redis
+    redis:
+      time-to-live: ${BOOK_CACHE_DEFAULT_TTL:10m}
+      cache-null-values: false
+
+booksphere:
+  cache:
+    default-ttl-minutes: ${BOOK_CACHE_DEFAULT_TTL_MINUTES:10}
+    books-active-ttl-minutes: ${BOOK_CACHE_BOOK_LIST_TTL_MINUTES:5}
+    book-detail-ttl-minutes: ${BOOK_CACHE_BOOK_DETAIL_TTL_MINUTES:10}
+    categories-active-ttl-minutes: ${BOOK_CACHE_CATEGORY_TTL_MINUTES:30}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  show-actuator: false
