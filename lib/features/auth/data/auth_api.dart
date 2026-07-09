@@ -1,4 +1,5 @@
 import 'package:booksphere_app/core/constants/api_endpoints.dart';
+import 'package:booksphere_app/core/constants/app_message_keys.dart';
 import 'package:booksphere_app/core/network/api_exception.dart';
 import 'package:booksphere_app/core/network/dio_client.dart';
 import 'package:booksphere_app/features/auth/data/auth_models.dart';
@@ -19,8 +20,7 @@ class AuthApi {
 
       if (responseData is! Map) {
         throw const AuthLoginException(
-          message: 'Hệ thống tạm thời không khả dụng. Vui lòng thử lại sau.',
-          code: 'AUTH_LOGIN_INVALID_RESPONSE',
+          code: AppMessageKeys.authLoginInvalidResponse,
         );
       }
 
@@ -29,8 +29,7 @@ class AuthApi {
       );
       if (!loginResponse.isValid) {
         throw const AuthLoginException(
-          message: 'Hệ thống tạm thời không khả dụng. Vui lòng thử lại sau.',
-          code: 'AUTH_LOGIN_INVALID_RESPONSE',
+          code: AppMessageKeys.authLoginInvalidResponse,
         );
       }
 
@@ -46,32 +45,9 @@ class AuthApi {
     final statusCode = apiException.statusCode;
 
     return AuthLoginException(
-      message: _messageForLoginError(
-        code: code,
-        statusCode: statusCode,
-        dioException: error,
-      ),
-      code: code,
+      code: code ?? _fallbackCodeForLoginError(statusCode, error),
       statusCode: statusCode,
     );
-  }
-
-  String _messageForLoginError({
-    required String? code,
-    required int? statusCode,
-    required DioException dioException,
-  }) {
-    return switch (code) {
-      'AUTH_INVALID_CREDENTIALS' => 'Tên đăng nhập hoặc mật khẩu không đúng.',
-      'AUTH_ACCOUNT_INACTIVE' =>
-        'Tài khoản đã bị khóa hoặc chưa được kích hoạt.',
-      _ when statusCode == 401 => 'Tên đăng nhập hoặc mật khẩu không đúng.',
-      _ when statusCode == 500 || statusCode == 503 =>
-        'Hệ thống tạm thời không khả dụng. Vui lòng thử lại sau.',
-      _ when _isNetworkError(dioException) =>
-        'Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng hoặc API Gateway.',
-      _ => 'Không thể đăng nhập. Vui lòng thử lại.',
-    };
   }
 
   String? _resolveErrorCode(ApiException apiException) {
@@ -91,11 +67,11 @@ class AuthApi {
     }
 
     final message = apiException.message.toUpperCase();
-    if (message.contains('AUTH_INVALID_CREDENTIALS')) {
-      return 'AUTH_INVALID_CREDENTIALS';
+    if (message.contains(AppMessageKeys.authInvalidCredentials)) {
+      return AppMessageKeys.authInvalidCredentials;
     }
-    if (message.contains('AUTH_ACCOUNT_INACTIVE')) {
-      return 'AUTH_ACCOUNT_INACTIVE';
+    if (message.contains(AppMessageKeys.authAccountInactive)) {
+      return AppMessageKeys.authAccountInactive;
     }
 
     return null;
@@ -124,6 +100,20 @@ class AuthApi {
     }
 
     return null;
+  }
+
+  String _fallbackCodeForLoginError(int? statusCode, DioException error) {
+    if (statusCode == 401) {
+      return AppMessageKeys.authInvalidCredentials;
+    }
+    if (statusCode == 500 || statusCode == 503) {
+      return AppMessageKeys.serverUnavailable;
+    }
+    if (_isNetworkError(error)) {
+      return AppMessageKeys.networkError;
+    }
+
+    return AppMessageKeys.unknownError;
   }
 
   bool _isNetworkError(DioException error) {

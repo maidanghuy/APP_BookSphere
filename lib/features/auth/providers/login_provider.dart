@@ -1,3 +1,4 @@
+import 'package:booksphere_app/core/constants/app_message_keys.dart';
 import 'package:booksphere_app/features/auth/data/auth_api.dart';
 import 'package:booksphere_app/features/auth/data/auth_models.dart';
 import 'package:booksphere_app/features/auth/data/auth_repository.dart';
@@ -20,19 +21,28 @@ final loginControllerProvider = NotifierProvider<LoginController, LoginState>(
 );
 
 class LoginState {
-  const LoginState({this.isLoading = false, this.errorMessage});
+  const LoginState({
+    this.isLoading = false,
+    this.errorCode,
+    this.errorStatusCode,
+  });
 
   final bool isLoading;
-  final String? errorMessage;
+  final String? errorCode;
+  final int? errorStatusCode;
 
   LoginState copyWith({
     bool? isLoading,
-    String? errorMessage,
+    String? errorCode,
+    int? errorStatusCode,
     bool clearError = false,
   }) {
     return LoginState(
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+      errorCode: clearError ? null : errorCode ?? this.errorCode,
+      errorStatusCode: clearError
+          ? null
+          : errorStatusCode ?? this.errorStatusCode,
     );
   }
 }
@@ -60,12 +70,13 @@ class LoginController extends Notifier<LoginState> {
       state = const LoginState();
       return true;
     } on AuthLoginException catch (error) {
-      state = LoginState(errorMessage: error.message);
+      state = LoginState(
+        errorCode: error.code,
+        errorStatusCode: error.statusCode,
+      );
       return false;
     } on Object {
-      state = const LoginState(
-        errorMessage: 'Không thể đăng nhập. Vui lòng thử lại.',
-      );
+      state = const LoginState(errorCode: AppMessageKeys.unknownError);
       return false;
     }
   }

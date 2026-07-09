@@ -88,9 +88,8 @@ class LoginResponse {
 }
 
 class AuthLoginException implements Exception {
-  const AuthLoginException({required this.message, this.code, this.statusCode});
+  const AuthLoginException({this.code, this.statusCode});
 
-  final String message;
   final String? code;
   final int? statusCode;
 
