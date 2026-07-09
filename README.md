@@ -21,7 +21,7 @@ Coder: maidanghuy
 ## Folder Structure
 
 ```text
-booksphere_app/
+APP_BookSphere/
 |-- android/
 |-- ios/
 |-- assets/
@@ -58,6 +58,7 @@ booksphere_app/
 |-- pubspec.yaml
 |-- analysis_options.yaml
 |-- README.md
+|-- README_PRM393_Frontend_Flutter_Implementation_Plan.md
 `-- .gitignore
 ```
 
