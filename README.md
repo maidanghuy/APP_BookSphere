@@ -7,6 +7,7 @@ Tasks:
 - BS-APP-05 - Secure Token Storage
 - BS-APP-06 - Splash Screen and Auth Guard
 - BS-APP-07 - Login Screen
+- BS-APP-07A - Theme, Localization, Message Constants and API Endpoint Constants
 
 Coder: maidanghuy
 
@@ -22,7 +23,7 @@ Coder: maidanghuy
 - Material 3
 - Android support
 - iOS scaffold for future expansion
-- Runtime dependencies: flutter_riverpod, go_router, dio, flutter_secure_storage, shared_preferences, intl, json_annotation
+- Runtime dependencies: flutter_riverpod, go_router, dio, flutter_secure_storage, shared_preferences, intl, flutter_localizations, json_annotation
 - Dev dependencies: flutter_lints, build_runner, json_serializable, mocktail
 
 ## Dependencies
@@ -38,6 +39,7 @@ Runtime dependencies:
 - flutter_secure_storage
 - shared_preferences
 - intl
+- flutter_localizations
 - json_annotation
 
 Dev dependencies:
@@ -125,6 +127,25 @@ Coder: maidanghuy
 - Logout flow will be implemented in BS-APP-09.
 - MainTab will be implemented in BS-APP-10.
 
+## Theme, Localization, Message Constants And API Endpoint Constants
+
+BS-APP-07A - Theme Mode, Localization, Message Constants và API Endpoint Constants
+
+Coder: maidanghuy
+
+- App supports Light Mode, Dark Mode, and System Mode.
+- App supports 3 languages:
+  - Vietnamese: `vi`
+  - English: `en`
+  - Japanese: `ja`
+- Language is managed centrally with `LocaleProvider`.
+- Theme is managed centrally with `ThemeModeProvider`.
+- User-facing messages are loaded from ARB localization files.
+- Error and message codes are defined in `AppMessageKeys`.
+- API endpoints are defined in `ApiEndpoints`.
+- Storage keys are defined in `StorageKeys`.
+- UI text, user-facing messages, and API paths are not hard-coded across feature files.
+
 ## Folder Structure
 
 ```text
@@ -139,14 +160,19 @@ APP_BookSphere/
 |   |-- main.dart
 |   |-- app/
 |   |   |-- app.dart
-|   |   |-- router.dart
-|   |   `-- theme.dart
+|   |   `-- router.dart
 |   |-- core/
 |   |   |-- config/
 |   |   |   `-- app_config.dart
 |   |   |-- constants/
+|   |   |   |-- app_constants.dart
+|   |   |   |-- app_message_keys.dart
 |   |   |   |-- api_endpoints.dart
 |   |   |   `-- storage_keys.dart
+|   |   |-- localization/
+|   |   |   |-- app_locales.dart
+|   |   |   |-- l10n_extension.dart
+|   |   |   `-- locale_provider.dart
 |   |   |-- network/
 |   |   |   |-- api_exception.dart
 |   |   |   |-- auth_interceptor.dart
@@ -156,9 +182,19 @@ APP_BookSphere/
 |   |   |-- storage/
 |   |   |   |-- secure_auth_token_provider.dart
 |   |   |   `-- secure_storage_service.dart
+|   |   |-- theme/
+|   |   |   |-- app_theme.dart
+|   |   |   `-- theme_mode_provider.dart
 |   |   |-- utils/
+|   |   |   |-- error_message_mapper.dart
 |   |   |   `-- jwt_utils.dart
 |   |   `-- widgets/
+|   |       |-- language_selector.dart
+|   |       `-- theme_mode_selector.dart
+|   |-- l10n/
+|   |   |-- app_en.arb
+|   |   |-- app_ja.arb
+|   |   `-- app_vi.arb
 |   |-- shared/
 |   |   |-- models/
 |   |   |   |-- api_error.dart
@@ -185,6 +221,7 @@ APP_BookSphere/
 |   |   `-- profile/
 |   `-- generated/
 |-- test/
+|-- l10n.yaml
 |-- pubspec.yaml
 |-- analysis_options.yaml
 |-- README.md
@@ -210,6 +247,7 @@ Dependency validation:
 
 ```bash
 flutter pub get
+flutter gen-l10n
 flutter analyze
 flutter test
 flutter build apk

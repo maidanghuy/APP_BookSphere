@@ -1,4 +1,4 @@
-import 'package:booksphere_app/core/config/app_config.dart';
+import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:booksphere_app/features/auth/data/auth_session_service.dart';
 import 'package:booksphere_app/features/auth/providers/auth_guard_provider.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +52,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -63,7 +64,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppConfig.appName,
+                  l10n.appName,
                   textAlign: TextAlign.center,
                   style: textTheme.headlineMedium,
                 ),
@@ -71,18 +72,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 if (_isCheckingSession) ...[
                   const CircularProgressIndicator(),
                   const SizedBox(height: 16),
-                  const Text('Checking session...'),
+                  Text(l10n.checkingSession),
                 ] else if (_hasConnectionError) ...[
                   const Icon(Icons.wifi_off, size: 40),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Unable to connect to the server. Please try again.',
-                    textAlign: TextAlign.center,
-                  ),
+                  Text(l10n.networkError, textAlign: TextAlign.center),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: _checkSession,
-                    child: const Text('Try again'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ],

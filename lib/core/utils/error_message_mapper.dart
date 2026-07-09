@@ -1,0 +1,28 @@
+import 'package:booksphere_app/core/constants/app_message_keys.dart';
+import 'package:booksphere_app/core/localization/l10n_extension.dart';
+import 'package:flutter/widgets.dart';
+
+class ErrorMessageMapper {
+  const ErrorMessageMapper._();
+
+  static String mapCode(BuildContext context, String? code, {int? statusCode}) {
+    final l10n = context.l10n;
+
+    if (statusCode == 401) {
+      return l10n.invalidCredentials;
+    }
+    if (statusCode == 500 || statusCode == 503) {
+      return l10n.serverUnavailable;
+    }
+
+    return switch (code) {
+      AppMessageKeys.authInvalidCredentials => l10n.invalidCredentials,
+      AppMessageKeys.authAccountInactive => l10n.accountInactive,
+      AppMessageKeys.networkError => l10n.networkError,
+      AppMessageKeys.serverUnavailable ||
+      AppMessageKeys.authLoginInvalidResponse => l10n.serverUnavailable,
+      AppMessageKeys.unknownError => l10n.unknownError,
+      _ => l10n.unknownError,
+    };
+  }
+}

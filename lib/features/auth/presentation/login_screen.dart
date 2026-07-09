@@ -1,3 +1,7 @@
+import 'package:booksphere_app/core/localization/l10n_extension.dart';
+import 'package:booksphere_app/core/utils/error_message_mapper.dart';
+import 'package:booksphere_app/core/widgets/language_selector.dart';
+import 'package:booksphere_app/core/widgets/theme_mode_selector.dart';
 import 'package:booksphere_app/features/auth/providers/login_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,8 +51,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final loginState = ref.watch(loginControllerProvider);
+    final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final errorMessage = loginState.errorCode == null
+        ? null
+        : ErrorMessageMapper.mapCode(
+            context,
+            loginState.errorCode,
+            statusCode: loginState.errorStatusCode,
+          );
 
     return Scaffold(
       body: SafeArea(
@@ -64,7 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'BookSphere',
+                      l10n.appName,
                       textAlign: TextAlign.center,
                       style: textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w700,
@@ -73,7 +85,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Welcome back',
+                      l10n.welcomeBack,
                       textAlign: TextAlign.center,
                       style: textTheme.titleMedium,
                     ),
@@ -83,20 +95,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       enabled: !loginState.isLoading,
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.username],
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        prefixIcon: Icon(Icons.person_outline),
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.username,
+                        prefixIcon: const Icon(Icons.person_outline),
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Vui lòng nhập tên đăng nhập.';
+                          return l10n.usernameRequired;
                         }
 
                         return null;
                       },
                       onChanged: (_) {
-                        if (loginState.errorMessage != null) {
+                        if (loginState.errorCode != null) {
                           ref
                               .read(loginControllerProvider.notifier)
                               .clearError();
@@ -116,13 +128,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         }
                       },
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: l10n.password,
                         prefixIcon: const Icon(Icons.lock_outline),
                         border: const OutlineInputBorder(),
                         suffixIcon: IconButton(
                           tooltip: _obscurePassword
-                              ? 'Show password'
-                              : 'Hide password',
+                              ? l10n.showPassword
+                              : l10n.hidePassword,
                           onPressed: loginState.isLoading
                               ? null
                               : () {
@@ -139,22 +151,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Vui lòng nhập mật khẩu.';
+                          return l10n.passwordRequired;
                         }
 
                         return null;
                       },
                       onChanged: (_) {
-                        if (loginState.errorMessage != null) {
+                        if (loginState.errorCode != null) {
                           ref
                               .read(loginControllerProvider.notifier)
                               .clearError();
                         }
                       },
                     ),
-                    if (loginState.errorMessage != null) ...[
+                    if (errorMessage != null) ...[
                       const SizedBox(height: 16),
-                      _LoginErrorMessage(message: loginState.errorMessage!),
+                      _LoginErrorMessage(message: errorMessage),
                     ],
                     const SizedBox(height: 24),
                     FilledButton.icon(
@@ -166,16 +178,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.login),
-                      label: const Text('Login'),
+                      label: Text(l10n.login),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Register Screen will be implemented in BS-APP-08',
+                      l10n.registerScreenPlaceholder,
                       textAlign: TextAlign.center,
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    const ThemeModeSelector(),
+                    const SizedBox(height: 12),
+                    const LanguageSelector(),
                   ],
                 ),
               ),
