@@ -39,6 +39,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get language => 'Ngôn ngữ';
 
   @override
+  String get selectTheme => 'Chọn giao diện';
+
+  @override
+  String get selectLanguage => 'Chọn ngôn ngữ';
+
+  @override
   String get lightMode => 'Sáng';
 
   @override

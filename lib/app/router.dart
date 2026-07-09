@@ -1,8 +1,7 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:booksphere_app/core/network/dio_client.dart';
 import 'package:booksphere_app/core/storage/secure_storage_service.dart';
-import 'package:booksphere_app/core/widgets/language_selector.dart';
-import 'package:booksphere_app/core/widgets/theme_mode_selector.dart';
+import 'package:booksphere_app/core/widgets/app_top_left_actions.dart';
 import 'package:booksphere_app/features/auth/data/auth_session_service.dart';
 import 'package:booksphere_app/features/auth/presentation/login_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/register_screen.dart';
@@ -77,28 +76,32 @@ class MainPlaceholderScreen extends StatelessWidget {
     final l10n = context.l10n;
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(l10n.mainScreenPlaceholder, textAlign: TextAlign.center),
-                  const SizedBox(height: 24),
-                  const LogoutButton(),
-                  const SizedBox(height: 24),
-                  const ThemeModeSelector(),
-                  const SizedBox(height: 12),
-                  const LanguageSelector(),
-                ],
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 72, 24, 24),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        l10n.mainScreenPlaceholder,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      const LogoutButton(),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+          const AppTopLeftActions(),
+        ],
       ),
     );
   }

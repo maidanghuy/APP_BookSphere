@@ -10,6 +10,8 @@
   "checkingSession": "セッションを確認しています...",
   "theme": "テーマ",
   "language": "言語",
+  "selectTheme": "テーマを選択",
+  "selectLanguage": "言語を選択",
   "lightMode": "ライト",
   "darkMode": "ダーク",
   "systemMode": "システム設定",

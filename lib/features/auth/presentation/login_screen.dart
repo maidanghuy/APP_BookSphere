@@ -1,7 +1,6 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:booksphere_app/core/utils/error_message_mapper.dart';
-import 'package:booksphere_app/core/widgets/language_selector.dart';
-import 'package:booksphere_app/core/widgets/theme_mode_selector.dart';
+import 'package:booksphere_app/core/widgets/app_top_left_actions.dart';
 import 'package:booksphere_app/features/auth/providers/login_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,141 +62,144 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           );
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      l10n.appName,
-                      textAlign: TextAlign.center,
-                      style: textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.welcomeBack,
-                      textAlign: TextAlign.center,
-                      style: textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 32),
-                    TextFormField(
-                      controller: _usernameController,
-                      enabled: !loginState.isLoading,
-                      textInputAction: TextInputAction.next,
-                      autofillHints: const [AutofillHints.username],
-                      decoration: InputDecoration(
-                        labelText: l10n.username,
-                        prefixIcon: const Icon(Icons.person_outline),
-                        border: const OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return l10n.usernameRequired;
-                        }
-
-                        return null;
-                      },
-                      onChanged: (_) {
-                        if (loginState.errorCode != null) {
-                          ref
-                              .read(loginControllerProvider.notifier)
-                              .clearError();
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      enabled: !loginState.isLoading,
-                      obscureText: _obscurePassword,
-                      textInputAction: TextInputAction.done,
-                      autofillHints: const [AutofillHints.password],
-                      onFieldSubmitted: (_) {
-                        if (!loginState.isLoading) {
-                          _submit();
-                        }
-                      },
-                      decoration: InputDecoration(
-                        labelText: l10n.password,
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        border: const OutlineInputBorder(),
-                        suffixIcon: IconButton(
-                          tooltip: _obscurePassword
-                              ? l10n.showPassword
-                              : l10n.hidePassword,
-                          onPressed: loginState.isLoading
-                              ? null
-                              : () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 72, 24, 24),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          l10n.appName,
+                          textAlign: TextAlign.center,
+                          style: textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.primary,
                           ),
                         ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return l10n.passwordRequired;
-                        }
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.welcomeBack,
+                          textAlign: TextAlign.center,
+                          style: textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 32),
+                        TextFormField(
+                          controller: _usernameController,
+                          enabled: !loginState.isLoading,
+                          textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.username],
+                          decoration: InputDecoration(
+                            labelText: l10n.username,
+                            prefixIcon: const Icon(Icons.person_outline),
+                            border: const OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.usernameRequired;
+                            }
 
-                        return null;
-                      },
-                      onChanged: (_) {
-                        if (loginState.errorCode != null) {
-                          ref
-                              .read(loginControllerProvider.notifier)
-                              .clearError();
-                        }
-                      },
+                            return null;
+                          },
+                          onChanged: (_) {
+                            if (loginState.errorCode != null) {
+                              ref
+                                  .read(loginControllerProvider.notifier)
+                                  .clearError();
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _passwordController,
+                          enabled: !loginState.isLoading,
+                          obscureText: _obscurePassword,
+                          textInputAction: TextInputAction.done,
+                          autofillHints: const [AutofillHints.password],
+                          onFieldSubmitted: (_) {
+                            if (!loginState.isLoading) {
+                              _submit();
+                            }
+                          },
+                          decoration: InputDecoration(
+                            labelText: l10n.password,
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            border: const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              tooltip: _obscurePassword
+                                  ? l10n.showPassword
+                                  : l10n.hidePassword,
+                              onPressed: loginState.isLoading
+                                  ? null
+                                  : () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                              ),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return l10n.passwordRequired;
+                            }
+
+                            return null;
+                          },
+                          onChanged: (_) {
+                            if (loginState.errorCode != null) {
+                              ref
+                                  .read(loginControllerProvider.notifier)
+                                  .clearError();
+                            }
+                          },
+                        ),
+                        if (errorMessage != null) ...[
+                          const SizedBox(height: 16),
+                          _LoginErrorMessage(message: errorMessage),
+                        ],
+                        const SizedBox(height: 24),
+                        FilledButton.icon(
+                          onPressed: loginState.isLoading ? null : _submit,
+                          icon: loginState.isLoading
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.login),
+                          label: Text(l10n.login),
+                        ),
+                        const SizedBox(height: 16),
+                        TextButton.icon(
+                          onPressed: loginState.isLoading
+                              ? null
+                              : () => context.go('/register'),
+                          icon: const Icon(Icons.person_add_alt_1),
+                          label: Text(l10n.createAccount),
+                        ),
+                      ],
                     ),
-                    if (errorMessage != null) ...[
-                      const SizedBox(height: 16),
-                      _LoginErrorMessage(message: errorMessage),
-                    ],
-                    const SizedBox(height: 24),
-                    FilledButton.icon(
-                      onPressed: loginState.isLoading ? null : _submit,
-                      icon: loginState.isLoading
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.login),
-                      label: Text(l10n.login),
-                    ),
-                    const SizedBox(height: 16),
-                    TextButton.icon(
-                      onPressed: loginState.isLoading
-                          ? null
-                          : () => context.go('/register'),
-                      icon: const Icon(Icons.person_add_alt_1),
-                      label: Text(l10n.createAccount),
-                    ),
-                    const SizedBox(height: 24),
-                    const ThemeModeSelector(),
-                    const SizedBox(height: 12),
-                    const LanguageSelector(),
-                  ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+          const AppTopLeftActions(),
+        ],
       ),
     );
   }

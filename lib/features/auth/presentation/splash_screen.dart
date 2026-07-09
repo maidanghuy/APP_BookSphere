@@ -1,4 +1,5 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
+import 'package:booksphere_app/core/widgets/app_top_left_actions.dart';
 import 'package:booksphere_app/features/auth/data/auth_session_service.dart';
 import 'package:booksphere_app/features/auth/providers/auth_guard_provider.dart';
 import 'package:flutter/material.dart';
@@ -56,37 +57,42 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  l10n.appName,
-                  textAlign: TextAlign.center,
-                  style: textTheme.headlineMedium,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 72, 24, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.appName,
+                      textAlign: TextAlign.center,
+                      style: textTheme.headlineMedium,
+                    ),
+                    const SizedBox(height: 24),
+                    if (_isCheckingSession) ...[
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 16),
+                      Text(l10n.checkingSession),
+                    ] else if (_hasConnectionError) ...[
+                      const Icon(Icons.wifi_off, size: 40),
+                      const SizedBox(height: 16),
+                      Text(l10n.networkError, textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        onPressed: _checkSession,
+                        child: Text(l10n.retry),
+                      ),
+                    ],
+                  ],
                 ),
-                const SizedBox(height: 24),
-                if (_isCheckingSession) ...[
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
-                  Text(l10n.checkingSession),
-                ] else if (_hasConnectionError) ...[
-                  const Icon(Icons.wifi_off, size: 40),
-                  const SizedBox(height: 16),
-                  Text(l10n.networkError, textAlign: TextAlign.center),
-                  const SizedBox(height: 16),
-                  FilledButton(
-                    onPressed: _checkSession,
-                    child: Text(l10n.retry),
-                  ),
-                ],
-              ],
+              ),
             ),
           ),
-        ),
+          const AppTopLeftActions(),
+        ],
       ),
     );
   }
