@@ -181,12 +181,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       label: Text(l10n.login),
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      l10n.registerScreenPlaceholder,
-                      textAlign: TextAlign.center,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
+                    TextButton.icon(
+                      onPressed: loginState.isLoading
+                          ? null
+                          : () => context.go('/register'),
+                      icon: const Icon(Icons.person_add_alt_1),
+                      label: Text(l10n.createAccount),
                     ),
                     const SizedBox(height: 24),
                     const ThemeModeSelector(),

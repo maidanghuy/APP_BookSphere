@@ -8,6 +8,7 @@ Tasks:
 - BS-APP-06 - Splash Screen and Auth Guard
 - BS-APP-07 - Login Screen
 - BS-APP-07A - Theme, Localization, Message Constants and API Endpoint Constants
+- BS-APP-08 - Register Screen
 
 Coder: maidanghuy
 
@@ -123,7 +124,7 @@ Coder: maidanghuy
 - Successful login navigates to `/main`.
 - Invalid credentials are mapped from `AUTH_INVALID_CREDENTIALS`.
 - Inactive accounts are mapped from `AUTH_ACCOUNT_INACTIVE`.
-- Register Screen will be implemented in BS-APP-08.
+- Register Screen is implemented in BS-APP-08.
 - Logout flow will be implemented in BS-APP-09.
 - MainTab will be implemented in BS-APP-10.
 
@@ -145,6 +146,22 @@ Coder: maidanghuy
 - API endpoints are defined in `ApiEndpoints`.
 - Storage keys are defined in `StorageKeys`.
 - UI text, user-facing messages, and API paths are not hard-coded across feature files.
+
+## Register Screen
+
+BS-APP-08 - Register Screen
+
+Coder: maidanghuy
+
+- Register calls `POST /api/auth/register`.
+- Register includes full name, username, email, phone, password, and confirm password.
+- Registered accounts use the default `MEMBER` role.
+- Input validation covers required fields, email format, phone format, password length, and matching confirm password.
+- Duplicate username and duplicate email errors are mapped to localized messages.
+- Successful registration shows a snackbar and navigates back to `/login`.
+- Register does not automatically log in the user.
+- Logout flow will be implemented in BS-APP-09.
+- MainTab will be implemented in BS-APP-10.
 
 ## Folder Structure
 
@@ -209,10 +226,12 @@ APP_BookSphere/
 |   |   |   |   `-- auth_session_service.dart
 |   |   |   |-- presentation/
 |   |   |   |   |-- login_screen.dart
+|   |   |   |   |-- register_screen.dart
 |   |   |   |   `-- splash_screen.dart
 |   |   |   `-- providers/
 |   |   |       |-- auth_guard_provider.dart
-|   |   |       `-- login_provider.dart
+|   |   |       |-- login_provider.dart
+|   |   |       `-- register_provider.dart
 |   |   |-- home/
 |   |   |-- books/
 |   |   |-- borrows/

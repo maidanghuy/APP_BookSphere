@@ -82,8 +82,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Main screen will be implemented in BS-APP-10';
 
   @override
-  String get registerScreenPlaceholder =>
-      'Register screen will be implemented in BS-APP-08';
+  String get registerScreenPlaceholder => 'Create a new BookSphere account';
 
   @override
   String get usernameRequired => 'Please enter your username.';
@@ -93,4 +92,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginFailed => 'Unable to log in. Please try again.';
+
+  @override
+  String get createAccount => 'Create account';
+
+  @override
+  String get fullName => 'Full name';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get confirmPassword => 'Confirm password';
+
+  @override
+  String get register => 'Register';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get goToLogin => 'Login';
+
+  @override
+  String get registerSuccess => 'Registration successful. Please log in.';
+
+  @override
+  String get usernameDuplicated => 'The username already exists.';
+
+  @override
+  String get emailDuplicated => 'The email has already been used.';
+
+  @override
+  String get invalidEmail => 'Enter a valid email address.';
+
+  @override
+  String get invalidPhone => 'Enter a valid phone number.';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 6 characters.';
+
+  @override
+  String get confirmPasswordNotMatch => 'Confirm password does not match.';
+
+  @override
+  String get requiredField => 'Please enter this information.';
+
+  @override
+  String get fullNameRequired => 'Please enter your full name.';
+
+  @override
+  String get emailRequired => 'Please enter your email.';
+
+  @override
+  String get phoneRequired => 'Please enter your phone number.';
+
+  @override
+  String get confirmPasswordRequired => 'Please confirm your password.';
+
+  @override
+  String get invalidRegistrationData =>
+      'Registration data is invalid. Please check again.';
+
+  @override
+  String get registrationConflict => 'Registration information already exists.';
 }

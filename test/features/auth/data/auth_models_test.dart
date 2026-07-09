@@ -43,4 +43,25 @@ void main() {
       expect(response.isValid, isTrue);
     });
   });
+
+  group('RegisterRequest', () {
+    test('serializes registration fields with member role', () {
+      const request = RegisterRequest(
+        fullName: 'Book Reader',
+        username: 'reader',
+        email: 'reader@example.com',
+        phone: '+84901234567',
+        password: 'password-value',
+      );
+
+      expect(request.toJson(), {
+        'fullName': 'Book Reader',
+        'username': 'reader',
+        'email': 'reader@example.com',
+        'phone': '+84901234567',
+        'password': 'password-value',
+        'role': 'MEMBER',
+      });
+    });
+  });
 }

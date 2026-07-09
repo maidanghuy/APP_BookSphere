@@ -99,6 +99,76 @@ class AuthLoginException implements Exception {
   }
 }
 
+class RegisterRequest {
+  const RegisterRequest({
+    required this.fullName,
+    required this.username,
+    required this.email,
+    required this.phone,
+    required this.password,
+    this.role = 'MEMBER',
+  });
+
+  final String fullName;
+  final String username;
+  final String email;
+  final String phone;
+  final String password;
+  final String role;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'fullName': fullName,
+      'username': username,
+      'email': email,
+      'phone': phone,
+      'password': password,
+      'role': role,
+    };
+  }
+}
+
+class RegisterResponse {
+  const RegisterResponse({
+    this.userId,
+    this.username,
+    this.email,
+    this.message = '',
+  });
+
+  final String? userId;
+  final String? username;
+  final String? email;
+  final String message;
+
+  factory RegisterResponse.fromJson(Map<String, dynamic> json) {
+    final payload = _asMap(json['data']) ?? json;
+
+    return RegisterResponse(
+      userId: _firstString([
+        payload['userId'],
+        payload['user_id'],
+        payload['id'],
+      ]),
+      username: _firstString([payload['username']]),
+      email: _firstString([payload['email']]),
+      message: _firstString([json['message'], payload['message']]) ?? '',
+    );
+  }
+}
+
+class AuthRegisterException implements Exception {
+  const AuthRegisterException({this.code, this.statusCode});
+
+  final String? code;
+  final int? statusCode;
+
+  @override
+  String toString() {
+    return 'AuthRegisterException(code: $code, statusCode: $statusCode)';
+  }
+}
+
 Map<String, dynamic>? _asMap(Object? value) {
   if (value is Map) {
     return Map<String, dynamic>.from(value);

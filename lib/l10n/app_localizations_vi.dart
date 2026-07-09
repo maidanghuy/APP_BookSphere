@@ -82,8 +82,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Màn hình chính sẽ được triển khai trong BS-APP-10';
 
   @override
-  String get registerScreenPlaceholder =>
-      'Màn hình đăng ký sẽ được triển khai trong BS-APP-08';
+  String get registerScreenPlaceholder => 'Tạo tài khoản BookSphere mới';
 
   @override
   String get usernameRequired => 'Vui lòng nhập tên đăng nhập.';
@@ -93,4 +92,71 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get loginFailed => 'Không thể đăng nhập. Vui lòng thử lại.';
+
+  @override
+  String get createAccount => 'Tạo tài khoản';
+
+  @override
+  String get fullName => 'Họ và tên';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get phone => 'Số điện thoại';
+
+  @override
+  String get confirmPassword => 'Xác nhận mật khẩu';
+
+  @override
+  String get register => 'Đăng ký';
+
+  @override
+  String get alreadyHaveAccount => 'Bạn đã có tài khoản?';
+
+  @override
+  String get goToLogin => 'Đăng nhập';
+
+  @override
+  String get registerSuccess => 'Đăng ký thành công. Vui lòng đăng nhập.';
+
+  @override
+  String get usernameDuplicated => 'Tên đăng nhập đã tồn tại.';
+
+  @override
+  String get emailDuplicated => 'Email đã được sử dụng.';
+
+  @override
+  String get invalidEmail => 'Email không hợp lệ.';
+
+  @override
+  String get invalidPhone => 'Số điện thoại không hợp lệ.';
+
+  @override
+  String get passwordMinLength => 'Mật khẩu phải có ít nhất 6 ký tự.';
+
+  @override
+  String get confirmPasswordNotMatch => 'Mật khẩu xác nhận không khớp.';
+
+  @override
+  String get requiredField => 'Vui lòng nhập thông tin này.';
+
+  @override
+  String get fullNameRequired => 'Vui lòng nhập họ và tên.';
+
+  @override
+  String get emailRequired => 'Vui lòng nhập email.';
+
+  @override
+  String get phoneRequired => 'Vui lòng nhập số điện thoại.';
+
+  @override
+  String get confirmPasswordRequired => 'Vui lòng xác nhận mật khẩu.';
+
+  @override
+  String get invalidRegistrationData =>
+      'Dữ liệu đăng ký không hợp lệ. Vui lòng kiểm tra lại.';
+
+  @override
+  String get registrationConflict => 'Thông tin đăng ký đã tồn tại.';
 }

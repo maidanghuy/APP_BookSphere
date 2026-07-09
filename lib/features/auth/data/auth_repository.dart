@@ -31,4 +31,22 @@ class AuthRepository {
 
     return response;
   }
+
+  Future<RegisterResponse> register({
+    required String fullName,
+    required String username,
+    required String email,
+    required String phone,
+    required String password,
+  }) {
+    return _authApi.register(
+      RegisterRequest(
+        fullName: fullName,
+        username: username,
+        email: email,
+        phone: phone,
+        password: password,
+      ),
+    );
+  }
 }

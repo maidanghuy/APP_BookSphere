@@ -78,7 +78,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get mainScreenPlaceholder => 'メイン画面はBS-APP-10で実装されます';
 
   @override
-  String get registerScreenPlaceholder => '登録画面はBS-APP-08で実装されます';
+  String get registerScreenPlaceholder => 'BookSphereの新しいアカウントを作成';
 
   @override
   String get usernameRequired => 'ユーザー名を入力してください。';
@@ -88,4 +88,70 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get loginFailed => 'ログインできません。もう一度お試しください。';
+
+  @override
+  String get createAccount => 'アカウントを作成';
+
+  @override
+  String get fullName => '氏名';
+
+  @override
+  String get email => 'メール';
+
+  @override
+  String get phone => '電話番号';
+
+  @override
+  String get confirmPassword => 'パスワード確認';
+
+  @override
+  String get register => '登録';
+
+  @override
+  String get alreadyHaveAccount => 'すでにアカウントをお持ちですか？';
+
+  @override
+  String get goToLogin => 'ログイン';
+
+  @override
+  String get registerSuccess => '登録が完了しました。ログインしてください。';
+
+  @override
+  String get usernameDuplicated => 'このユーザー名はすでに存在します。';
+
+  @override
+  String get emailDuplicated => 'このメールはすでに使用されています。';
+
+  @override
+  String get invalidEmail => '有効なメールアドレスを入力してください。';
+
+  @override
+  String get invalidPhone => '有効な電話番号を入力してください。';
+
+  @override
+  String get passwordMinLength => 'パスワードは6文字以上で入力してください。';
+
+  @override
+  String get confirmPasswordNotMatch => '確認用パスワードが一致しません。';
+
+  @override
+  String get requiredField => 'この項目を入力してください。';
+
+  @override
+  String get fullNameRequired => '氏名を入力してください。';
+
+  @override
+  String get emailRequired => 'メールを入力してください。';
+
+  @override
+  String get phoneRequired => '電話番号を入力してください。';
+
+  @override
+  String get confirmPasswordRequired => 'パスワード確認を入力してください。';
+
+  @override
+  String get invalidRegistrationData => '登録データが無効です。もう一度確認してください。';
+
+  @override
+  String get registrationConflict => '登録情報はすでに存在します。';
 }

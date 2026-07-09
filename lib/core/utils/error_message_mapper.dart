@@ -18,9 +18,16 @@ class ErrorMessageMapper {
     return switch (code) {
       AppMessageKeys.authInvalidCredentials => l10n.invalidCredentials,
       AppMessageKeys.authAccountInactive => l10n.accountInactive,
+      AppMessageKeys.authUsernameDuplicated ||
+      AppMessageKeys.usernameAlreadyExists => l10n.usernameDuplicated,
+      AppMessageKeys.authEmailDuplicated ||
+      AppMessageKeys.emailAlreadyExists => l10n.emailDuplicated,
       AppMessageKeys.networkError => l10n.networkError,
       AppMessageKeys.serverUnavailable ||
-      AppMessageKeys.authLoginInvalidResponse => l10n.serverUnavailable,
+      AppMessageKeys.authLoginInvalidResponse ||
+      AppMessageKeys.authRegisterInvalidResponse => l10n.serverUnavailable,
+      AppMessageKeys.invalidRegistrationData => l10n.invalidRegistrationData,
+      AppMessageKeys.registrationConflict => l10n.registrationConflict,
       AppMessageKeys.unknownError => l10n.unknownError,
       _ => l10n.unknownError,
     };
