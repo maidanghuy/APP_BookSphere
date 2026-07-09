@@ -4,6 +4,7 @@ Tasks:
 - BS-APP-01 - Initialize Flutter Project
 - BS-APP-02 - Configure Dependencies
 - BS-APP-04 - Build Dio Client
+- BS-APP-05 - Secure Token Storage
 
 Coder: maidanghuy
 
@@ -65,6 +66,30 @@ final dioClient = DioClient();
 final response = await dioClient.get(ApiEndpoints.books);
 ```
 
+## Secure Token Storage
+
+BS-APP-05 - Secure Token Storage
+
+Coder: maidanghuy
+
+- Tokens are stored with `flutter_secure_storage`.
+- Access token and refresh token are not stored in temporary variables.
+- Passwords are not stored.
+- Tokens are not logged to the console.
+- Storage methods support saving, reading, and clearing token data.
+- Logout flow will use `clearUserSession()`.
+- Login, Register, and Auth flow will be implemented in later tasks.
+
+Future usage example only, not a complete login or logout flow:
+
+```dart
+final storage = SecureStorageService();
+
+await storage.saveAccessToken(accessToken);
+final token = await storage.getAccessToken();
+await storage.clearUserSession();
+```
+
 ## Folder Structure
 
 ```text
@@ -85,6 +110,7 @@ APP_BookSphere/
 |   |   |-- config/
 |   |   |   `-- app_config.dart
 |   |   |-- constants/
+|   |   |   `-- storage_keys.dart
 |   |   |-- network/
 |   |   |   |-- api_exception.dart
 |   |   |   |-- auth_interceptor.dart
@@ -92,6 +118,8 @@ APP_BookSphere/
 |   |   |   |-- dio_client.dart
 |   |   |   `-- network_constants.dart
 |   |   |-- storage/
+|   |   |   |-- secure_auth_token_provider.dart
+|   |   |   `-- secure_storage_service.dart
 |   |   |-- utils/
 |   |   `-- widgets/
 |   |-- shared/
