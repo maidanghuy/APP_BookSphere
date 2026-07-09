@@ -5,6 +5,7 @@ Tasks:
 - BS-APP-02 - Configure Dependencies
 - BS-APP-04 - Build Dio Client
 - BS-APP-05 - Secure Token Storage
+- BS-APP-06 - Splash Screen and Auth Guard
 
 Coder: maidanghuy
 
@@ -90,6 +91,22 @@ final token = await storage.getAccessToken();
 await storage.clearUserSession();
 ```
 
+## Splash Screen And Auth Guard
+
+BS-APP-06 - Splash Screen và Auth Guard
+
+Coder: maidanghuy
+
+- App starts at `/splash`.
+- Splash checks access token and refresh token.
+- Unauthenticated sessions navigate to `/login`.
+- Authenticated sessions navigate to `/main`.
+- Expired access tokens with a refresh token attempt refresh through API Gateway.
+- Refresh failure clears the session and navigates to `/login`.
+- Connection errors show a retry state on the splash screen.
+- Real Login Screen will be implemented in BS-APP-07.
+- Real Main Tab Screen will be implemented in BS-APP-10.
+
 ## Folder Structure
 
 ```text
@@ -110,6 +127,7 @@ APP_BookSphere/
 |   |   |-- config/
 |   |   |   `-- app_config.dart
 |   |   |-- constants/
+|   |   |   |-- api_endpoints.dart
 |   |   |   `-- storage_keys.dart
 |   |   |-- network/
 |   |   |   |-- api_exception.dart
@@ -121,6 +139,7 @@ APP_BookSphere/
 |   |   |   |-- secure_auth_token_provider.dart
 |   |   |   `-- secure_storage_service.dart
 |   |   |-- utils/
+|   |   |   `-- jwt_utils.dart
 |   |   `-- widgets/
 |   |-- shared/
 |   |   |-- models/
@@ -129,6 +148,12 @@ APP_BookSphere/
 |   |   `-- enums/
 |   |-- features/
 |   |   |-- auth/
+|   |   |   |-- data/
+|   |   |   |   `-- auth_session_service.dart
+|   |   |   |-- presentation/
+|   |   |   |   `-- splash_screen.dart
+|   |   |   `-- providers/
+|   |   |       `-- auth_guard_provider.dart
 |   |   |-- home/
 |   |   |-- books/
 |   |   |-- borrows/
