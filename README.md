@@ -9,6 +9,7 @@ Tasks:
 - BS-APP-07 - Login Screen
 - BS-APP-07A - Theme, Localization, Message Constants and API Endpoint Constants
 - BS-APP-08 - Register Screen
+- BS-APP-09 - Logout
 
 Coder: maidanghuy
 
@@ -82,7 +83,7 @@ Coder: maidanghuy
 - Passwords are not stored.
 - Tokens are not logged to the console.
 - Storage methods support saving, reading, and clearing token data.
-- Logout flow will use `clearUserSession()`.
+- Logout flow uses `clearUserSession()`.
 - Login, Register, and Auth flow will be implemented in later tasks.
 
 Future usage example only, not a complete login or logout flow:
@@ -125,7 +126,7 @@ Coder: maidanghuy
 - Invalid credentials are mapped from `AUTH_INVALID_CREDENTIALS`.
 - Inactive accounts are mapped from `AUTH_ACCOUNT_INACTIVE`.
 - Register Screen is implemented in BS-APP-08.
-- Logout flow will be implemented in BS-APP-09.
+- Logout flow is implemented in BS-APP-09.
 - MainTab will be implemented in BS-APP-10.
 
 ## Theme, Localization, Message Constants And API Endpoint Constants
@@ -160,8 +161,24 @@ Coder: maidanghuy
 - Duplicate username and duplicate email errors are mapped to localized messages.
 - Successful registration shows a snackbar and navigates back to `/login`.
 - Register does not automatically log in the user.
-- Logout flow will be implemented in BS-APP-09.
+- Logout flow is implemented in BS-APP-09.
 - MainTab will be implemented in BS-APP-10.
+
+## Logout
+
+BS-APP-09 - Logout
+
+Coder: maidanghuy
+
+- Logout calls `POST /api/auth/logout`.
+- Logout clears the access token.
+- Logout clears the refresh token.
+- Logout clears the user role.
+- Logout clears the user ID.
+- Logout clears local user session state/cache if available.
+- After logout, the app navigates to `/login`.
+- Logout uses route replacement so users cannot go back to the private placeholder screen.
+- If the logout API fails because of network/server issues, the app still clears the local session so the user is logged out from this device.
 
 ## Folder Structure
 
@@ -227,10 +244,13 @@ APP_BookSphere/
 |   |   |   |-- presentation/
 |   |   |   |   |-- login_screen.dart
 |   |   |   |   |-- register_screen.dart
+|   |   |   |   |-- widgets/
+|   |   |   |   |   `-- logout_button.dart
 |   |   |   |   `-- splash_screen.dart
 |   |   |   `-- providers/
 |   |   |       |-- auth_guard_provider.dart
 |   |   |       |-- login_provider.dart
+|   |   |       |-- logout_provider.dart
 |   |   |       `-- register_provider.dart
 |   |   |-- home/
 |   |   |-- books/

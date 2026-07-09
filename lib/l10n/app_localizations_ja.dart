@@ -154,4 +154,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get registrationConflict => '登録情報はすでに存在します。';
+
+  @override
+  String get logout => 'ログアウト';
+
+  @override
+  String get logoutConfirmTitle => 'ログアウト確認';
+
+  @override
+  String get logoutConfirmMessage => 'ログアウトしてもよろしいですか？';
+
+  @override
+  String get cancel => 'キャンセル';
+
+  @override
+  String get logoutSuccess => 'ログアウトしました。';
+
+  @override
+  String get logoutFailedButCleared => 'サーバーに接続できませんでしたが、この端末からはログアウトしました。';
 }

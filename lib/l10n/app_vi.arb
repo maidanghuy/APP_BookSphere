@@ -48,5 +48,11 @@
   "phoneRequired": "Vui lòng nhập số điện thoại.",
   "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu.",
   "invalidRegistrationData": "Dữ liệu đăng ký không hợp lệ. Vui lòng kiểm tra lại.",
-  "registrationConflict": "Thông tin đăng ký đã tồn tại."
+  "registrationConflict": "Thông tin đăng ký đã tồn tại.",
+  "logout": "Đăng xuất",
+  "logoutConfirmTitle": "Xác nhận đăng xuất",
+  "logoutConfirmMessage": "Bạn có chắc muốn đăng xuất không?",
+  "cancel": "Hủy",
+  "logoutSuccess": "Bạn đã đăng xuất.",
+  "logoutFailedButCleared": "Không thể kết nối máy chủ, nhưng bạn đã được đăng xuất khỏi thiết bị này."
 }

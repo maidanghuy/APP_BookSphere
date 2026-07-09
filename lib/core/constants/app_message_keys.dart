@@ -14,6 +14,7 @@ class AppMessageKeys {
   static const String emailAlreadyExists = 'EMAIL_ALREADY_EXISTS';
   static const String invalidRegistrationData = 'INVALID_REGISTRATION_DATA';
   static const String registrationConflict = 'REGISTRATION_CONFLICT';
+  static const String logoutFailed = 'LOGOUT_FAILED';
 
   static const String networkError = 'NETWORK_ERROR';
   static const String serverUnavailable = 'SERVER_UNAVAILABLE';

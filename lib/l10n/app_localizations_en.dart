@@ -159,4 +159,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registrationConflict => 'Registration information already exists.';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get logoutConfirmTitle => 'Confirm logout';
+
+  @override
+  String get logoutConfirmMessage => 'Are you sure you want to log out?';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get logoutSuccess => 'You have been logged out.';
+
+  @override
+  String get logoutFailedButCleared =>
+      'Unable to contact the server, but you have been logged out from this device.';
 }

@@ -49,4 +49,19 @@ class AuthRepository {
       ),
     );
   }
+
+  Future<bool> logout() async {
+    var didReachLogoutApi = true;
+    final refreshToken = await _secureStorageService.getRefreshToken();
+
+    try {
+      await _authApi.logout(refreshToken: refreshToken);
+    } on Object {
+      didReachLogoutApi = false;
+    } finally {
+      await _secureStorageService.clearUserSession();
+    }
+
+    return didReachLogoutApi;
+  }
 }

@@ -48,5 +48,11 @@
   "phoneRequired": "電話番号を入力してください。",
   "confirmPasswordRequired": "パスワード確認を入力してください。",
   "invalidRegistrationData": "登録データが無効です。もう一度確認してください。",
-  "registrationConflict": "登録情報はすでに存在します。"
+  "registrationConflict": "登録情報はすでに存在します。",
+  "logout": "ログアウト",
+  "logoutConfirmTitle": "ログアウト確認",
+  "logoutConfirmMessage": "ログアウトしてもよろしいですか？",
+  "cancel": "キャンセル",
+  "logoutSuccess": "ログアウトしました。",
+  "logoutFailedButCleared": "サーバーに接続できませんでしたが、この端末からはログアウトしました。"
 }

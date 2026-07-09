@@ -393,6 +393,42 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thông tin đăng ký đã tồn tại.'**
   String get registrationConflict;
+
+  /// No description provided for @logout.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng xuất'**
+  String get logout;
+
+  /// No description provided for @logoutConfirmTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận đăng xuất'**
+  String get logoutConfirmTitle;
+
+  /// No description provided for @logoutConfirmMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có chắc muốn đăng xuất không?'**
+  String get logoutConfirmMessage;
+
+  /// No description provided for @cancel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hủy'**
+  String get cancel;
+
+  /// No description provided for @logoutSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã đăng xuất.'**
+  String get logoutSuccess;
+
+  /// No description provided for @logoutFailedButCleared.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể kết nối máy chủ, nhưng bạn đã được đăng xuất khỏi thiết bị này.'**
+  String get logoutFailedButCleared;
 }
 
 class _AppLocalizationsDelegate
