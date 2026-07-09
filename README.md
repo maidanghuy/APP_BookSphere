@@ -3,6 +3,7 @@
 Tasks:
 - BS-APP-01 - Initialize Flutter Project
 - BS-APP-02 - Configure Dependencies
+- BS-APP-04 - Build Dio Client
 
 Coder: maidanghuy
 
@@ -42,6 +43,28 @@ Dev dependencies:
 - json_serializable
 - mocktail
 
+## Dio Client
+
+BS-APP-04 - Xây dựng Dio Client
+
+Coder: maidanghuy
+
+- Dio Client uses `AppConfig.apiBaseUrl`.
+- The app calls API Gateway only.
+- The app must not call internal microservice ports directly.
+- Network timeout is configured centrally.
+- Request, response, and error interceptors are prepared.
+- Bearer token support uses an `AuthTokenProvider` abstraction.
+- Secure token storage will be implemented in a later task.
+- UI and Auth flow will be implemented in later tasks.
+
+Future usage example only, not implemented business logic:
+
+```dart
+final dioClient = DioClient();
+final response = await dioClient.get(ApiEndpoints.books);
+```
+
 ## Folder Structure
 
 ```text
@@ -63,11 +86,18 @@ APP_BookSphere/
 |   |   |   `-- app_config.dart
 |   |   |-- constants/
 |   |   |-- network/
+|   |   |   |-- api_exception.dart
+|   |   |   |-- auth_interceptor.dart
+|   |   |   |-- auth_token_provider.dart
+|   |   |   |-- dio_client.dart
+|   |   |   `-- network_constants.dart
 |   |   |-- storage/
 |   |   |-- utils/
 |   |   `-- widgets/
 |   |-- shared/
 |   |   |-- models/
+|   |   |   |-- api_error.dart
+|   |   |   `-- api_response.dart
 |   |   `-- enums/
 |   |-- features/
 |   |   |-- auth/
