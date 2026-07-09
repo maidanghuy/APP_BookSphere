@@ -1,16 +1,19 @@
 import 'package:booksphere_app/app/app.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('shows BS-APP-01 foundation screen', (tester) async {
-    await tester.pumpWidget(const BookSphereApp());
+  testWidgets('starts at splash and navigates to login without tokens', (
+    tester,
+  ) async {
+    FlutterSecureStorage.setMockInitialValues({});
 
-    expect(find.text('BookSphere Mobile'), findsOneWidget);
-    expect(find.text('Flutter'), findsOneWidget);
-    expect(find.text('Task:'), findsOneWidget);
-    expect(find.text('BS-APP-01'), findsOneWidget);
-    expect(find.text('Coder:'), findsOneWidget);
-    expect(find.text('maidanghuy'), findsOneWidget);
-    expect(find.text('Material 3 Ready'), findsOneWidget);
+    await tester.pumpWidget(const BookSphereApp());
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Login Screen will be implemented in BS-APP-07'),
+      findsOneWidget,
+    );
   });
 }
