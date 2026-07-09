@@ -6,6 +6,7 @@ Tasks:
 - BS-APP-04 - Build Dio Client
 - BS-APP-05 - Secure Token Storage
 - BS-APP-06 - Splash Screen and Auth Guard
+- BS-APP-07 - Login Screen
 
 Coder: maidanghuy
 
@@ -104,8 +105,25 @@ Coder: maidanghuy
 - Expired access tokens with a refresh token attempt refresh through API Gateway.
 - Refresh failure clears the session and navigates to `/login`.
 - Connection errors show a retry state on the splash screen.
-- Real Login Screen will be implemented in BS-APP-07.
+- Login Screen is implemented in BS-APP-07.
 - Real Main Tab Screen will be implemented in BS-APP-10.
+
+## Login Screen
+
+BS-APP-07 - Login Screen
+
+Coder: maidanghuy
+
+- Login calls `POST /api/auth/login`.
+- Login uses username and password.
+- Successful login stores access token, refresh token, role, and userId if provided.
+- Tokens and session values are stored with `SecureStorageService`.
+- Successful login navigates to `/main`.
+- Invalid credentials are mapped from `AUTH_INVALID_CREDENTIALS`.
+- Inactive accounts are mapped from `AUTH_ACCOUNT_INACTIVE`.
+- Register Screen will be implemented in BS-APP-08.
+- Logout flow will be implemented in BS-APP-09.
+- MainTab will be implemented in BS-APP-10.
 
 ## Folder Structure
 
@@ -149,11 +167,16 @@ APP_BookSphere/
 |   |-- features/
 |   |   |-- auth/
 |   |   |   |-- data/
+|   |   |   |   |-- auth_api.dart
+|   |   |   |   |-- auth_models.dart
+|   |   |   |   |-- auth_repository.dart
 |   |   |   |   `-- auth_session_service.dart
 |   |   |   |-- presentation/
+|   |   |   |   |-- login_screen.dart
 |   |   |   |   `-- splash_screen.dart
 |   |   |   `-- providers/
-|   |   |       `-- auth_guard_provider.dart
+|   |   |       |-- auth_guard_provider.dart
+|   |   |       `-- login_provider.dart
 |   |   |-- home/
 |   |   |-- books/
 |   |   |-- borrows/

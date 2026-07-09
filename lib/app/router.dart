@@ -1,6 +1,7 @@
 import 'package:booksphere_app/core/network/dio_client.dart';
 import 'package:booksphere_app/core/storage/secure_storage_service.dart';
 import 'package:booksphere_app/features/auth/data/auth_session_service.dart';
+import 'package:booksphere_app/features/auth/presentation/login_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -27,7 +28,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.login,
-      builder: (context, state) => const LoginPlaceholderScreen(),
+      builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
       path: AppRoutes.main,
@@ -37,41 +38,22 @@ final appRouter = GoRouter(
   redirect: (context, state) async {
     final matchedLocation = state.matchedLocation;
 
-    if (matchedLocation == AppRoutes.splash ||
-        matchedLocation == AppRoutes.login) {
+    if (matchedLocation == AppRoutes.splash) {
       return null;
     }
 
-    if (matchedLocation == AppRoutes.main) {
+    if (matchedLocation == AppRoutes.login ||
+        matchedLocation == AppRoutes.main) {
       final status = await _authSessionService.checkSession();
       if (status == AuthSessionStatus.authenticated) {
-        return null;
+        return matchedLocation == AppRoutes.login ? AppRoutes.main : null;
       }
-      return AppRoutes.login;
+      return matchedLocation == AppRoutes.main ? AppRoutes.login : null;
     }
 
     return null;
   },
 );
-
-class LoginPlaceholderScreen extends StatelessWidget {
-  const LoginPlaceholderScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Text(
-            'Login Screen will be implemented in BS-APP-07',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class MainPlaceholderScreen extends StatelessWidget {
   const MainPlaceholderScreen({super.key});
