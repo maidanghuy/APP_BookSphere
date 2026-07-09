@@ -159,4 +159,23 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get registrationConflict => 'Thông tin đăng ký đã tồn tại.';
+
+  @override
+  String get logout => 'Đăng xuất';
+
+  @override
+  String get logoutConfirmTitle => 'Xác nhận đăng xuất';
+
+  @override
+  String get logoutConfirmMessage => 'Bạn có chắc muốn đăng xuất không?';
+
+  @override
+  String get cancel => 'Hủy';
+
+  @override
+  String get logoutSuccess => 'Bạn đã đăng xuất.';
+
+  @override
+  String get logoutFailedButCleared =>
+      'Không thể kết nối máy chủ, nhưng bạn đã được đăng xuất khỏi thiết bị này.';
 }

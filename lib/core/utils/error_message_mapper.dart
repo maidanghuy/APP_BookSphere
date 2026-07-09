@@ -22,6 +22,7 @@ class ErrorMessageMapper {
       AppMessageKeys.usernameAlreadyExists => l10n.usernameDuplicated,
       AppMessageKeys.authEmailDuplicated ||
       AppMessageKeys.emailAlreadyExists => l10n.emailDuplicated,
+      AppMessageKeys.logoutFailed => l10n.logoutFailedButCleared,
       AppMessageKeys.networkError => l10n.networkError,
       AppMessageKeys.serverUnavailable ||
       AppMessageKeys.authLoginInvalidResponse ||

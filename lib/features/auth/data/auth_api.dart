@@ -59,6 +59,14 @@ class AuthApi {
     }
   }
 
+  Future<void> logout({String? refreshToken}) async {
+    final data = refreshToken == null || refreshToken.isEmpty
+        ? null
+        : {'refreshToken': refreshToken};
+
+    await _dioClient.post<Object?>(ApiEndpoints.logout, data: data);
+  }
+
   AuthLoginException _mapDioLoginError(DioException error) {
     final apiException = ApiException.fromDioException(error);
     final code = _resolveErrorCode(apiException);

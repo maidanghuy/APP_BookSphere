@@ -7,6 +7,7 @@ import 'package:booksphere_app/features/auth/data/auth_session_service.dart';
 import 'package:booksphere_app/features/auth/presentation/login_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/register_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/splash_screen.dart';
+import 'package:booksphere_app/features/auth/presentation/widgets/logout_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -87,6 +88,8 @@ class MainPlaceholderScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(l10n.mainScreenPlaceholder, textAlign: TextAlign.center),
+                  const SizedBox(height: 24),
+                  const LogoutButton(),
                   const SizedBox(height: 24),
                   const ThemeModeSelector(),
                   const SizedBox(height: 12),

@@ -48,5 +48,11 @@
   "phoneRequired": "Please enter your phone number.",
   "confirmPasswordRequired": "Please confirm your password.",
   "invalidRegistrationData": "Registration data is invalid. Please check again.",
-  "registrationConflict": "Registration information already exists."
+  "registrationConflict": "Registration information already exists.",
+  "logout": "Logout",
+  "logoutConfirmTitle": "Confirm logout",
+  "logoutConfirmMessage": "Are you sure you want to log out?",
+  "cancel": "Cancel",
+  "logoutSuccess": "You have been logged out.",
+  "logoutFailedButCleared": "Unable to contact the server, but you have been logged out from this device."
 }
