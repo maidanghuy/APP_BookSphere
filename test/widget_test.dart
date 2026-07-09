@@ -11,9 +11,10 @@ void main() {
     await tester.pumpWidget(const BookSphereApp());
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Login Screen will be implemented in BS-APP-07'),
-      findsOneWidget,
-    );
+    expect(find.text('BookSphere'), findsOneWidget);
+    expect(find.text('Welcome back'), findsOneWidget);
+    expect(find.text('Username'), findsOneWidget);
+    expect(find.text('Password'), findsOneWidget);
+    expect(find.text('Login'), findsOneWidget);
   });
 }
