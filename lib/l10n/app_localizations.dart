@@ -241,7 +241,7 @@ abstract class AppLocalizations {
   /// No description provided for @registerScreenPlaceholder.
   ///
   /// In vi, this message translates to:
-  /// **'Màn hình đăng ký sẽ được triển khai trong BS-APP-08'**
+  /// **'Tạo tài khoản BookSphere mới'**
   String get registerScreenPlaceholder;
 
   /// No description provided for @usernameRequired.
@@ -261,6 +261,138 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Không thể đăng nhập. Vui lòng thử lại.'**
   String get loginFailed;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo tài khoản'**
+  String get createAccount;
+
+  /// No description provided for @fullName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Họ và tên'**
+  String get fullName;
+
+  /// No description provided for @email.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @phone.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số điện thoại'**
+  String get phone;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận mật khẩu'**
+  String get confirmPassword;
+
+  /// No description provided for @register.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký'**
+  String get register;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã có tài khoản?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @goToLogin.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng nhập'**
+  String get goToLogin;
+
+  /// No description provided for @registerSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký thành công. Vui lòng đăng nhập.'**
+  String get registerSuccess;
+
+  /// No description provided for @usernameDuplicated.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên đăng nhập đã tồn tại.'**
+  String get usernameDuplicated;
+
+  /// No description provided for @emailDuplicated.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email đã được sử dụng.'**
+  String get emailDuplicated;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email không hợp lệ.'**
+  String get invalidEmail;
+
+  /// No description provided for @invalidPhone.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số điện thoại không hợp lệ.'**
+  String get invalidPhone;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mật khẩu phải có ít nhất 6 ký tự.'**
+  String get passwordMinLength;
+
+  /// No description provided for @confirmPasswordNotMatch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mật khẩu xác nhận không khớp.'**
+  String get confirmPasswordNotMatch;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập thông tin này.'**
+  String get requiredField;
+
+  /// No description provided for @fullNameRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập họ và tên.'**
+  String get fullNameRequired;
+
+  /// No description provided for @emailRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập email.'**
+  String get emailRequired;
+
+  /// No description provided for @phoneRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập số điện thoại.'**
+  String get phoneRequired;
+
+  /// No description provided for @confirmPasswordRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng xác nhận mật khẩu.'**
+  String get confirmPasswordRequired;
+
+  /// No description provided for @invalidRegistrationData.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu đăng ký không hợp lệ. Vui lòng kiểm tra lại.'**
+  String get invalidRegistrationData;
+
+  /// No description provided for @registrationConflict.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông tin đăng ký đã tồn tại.'**
+  String get registrationConflict;
 }
 
 class _AppLocalizationsDelegate

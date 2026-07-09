@@ -39,6 +39,26 @@ class AuthApi {
     }
   }
 
+  Future<RegisterResponse> register(RegisterRequest request) async {
+    try {
+      final response = await _dioClient.post<Object?>(
+        ApiEndpoints.register,
+        data: request.toJson(),
+      );
+      final responseData = response.data;
+
+      if (responseData is! Map) {
+        throw const AuthRegisterException(
+          code: AppMessageKeys.authRegisterInvalidResponse,
+        );
+      }
+
+      return RegisterResponse.fromJson(Map<String, dynamic>.from(responseData));
+    } on DioException catch (error) {
+      throw _mapDioRegisterError(error);
+    }
+  }
+
   AuthLoginException _mapDioLoginError(DioException error) {
     final apiException = ApiException.fromDioException(error);
     final code = _resolveErrorCode(apiException);
@@ -46,6 +66,17 @@ class AuthApi {
 
     return AuthLoginException(
       code: code ?? _fallbackCodeForLoginError(statusCode, error),
+      statusCode: statusCode,
+    );
+  }
+
+  AuthRegisterException _mapDioRegisterError(DioException error) {
+    final apiException = ApiException.fromDioException(error);
+    final code = _resolveErrorCode(apiException);
+    final statusCode = apiException.statusCode;
+
+    return AuthRegisterException(
+      code: code ?? _fallbackCodeForRegisterError(statusCode, error),
       statusCode: statusCode,
     );
   }
@@ -72,6 +103,18 @@ class AuthApi {
     }
     if (message.contains(AppMessageKeys.authAccountInactive)) {
       return AppMessageKeys.authAccountInactive;
+    }
+    if (message.contains(AppMessageKeys.authUsernameDuplicated)) {
+      return AppMessageKeys.authUsernameDuplicated;
+    }
+    if (message.contains(AppMessageKeys.authEmailDuplicated)) {
+      return AppMessageKeys.authEmailDuplicated;
+    }
+    if (message.contains(AppMessageKeys.usernameAlreadyExists)) {
+      return AppMessageKeys.usernameAlreadyExists;
+    }
+    if (message.contains(AppMessageKeys.emailAlreadyExists)) {
+      return AppMessageKeys.emailAlreadyExists;
     }
 
     return null;
@@ -105,6 +148,23 @@ class AuthApi {
   String _fallbackCodeForLoginError(int? statusCode, DioException error) {
     if (statusCode == 401) {
       return AppMessageKeys.authInvalidCredentials;
+    }
+    if (statusCode == 500 || statusCode == 503) {
+      return AppMessageKeys.serverUnavailable;
+    }
+    if (_isNetworkError(error)) {
+      return AppMessageKeys.networkError;
+    }
+
+    return AppMessageKeys.unknownError;
+  }
+
+  String _fallbackCodeForRegisterError(int? statusCode, DioException error) {
+    if (statusCode == 400) {
+      return AppMessageKeys.invalidRegistrationData;
+    }
+    if (statusCode == 409) {
+      return AppMessageKeys.registrationConflict;
     }
     if (statusCode == 500 || statusCode == 503) {
       return AppMessageKeys.serverUnavailable;
