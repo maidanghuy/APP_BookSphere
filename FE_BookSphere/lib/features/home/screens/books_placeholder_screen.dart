@@ -1,11 +1,11 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:flutter/material.dart';
 
-class HomePlaceholderScreen extends StatelessWidget {
-  const HomePlaceholderScreen({super.key});
+class BooksPlaceholderScreen extends StatelessWidget {
+  const BooksPlaceholderScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text(context.l10n.homeScreenPlaceholder));
+    return Center(child: Text(context.l10n.booksScreenPlaceholder));
   }
 }

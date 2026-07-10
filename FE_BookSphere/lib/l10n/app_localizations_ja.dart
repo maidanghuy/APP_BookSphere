@@ -9,6 +9,90 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get books => '本';
+
+  @override
+  String get fines => '罰金';
+
+  @override
+  String get booksScreenPlaceholder => '本の画面 - BS-APP-12';
+
+  @override
+  String get finesScreenPlaceholder => '罰金画面 - 今後のタスク';
+
+  @override
+  String get borrowingOverview => '貸出状況';
+
+  @override
+  String get activeBorrows => '貸出中';
+
+  @override
+  String get overdueBorrows => '延滞中';
+
+  @override
+  String get unpaidFines => '未払いの罰金';
+
+  @override
+  String get currentlyBorrowedBooks => '現在借りている本';
+
+  @override
+  String get latestNotification => '最新のお知らせ';
+
+  @override
+  String get mockLatestNotification => 'Clean Codeの返却期限が近づいています。';
+
+  @override
+  String get viewBooks => '本を見る';
+
+  @override
+  String get viewBorrows => '貸出票を見る';
+
+  @override
+  String get viewFines => '罰金を見る';
+
+  @override
+  String get homeEmptyTitle => '貸出履歴はまだありません。';
+
+  @override
+  String get hello => 'こんにちは';
+
+  @override
+  String get reader => '読者';
+
+  @override
+  String get welcomeBackToBookSphere => 'BookSphereへようこそ';
+
+  @override
+  String get searchBooks => '本を検索...';
+
+  @override
+  String get clearSearch => '検索をクリア';
+
+  @override
+  String get searchFuturePlaceholder => '検索機能は今後のタスクで実装されます。';
+
+  @override
+  String get featuredBooks => '注目の本';
+
+  @override
+  String get recommendedForYou => 'あなたへのおすすめ';
+
+  @override
+  String get categoryProgramming => 'プログラミング';
+
+  @override
+  String get categoryNovel => '小説';
+
+  @override
+  String get categoryScience => '科学';
+
+  @override
+  String get categoryHistory => '歴史';
+
+  @override
+  String get categoryTechnology => 'テクノロジー';
+
+  @override
   String get appName => 'BookSphere';
 
   @override
@@ -82,36 +166,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get mainScreenPlaceholder => 'メイン画面はBS-APP-10で実装されます';
-
-  @override
-  String get home => 'ホーム';
-
-  @override
-  String get categories => 'カテゴリー';
-
-  @override
-  String get myBorrow => '貸出中';
-
-  @override
-  String get notifications => '通知';
-
-  @override
-  String get profile => 'プロフィール';
-
-  @override
-  String get homeScreenPlaceholder => 'ホーム画面 - BS-APP-11';
-
-  @override
-  String get categoryScreenPlaceholder => 'カテゴリー画面 - BS-APP-13';
-
-  @override
-  String get borrowScreenPlaceholder => '貸出画面 - BS-APP-14';
-
-  @override
-  String get notificationScreenPlaceholder => '通知画面 - BS-APP-15';
-
-  @override
-  String get profileScreenPlaceholder => 'プロフィール画面 - BS-APP-16';
 
   @override
   String get registerScreenPlaceholder => 'BookSphereの新しいアカウントを作成';
@@ -208,4 +262,34 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get logoutFailedButCleared => 'サーバーに接続できませんでしたが、この端末からはログアウトしました。';
+
+  @override
+  String get home => 'ホーム';
+
+  @override
+  String get categories => 'カテゴリー';
+
+  @override
+  String get myBorrow => '貸出中';
+
+  @override
+  String get notifications => '通知';
+
+  @override
+  String get profile => 'プロフィール';
+
+  @override
+  String get homeScreenPlaceholder => 'ホーム画面 - BS-APP-11';
+
+  @override
+  String get categoryScreenPlaceholder => 'カテゴリー画面 - BS-APP-13';
+
+  @override
+  String get borrowScreenPlaceholder => '貸出画面 - BS-APP-14';
+
+  @override
+  String get notificationScreenPlaceholder => '通知画面 - BS-APP-15';
+
+  @override
+  String get profileScreenPlaceholder => 'プロフィール画面 - BS-APP-16';
 }
