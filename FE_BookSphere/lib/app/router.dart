@@ -1,13 +1,10 @@
-import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:booksphere_app/core/network/dio_client.dart';
 import 'package:booksphere_app/core/storage/secure_storage_service.dart';
-import 'package:booksphere_app/core/widgets/app_top_left_actions.dart';
 import 'package:booksphere_app/features/auth/data/auth_session_service.dart';
 import 'package:booksphere_app/features/auth/presentation/login_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/register_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/splash_screen.dart';
-import 'package:booksphere_app/features/auth/presentation/widgets/logout_button.dart';
-import 'package:flutter/material.dart';
+import 'package:booksphere_app/features/home/presentation/main_tab_screen.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRoutes {
@@ -41,7 +38,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.main,
-      builder: (context, state) => const MainPlaceholderScreen(),
+      builder: (context, state) => const MainTabScreen(),
     ),
   ],
   redirect: (context, state) async {
@@ -67,42 +64,3 @@ final appRouter = GoRouter(
     return null;
   },
 );
-
-class MainPlaceholderScreen extends StatelessWidget {
-  const MainPlaceholderScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-
-    return Scaffold(
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 72, 24, 24),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        l10n.mainScreenPlaceholder,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-                      const LogoutButton(),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const AppTopLeftActions(),
-        ],
-      ),
-    );
-  }
-}

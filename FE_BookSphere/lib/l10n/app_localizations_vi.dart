@@ -88,6 +88,37 @@ class AppLocalizationsVi extends AppLocalizations {
       'Màn hình chính sẽ được triển khai trong BS-APP-10';
 
   @override
+  String get home => 'Trang chủ';
+
+  @override
+  String get categories => 'Danh mục';
+
+  @override
+  String get myBorrow => 'Sách đang mượn';
+
+  @override
+  String get notifications => 'Thông báo';
+
+  @override
+  String get profile => 'Hồ sơ';
+
+  @override
+  String get homeScreenPlaceholder => 'Màn hình Trang chủ - BS-APP-11';
+
+  @override
+  String get categoryScreenPlaceholder => 'Màn hình Danh mục - BS-APP-13';
+
+  @override
+  String get borrowScreenPlaceholder => 'Màn hình Mượn sách - BS-APP-14';
+
+  @override
+  String get notificationScreenPlaceholder =>
+      'Màn hình Thông báo - BS-APP-15';
+
+  @override
+  String get profileScreenPlaceholder => 'Màn hình Hồ sơ - BS-APP-16';
+
+  @override
   String get registerScreenPlaceholder => 'Tạo tài khoản BookSphere mới';
 
   @override

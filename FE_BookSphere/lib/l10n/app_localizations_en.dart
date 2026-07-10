@@ -88,6 +88,37 @@ class AppLocalizationsEn extends AppLocalizations {
       'Main screen will be implemented in BS-APP-10';
 
   @override
+  String get home => 'Home';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get myBorrow => 'My Borrow';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get homeScreenPlaceholder => 'Home Screen - BS-APP-11';
+
+  @override
+  String get categoryScreenPlaceholder => 'Category Screen - BS-APP-13';
+
+  @override
+  String get borrowScreenPlaceholder => 'Borrow Screen - BS-APP-14';
+
+  @override
+  String get notificationScreenPlaceholder =>
+      'Notification Screen - BS-APP-15';
+
+  @override
+  String get profileScreenPlaceholder => 'Profile Screen - BS-APP-16';
+
+  @override
   String get registerScreenPlaceholder => 'Create a new BookSphere account';
 
   @override

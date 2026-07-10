@@ -250,6 +250,26 @@ abstract class AppLocalizations {
   /// **'Màn hình chính sẽ được triển khai trong BS-APP-10'**
   String get mainScreenPlaceholder;
 
+  String get home;
+
+  String get categories;
+
+  String get myBorrow;
+
+  String get notifications;
+
+  String get profile;
+
+  String get homeScreenPlaceholder;
+
+  String get categoryScreenPlaceholder;
+
+  String get borrowScreenPlaceholder;
+
+  String get notificationScreenPlaceholder;
+
+  String get profileScreenPlaceholder;
+
   /// No description provided for @registerScreenPlaceholder.
   ///
   /// In vi, this message translates to:
