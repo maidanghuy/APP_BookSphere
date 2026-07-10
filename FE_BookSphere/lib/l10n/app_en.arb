@@ -56,5 +56,15 @@
   "logoutConfirmMessage": "Are you sure you want to log out?",
   "cancel": "Cancel",
   "logoutSuccess": "You have been logged out.",
-  "logoutFailedButCleared": "Unable to contact the server, but you have been logged out from this device."
+  "logoutFailedButCleared": "Unable to contact the server, but you have been logged out from this device.",
+  "home": "Home",
+  "categories": "Categories",
+  "myBorrow": "My Borrow",
+  "notifications": "Notifications",
+  "profile": "Profile",
+  "homeScreenPlaceholder": "Home Screen - BS-APP-11",
+  "categoryScreenPlaceholder": "Category Screen - BS-APP-13",
+  "borrowScreenPlaceholder": "Borrow Screen - BS-APP-14",
+  "notificationScreenPlaceholder": "Notification Screen - BS-APP-15",
+  "profileScreenPlaceholder": "Profile Screen - BS-APP-16"
 }

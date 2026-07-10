@@ -56,5 +56,15 @@
   "logoutConfirmMessage": "Bạn có chắc muốn đăng xuất không?",
   "cancel": "Hủy",
   "logoutSuccess": "Bạn đã đăng xuất.",
-  "logoutFailedButCleared": "Không thể kết nối máy chủ, nhưng bạn đã được đăng xuất khỏi thiết bị này."
+  "logoutFailedButCleared": "Không thể kết nối máy chủ, nhưng bạn đã được đăng xuất khỏi thiết bị này.",
+  "home": "Trang chủ",
+  "categories": "Danh mục",
+  "myBorrow": "Sách đang mượn",
+  "notifications": "Thông báo",
+  "profile": "Hồ sơ",
+  "homeScreenPlaceholder": "Màn hình Trang chủ - BS-APP-11",
+  "categoryScreenPlaceholder": "Màn hình Danh mục - BS-APP-13",
+  "borrowScreenPlaceholder": "Màn hình Mượn sách - BS-APP-14",
+  "notificationScreenPlaceholder": "Màn hình Thông báo - BS-APP-15",
+  "profileScreenPlaceholder": "Màn hình Hồ sơ - BS-APP-16"
 }

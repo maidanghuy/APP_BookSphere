@@ -84,6 +84,36 @@ class AppLocalizationsJa extends AppLocalizations {
   String get mainScreenPlaceholder => 'メイン画面はBS-APP-10で実装されます';
 
   @override
+  String get home => 'ホーム';
+
+  @override
+  String get categories => 'カテゴリー';
+
+  @override
+  String get myBorrow => '貸出中';
+
+  @override
+  String get notifications => '通知';
+
+  @override
+  String get profile => 'プロフィール';
+
+  @override
+  String get homeScreenPlaceholder => 'ホーム画面 - BS-APP-11';
+
+  @override
+  String get categoryScreenPlaceholder => 'カテゴリー画面 - BS-APP-13';
+
+  @override
+  String get borrowScreenPlaceholder => '貸出画面 - BS-APP-14';
+
+  @override
+  String get notificationScreenPlaceholder => '通知画面 - BS-APP-15';
+
+  @override
+  String get profileScreenPlaceholder => 'プロフィール画面 - BS-APP-16';
+
+  @override
   String get registerScreenPlaceholder => 'BookSphereの新しいアカウントを作成';
 
   @override

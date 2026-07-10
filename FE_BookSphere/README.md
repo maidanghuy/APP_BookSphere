@@ -309,6 +309,25 @@ flutter test
 flutter build apk
 ```
 
+## BS-APP-10 Main Tab Layout
+
+Coder:
+maidanghuy
+
+Implemented:
+
+- MainTabScreen
+- Material 3 NavigationBar
+- 5 main tabs:
+  - Home
+  - Categories
+  - My Borrow
+  - Notifications
+  - Profile
+
+Current screens are placeholders.
+Business features will be implemented in later tasks.
+
 ## API Base URL
 
 Pass `API_BASE_URL` with `--dart-define`:

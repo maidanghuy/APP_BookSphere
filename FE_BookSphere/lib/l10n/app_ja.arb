@@ -56,5 +56,15 @@
   "logoutConfirmMessage": "ログアウトしてもよろしいですか？",
   "cancel": "キャンセル",
   "logoutSuccess": "ログアウトしました。",
-  "logoutFailedButCleared": "サーバーに接続できませんでしたが、この端末からはログアウトしました。"
+  "logoutFailedButCleared": "サーバーに接続できませんでしたが、この端末からはログアウトしました。",
+  "home": "ホーム",
+  "categories": "カテゴリー",
+  "myBorrow": "貸出中",
+  "notifications": "通知",
+  "profile": "プロフィール",
+  "homeScreenPlaceholder": "ホーム画面 - BS-APP-11",
+  "categoryScreenPlaceholder": "カテゴリー画面 - BS-APP-13",
+  "borrowScreenPlaceholder": "貸出画面 - BS-APP-14",
+  "notificationScreenPlaceholder": "通知画面 - BS-APP-15",
+  "profileScreenPlaceholder": "プロフィール画面 - BS-APP-16"
 }
