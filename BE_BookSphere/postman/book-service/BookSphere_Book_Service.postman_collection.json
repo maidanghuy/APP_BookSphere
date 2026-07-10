@@ -1178,6 +1178,7 @@
                   "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
                   "pm.test('Book is active with active category', function () {",
                   "    const json = pm.response.json();",
+                  "    pm.expect(json.data.author).to.be.a('string');",
                   "    pm.expect(json.data.isActive).to.eql(true);",
                   "    pm.expect(json.data.categoryActive).to.eql(true);",
                   "});"

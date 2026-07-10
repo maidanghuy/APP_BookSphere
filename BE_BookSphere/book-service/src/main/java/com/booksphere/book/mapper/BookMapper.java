@@ -47,6 +47,7 @@ public final class BookMapper {
         InternalBookResponse response = new InternalBookResponse();
         response.setId(book.getId());
         response.setTitle(book.getTitle());
+        response.setAuthor(book.getAuthor());
         response.setIsbn(book.getIsbn());
         response.setAvailableQuantity(book.getAvailableQuantity());
         response.setIsActive(book.getIsActive());

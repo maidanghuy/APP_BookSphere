@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "booksphere-auth-service-collection",
     "name": "BookSphere - Auth Service",
-    "description": "Postman collection for Auth Service.\n\nCovers:\n- Register\n- Login\n- Refresh token\n- Logout\n- Basic validation and security error cases\n- Via API Gateway and Direct Service checks\n\nRecommended run order:\n1. 00 - Auth API - Via Gateway\n2. 01 - Auth API - Direct Service\n3. 02 - Validation & Error Cases\n\nPrerequisites: Auth Service and API Gateway running.",
+    "description": "Postman collection for Auth Service.\n\nCovers:\n- Register\n- Login\n- Refresh token\n- Logout\n- Internal user snapshot for service-to-service lookups\n- Basic validation and security error cases\n- Via API Gateway and Direct Service checks\n\nRecommended run order:\n1. 00 - Auth API - Via Gateway\n2. 01 - Auth API - Direct Service\n3. 02 - Validation & Error Cases\n\nPrerequisites: Auth Service and API Gateway running.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -355,6 +355,44 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Direct refresh returns 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Internal User By ID - Direct Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{authServiceBaseUrl}}/internal/users/{{memberUserId}}",
+              "host": [
+                "{{authServiceBaseUrl}}"
+              ],
+              "path": [
+                "internal",
+                "users",
+                "{{memberUserId}}"
+              ]
+            },
+            "description": "Service-to-service endpoint used by Borrow Service to enrich borrow responses with memberName and username."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('Internal user returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Internal user payload has member snapshot fields', function () {",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.data.id).to.eql(Number(pm.environment.get('memberUserId')));",
+                  "  pm.expect(body.data.fullName).to.be.a('string');",
+                  "  pm.expect(body.data.username).to.eql(pm.environment.get('memberUsername'));",
+                  "  pm.expect(body.data).to.have.property('isActive');",
+                  "});"
                 ]
               }
             }

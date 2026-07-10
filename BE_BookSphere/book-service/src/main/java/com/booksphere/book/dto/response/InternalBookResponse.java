@@ -9,6 +9,8 @@ public class InternalBookResponse {
     private Long id;
     @Schema(description = "Book title", example = "Clean Code")
     private String title;
+    @Schema(description = "Book author", example = "Robert C. Martin")
+    private String author;
     @Schema(description = "ISBN code", example = "9780132350884")
     private String isbn;
     @Schema(description = "Available quantity", example = "8")
@@ -32,6 +34,14 @@ public class InternalBookResponse {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getIsbn() {
