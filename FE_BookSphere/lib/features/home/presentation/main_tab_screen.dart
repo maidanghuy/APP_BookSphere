@@ -1,7 +1,8 @@
 import 'package:booksphere_app/core/widgets/app_top_left_actions.dart';
 import 'package:booksphere_app/features/auth/presentation/widgets/logout_button.dart';
 import 'package:booksphere_app/features/home/screens/borrow_placeholder_screen.dart';
-import 'package:booksphere_app/features/home/screens/category_placeholder_screen.dart';
+import 'package:booksphere_app/features/home/screens/books_placeholder_screen.dart';
+import 'package:booksphere_app/features/home/screens/fine_placeholder_screen.dart';
 import 'package:booksphere_app/features/home/presentation/home_screen.dart';
 import 'package:booksphere_app/features/home/screens/notification_placeholder_screen.dart';
 import 'package:booksphere_app/features/home/screens/profile_placeholder_screen.dart';
@@ -19,12 +20,17 @@ class MainTabScreen extends ConsumerStatefulWidget {
 class _MainTabScreenState extends ConsumerState<MainTabScreen> {
   int currentIndex = 0;
 
-  static const pages = <Widget>[
-    HomeScreen(),
-    CategoryPlaceholderScreen(),
-    BorrowPlaceholderScreen(),
-    NotificationPlaceholderScreen(),
-    ProfilePlaceholderScreen(),
+  List<Widget> get pages => [
+    HomeScreen(
+      onViewBooks: () => _selectTab(1),
+      onViewBorrows: () => _selectTab(2),
+      onViewFines: () => _selectTab(3),
+    ),
+    const BooksPlaceholderScreen(),
+    const BorrowPlaceholderScreen(),
+    const FinePlaceholderScreen(),
+    const NotificationPlaceholderScreen(),
+    const ProfilePlaceholderScreen(),
   ];
 
   void _selectTab(int index) {

@@ -9,6 +9,52 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get books => 'Books';
+
+  @override
+  String get fines => 'Fines';
+
+  @override
+  String get booksScreenPlaceholder => 'Books Screen - BS-APP-12';
+
+  @override
+  String get finesScreenPlaceholder => 'Fines Screen - Future Task';
+
+  @override
+  String get borrowingOverview => 'Borrowing overview';
+
+  @override
+  String get activeBorrows => 'Active borrows';
+
+  @override
+  String get overdueBorrows => 'Overdue borrows';
+
+  @override
+  String get unpaidFines => 'Unpaid fines';
+
+  @override
+  String get currentlyBorrowedBooks => 'Currently borrowed books';
+
+  @override
+  String get latestNotification => 'Latest notification';
+
+  @override
+  String get mockLatestNotification =>
+      'The due date for Clean Code is approaching.';
+
+  @override
+  String get viewBooks => 'View books';
+
+  @override
+  String get viewBorrows => 'View borrows';
+
+  @override
+  String get viewFines => 'View fines';
+
+  @override
+  String get homeEmptyTitle => 'You have no borrowing activity yet.';
+
+  @override
   String get hello => 'Hello';
 
   @override

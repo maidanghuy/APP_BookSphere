@@ -9,6 +9,51 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get books => 'Sách';
+
+  @override
+  String get fines => 'Tiền phạt';
+
+  @override
+  String get booksScreenPlaceholder => 'Màn hình Sách - BS-APP-12';
+
+  @override
+  String get finesScreenPlaceholder => 'Màn hình Tiền phạt - Task sau';
+
+  @override
+  String get borrowingOverview => 'Tổng quan mượn sách';
+
+  @override
+  String get activeBorrows => 'Phiếu đang mượn';
+
+  @override
+  String get overdueBorrows => 'Phiếu quá hạn';
+
+  @override
+  String get unpaidFines => 'Tiền phạt chưa thanh toán';
+
+  @override
+  String get currentlyBorrowedBooks => 'Sách đang mượn';
+
+  @override
+  String get latestNotification => 'Thông báo mới nhất';
+
+  @override
+  String get mockLatestNotification => 'Sách Clean Code sắp đến hạn trả.';
+
+  @override
+  String get viewBooks => 'Xem sách';
+
+  @override
+  String get viewBorrows => 'Xem phiếu mượn';
+
+  @override
+  String get viewFines => 'Xem tiền phạt';
+
+  @override
+  String get homeEmptyTitle => 'Bạn chưa có hoạt động mượn sách.';
+
+  @override
   String get hello => 'Xin chào';
 
   @override

@@ -100,6 +100,96 @@ abstract class AppLocalizations {
     Locale('vi'),
   ];
 
+  /// No description provided for @books.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách'**
+  String get books;
+
+  /// No description provided for @fines.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiền phạt'**
+  String get fines;
+
+  /// No description provided for @booksScreenPlaceholder.
+  ///
+  /// In vi, this message translates to:
+  /// **'Màn hình Sách - BS-APP-12'**
+  String get booksScreenPlaceholder;
+
+  /// No description provided for @finesScreenPlaceholder.
+  ///
+  /// In vi, this message translates to:
+  /// **'Màn hình Tiền phạt - Task sau'**
+  String get finesScreenPlaceholder;
+
+  /// No description provided for @borrowingOverview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng quan mượn sách'**
+  String get borrowingOverview;
+
+  /// No description provided for @activeBorrows.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiếu đang mượn'**
+  String get activeBorrows;
+
+  /// No description provided for @overdueBorrows.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiếu quá hạn'**
+  String get overdueBorrows;
+
+  /// No description provided for @unpaidFines.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiền phạt chưa thanh toán'**
+  String get unpaidFines;
+
+  /// No description provided for @currentlyBorrowedBooks.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách đang mượn'**
+  String get currentlyBorrowedBooks;
+
+  /// No description provided for @latestNotification.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo mới nhất'**
+  String get latestNotification;
+
+  /// No description provided for @mockLatestNotification.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách Clean Code sắp đến hạn trả.'**
+  String get mockLatestNotification;
+
+  /// No description provided for @viewBooks.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem sách'**
+  String get viewBooks;
+
+  /// No description provided for @viewBorrows.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem phiếu mượn'**
+  String get viewBorrows;
+
+  /// No description provided for @viewFines.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem tiền phạt'**
+  String get viewFines;
+
+  /// No description provided for @homeEmptyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chưa có hoạt động mượn sách.'**
+  String get homeEmptyTitle;
+
   /// No description provided for @hello.
   ///
   /// In vi, this message translates to:

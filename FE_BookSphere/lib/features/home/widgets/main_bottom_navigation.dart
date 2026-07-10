@@ -17,16 +17,21 @@ class MainBottomNavigation extends StatelessWidget {
 
     return NavigationBar(
       selectedIndex: currentIndex,
+      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
       onDestinationSelected: onDestinationSelected,
       destinations: [
         NavigationDestination(icon: const Icon(Icons.home), label: l10n.home),
         NavigationDestination(
-          icon: const Icon(Icons.category),
-          label: l10n.categories,
+          icon: const Icon(Icons.menu_book),
+          label: l10n.books,
         ),
         NavigationDestination(
           icon: const Icon(Icons.library_books),
           label: l10n.myBorrow,
+        ),
+        NavigationDestination(
+          icon: const Icon(Icons.payments),
+          label: l10n.fines,
         ),
         NavigationDestination(
           icon: const Icon(Icons.notifications),

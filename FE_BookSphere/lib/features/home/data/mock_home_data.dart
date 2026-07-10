@@ -13,6 +13,24 @@ class HomeBook {
 }
 
 abstract final class MockHomeData {
+  static const activeBorrowCount = 2;
+  static const overdueBorrowCount = 1;
+  static const unpaidFineCount = 1;
+  static const hasLatestNotification = true;
+
+  static const borrowedBooks = <HomeBook>[
+    HomeBook(
+      title: 'Clean Code',
+      author: 'Robert C. Martin',
+      category: HomeCategory.programming,
+    ),
+    HomeBook(
+      title: 'The Great Gatsby',
+      author: 'F. Scott Fitzgerald',
+      category: HomeCategory.novel,
+    ),
+  ];
+
   static const featuredBooks = <HomeBook>[
     HomeBook(
       title: 'Clean Code',

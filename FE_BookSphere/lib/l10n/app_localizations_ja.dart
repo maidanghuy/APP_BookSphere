@@ -9,6 +9,51 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get books => '本';
+
+  @override
+  String get fines => '罰金';
+
+  @override
+  String get booksScreenPlaceholder => '本の画面 - BS-APP-12';
+
+  @override
+  String get finesScreenPlaceholder => '罰金画面 - 今後のタスク';
+
+  @override
+  String get borrowingOverview => '貸出状況';
+
+  @override
+  String get activeBorrows => '貸出中';
+
+  @override
+  String get overdueBorrows => '延滞中';
+
+  @override
+  String get unpaidFines => '未払いの罰金';
+
+  @override
+  String get currentlyBorrowedBooks => '現在借りている本';
+
+  @override
+  String get latestNotification => '最新のお知らせ';
+
+  @override
+  String get mockLatestNotification => 'Clean Codeの返却期限が近づいています。';
+
+  @override
+  String get viewBooks => '本を見る';
+
+  @override
+  String get viewBorrows => '貸出票を見る';
+
+  @override
+  String get viewFines => '罰金を見る';
+
+  @override
+  String get homeEmptyTitle => '貸出履歴はまだありません。';
+
+  @override
   String get hello => 'こんにちは';
 
   @override
