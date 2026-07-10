@@ -9,6 +9,46 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get hello => 'Xin chào';
+
+  @override
+  String get reader => 'Độc giả';
+
+  @override
+  String get welcomeBackToBookSphere => 'Chào mừng bạn trở lại BookSphere';
+
+  @override
+  String get searchBooks => 'Tìm kiếm sách...';
+
+  @override
+  String get clearSearch => 'Xóa tìm kiếm';
+
+  @override
+  String get searchFuturePlaceholder =>
+      'Tính năng tìm kiếm sẽ được triển khai trong task sau.';
+
+  @override
+  String get featuredBooks => 'Sách nổi bật';
+
+  @override
+  String get recommendedForYou => 'Đề xuất cho bạn';
+
+  @override
+  String get categoryProgramming => 'Lập trình';
+
+  @override
+  String get categoryNovel => 'Tiểu thuyết';
+
+  @override
+  String get categoryScience => 'Khoa học';
+
+  @override
+  String get categoryHistory => 'Lịch sử';
+
+  @override
+  String get categoryTechnology => 'Công nghệ';
+
+  @override
   String get appName => 'BookSphere';
 
   @override
@@ -86,37 +126,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get mainScreenPlaceholder =>
       'Màn hình chính sẽ được triển khai trong BS-APP-10';
-
-  @override
-  String get home => 'Trang chủ';
-
-  @override
-  String get categories => 'Danh mục';
-
-  @override
-  String get myBorrow => 'Sách đang mượn';
-
-  @override
-  String get notifications => 'Thông báo';
-
-  @override
-  String get profile => 'Hồ sơ';
-
-  @override
-  String get homeScreenPlaceholder => 'Màn hình Trang chủ - BS-APP-11';
-
-  @override
-  String get categoryScreenPlaceholder => 'Màn hình Danh mục - BS-APP-13';
-
-  @override
-  String get borrowScreenPlaceholder => 'Màn hình Mượn sách - BS-APP-14';
-
-  @override
-  String get notificationScreenPlaceholder =>
-      'Màn hình Thông báo - BS-APP-15';
-
-  @override
-  String get profileScreenPlaceholder => 'Màn hình Hồ sơ - BS-APP-16';
 
   @override
   String get registerScreenPlaceholder => 'Tạo tài khoản BookSphere mới';
@@ -215,4 +224,34 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get logoutFailedButCleared =>
       'Không thể kết nối máy chủ, nhưng bạn đã được đăng xuất khỏi thiết bị này.';
+
+  @override
+  String get home => 'Trang chủ';
+
+  @override
+  String get categories => 'Danh mục';
+
+  @override
+  String get myBorrow => 'Sách đang mượn';
+
+  @override
+  String get notifications => 'Thông báo';
+
+  @override
+  String get profile => 'Hồ sơ';
+
+  @override
+  String get homeScreenPlaceholder => 'Màn hình Trang chủ - BS-APP-11';
+
+  @override
+  String get categoryScreenPlaceholder => 'Màn hình Danh mục - BS-APP-13';
+
+  @override
+  String get borrowScreenPlaceholder => 'Màn hình Mượn sách - BS-APP-14';
+
+  @override
+  String get notificationScreenPlaceholder => 'Màn hình Thông báo - BS-APP-15';
+
+  @override
+  String get profileScreenPlaceholder => 'Màn hình Hồ sơ - BS-APP-16';
 }

@@ -9,6 +9,46 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get hello => 'Hello';
+
+  @override
+  String get reader => 'Reader';
+
+  @override
+  String get welcomeBackToBookSphere => 'Welcome back to BookSphere';
+
+  @override
+  String get searchBooks => 'Search books...';
+
+  @override
+  String get clearSearch => 'Clear search';
+
+  @override
+  String get searchFuturePlaceholder =>
+      'Search feature will be implemented in a future task.';
+
+  @override
+  String get featuredBooks => 'Featured Books';
+
+  @override
+  String get recommendedForYou => 'Recommended for you';
+
+  @override
+  String get categoryProgramming => 'Programming';
+
+  @override
+  String get categoryNovel => 'Novel';
+
+  @override
+  String get categoryScience => 'Science';
+
+  @override
+  String get categoryHistory => 'History';
+
+  @override
+  String get categoryTechnology => 'Technology';
+
+  @override
   String get appName => 'BookSphere';
 
   @override
@@ -86,37 +126,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mainScreenPlaceholder =>
       'Main screen will be implemented in BS-APP-10';
-
-  @override
-  String get home => 'Home';
-
-  @override
-  String get categories => 'Categories';
-
-  @override
-  String get myBorrow => 'My Borrow';
-
-  @override
-  String get notifications => 'Notifications';
-
-  @override
-  String get profile => 'Profile';
-
-  @override
-  String get homeScreenPlaceholder => 'Home Screen - BS-APP-11';
-
-  @override
-  String get categoryScreenPlaceholder => 'Category Screen - BS-APP-13';
-
-  @override
-  String get borrowScreenPlaceholder => 'Borrow Screen - BS-APP-14';
-
-  @override
-  String get notificationScreenPlaceholder =>
-      'Notification Screen - BS-APP-15';
-
-  @override
-  String get profileScreenPlaceholder => 'Profile Screen - BS-APP-16';
 
   @override
   String get registerScreenPlaceholder => 'Create a new BookSphere account';
@@ -215,4 +224,34 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get logoutFailedButCleared =>
       'Unable to contact the server, but you have been logged out from this device.';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get myBorrow => 'My Borrow';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get homeScreenPlaceholder => 'Home Screen - BS-APP-11';
+
+  @override
+  String get categoryScreenPlaceholder => 'Category Screen - BS-APP-13';
+
+  @override
+  String get borrowScreenPlaceholder => 'Borrow Screen - BS-APP-14';
+
+  @override
+  String get notificationScreenPlaceholder => 'Notification Screen - BS-APP-15';
+
+  @override
+  String get profileScreenPlaceholder => 'Profile Screen - BS-APP-16';
 }

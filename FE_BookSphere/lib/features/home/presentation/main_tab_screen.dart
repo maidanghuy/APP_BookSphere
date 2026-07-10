@@ -2,7 +2,7 @@ import 'package:booksphere_app/core/widgets/app_top_left_actions.dart';
 import 'package:booksphere_app/features/auth/presentation/widgets/logout_button.dart';
 import 'package:booksphere_app/features/home/screens/borrow_placeholder_screen.dart';
 import 'package:booksphere_app/features/home/screens/category_placeholder_screen.dart';
-import 'package:booksphere_app/features/home/screens/home_placeholder_screen.dart';
+import 'package:booksphere_app/features/home/presentation/home_screen.dart';
 import 'package:booksphere_app/features/home/screens/notification_placeholder_screen.dart';
 import 'package:booksphere_app/features/home/screens/profile_placeholder_screen.dart';
 import 'package:booksphere_app/features/home/widgets/main_bottom_navigation.dart';
@@ -20,7 +20,7 @@ class _MainTabScreenState extends ConsumerState<MainTabScreen> {
   int currentIndex = 0;
 
   static const pages = <Widget>[
-    HomePlaceholderScreen(),
+    HomeScreen(),
     CategoryPlaceholderScreen(),
     BorrowPlaceholderScreen(),
     NotificationPlaceholderScreen(),
@@ -48,10 +48,7 @@ class _MainTabScreenState extends ConsumerState<MainTabScreen> {
           const SafeArea(
             child: Align(
               alignment: Alignment.topRight,
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: LogoutButton(),
-              ),
+              child: Padding(padding: EdgeInsets.all(8), child: LogoutButton()),
             ),
           ),
         ],

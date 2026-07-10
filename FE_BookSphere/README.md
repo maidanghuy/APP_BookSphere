@@ -328,6 +328,18 @@ Implemented:
 Current screens are placeholders.
 Business features will be implemented in later tasks.
 
+## BS-APP-11 - Home Screen
+
+Coder: maidanghuy
+
+- Home Screen is the primary screen after login.
+- Displays a welcome header.
+- Includes a search bar UI.
+- Includes featured books, categories, and recommended sections.
+- Currently uses local mock data.
+- Real book API integration will be implemented in later Book tasks.
+- Main Tab Layout is provided by BS-APP-10.
+
 ## API Base URL
 
 Pass `API_BASE_URL` with `--dart-define`:

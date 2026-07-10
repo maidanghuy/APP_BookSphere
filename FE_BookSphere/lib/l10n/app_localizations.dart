@@ -100,6 +100,84 @@ abstract class AppLocalizations {
     Locale('vi'),
   ];
 
+  /// No description provided for @hello.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xin chào'**
+  String get hello;
+
+  /// No description provided for @reader.
+  ///
+  /// In vi, this message translates to:
+  /// **'Độc giả'**
+  String get reader;
+
+  /// No description provided for @welcomeBackToBookSphere.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chào mừng bạn trở lại BookSphere'**
+  String get welcomeBackToBookSphere;
+
+  /// No description provided for @searchBooks.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm kiếm sách...'**
+  String get searchBooks;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa tìm kiếm'**
+  String get clearSearch;
+
+  /// No description provided for @searchFuturePlaceholder.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tính năng tìm kiếm sẽ được triển khai trong task sau.'**
+  String get searchFuturePlaceholder;
+
+  /// No description provided for @featuredBooks.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách nổi bật'**
+  String get featuredBooks;
+
+  /// No description provided for @recommendedForYou.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đề xuất cho bạn'**
+  String get recommendedForYou;
+
+  /// No description provided for @categoryProgramming.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lập trình'**
+  String get categoryProgramming;
+
+  /// No description provided for @categoryNovel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiểu thuyết'**
+  String get categoryNovel;
+
+  /// No description provided for @categoryScience.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khoa học'**
+  String get categoryScience;
+
+  /// No description provided for @categoryHistory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lịch sử'**
+  String get categoryHistory;
+
+  /// No description provided for @categoryTechnology.
+  ///
+  /// In vi, this message translates to:
+  /// **'Công nghệ'**
+  String get categoryTechnology;
+
   /// No description provided for @appName.
   ///
   /// In vi, this message translates to:
@@ -249,26 +327,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Màn hình chính sẽ được triển khai trong BS-APP-10'**
   String get mainScreenPlaceholder;
-
-  String get home;
-
-  String get categories;
-
-  String get myBorrow;
-
-  String get notifications;
-
-  String get profile;
-
-  String get homeScreenPlaceholder;
-
-  String get categoryScreenPlaceholder;
-
-  String get borrowScreenPlaceholder;
-
-  String get notificationScreenPlaceholder;
-
-  String get profileScreenPlaceholder;
 
   /// No description provided for @registerScreenPlaceholder.
   ///
@@ -461,6 +519,66 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Không thể kết nối máy chủ, nhưng bạn đã được đăng xuất khỏi thiết bị này.'**
   String get logoutFailedButCleared;
+
+  /// No description provided for @home.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trang chủ'**
+  String get home;
+
+  /// No description provided for @categories.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh mục'**
+  String get categories;
+
+  /// No description provided for @myBorrow.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách đang mượn'**
+  String get myBorrow;
+
+  /// No description provided for @notifications.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo'**
+  String get notifications;
+
+  /// No description provided for @profile.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hồ sơ'**
+  String get profile;
+
+  /// No description provided for @homeScreenPlaceholder.
+  ///
+  /// In vi, this message translates to:
+  /// **'Màn hình Trang chủ - BS-APP-11'**
+  String get homeScreenPlaceholder;
+
+  /// No description provided for @categoryScreenPlaceholder.
+  ///
+  /// In vi, this message translates to:
+  /// **'Màn hình Danh mục - BS-APP-13'**
+  String get categoryScreenPlaceholder;
+
+  /// No description provided for @borrowScreenPlaceholder.
+  ///
+  /// In vi, this message translates to:
+  /// **'Màn hình Mượn sách - BS-APP-14'**
+  String get borrowScreenPlaceholder;
+
+  /// No description provided for @notificationScreenPlaceholder.
+  ///
+  /// In vi, this message translates to:
+  /// **'Màn hình Thông báo - BS-APP-15'**
+  String get notificationScreenPlaceholder;
+
+  /// No description provided for @profileScreenPlaceholder.
+  ///
+  /// In vi, this message translates to:
+  /// **'Màn hình Hồ sơ - BS-APP-16'**
+  String get profileScreenPlaceholder;
 }
 
 class _AppLocalizationsDelegate
