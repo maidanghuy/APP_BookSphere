@@ -374,3 +374,16 @@ Coder: Codex
 - Gracefully handles business exceptions (`BOOK_OUT_OF_STOCK`, `BOOK_INACTIVE`, `BORROW_SAGA_FAILED`).
 - Automatically invalidates/reloads book details on successful borrow creation.
 
+## BS-APP-16 - My Borrow List Screen
+
+Coder: khduong84
+
+- Implemented `MyBorrowListScreen` displaying the current member's borrowing history.
+- Pull-to-Refresh to reload list from `GET /api/borrows`.
+- Horizontal Filter Chips to filter by Status (`ALL`, `BORROWING`, `OVERDUE`, `RETURNED`, `CANCELLED`).
+- Reused resilient JSON models (`BorrowResponse`, `BorrowPageResponse`) to safely parse datetime lists.
+- Integrated color-coded `BorrowCard` widgets displaying borrow IDs, dates, quantities, and status badges.
+- Configured tap events navigating to `/borrows/:id` placeholder route.
+- Handles empty state ("You don't have any borrow records.") and network exceptions gracefully.
+
+

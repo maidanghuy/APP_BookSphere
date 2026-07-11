@@ -179,3 +179,102 @@ class BorrowDetailResponse {
     };
   }
 }
+
+class BorrowResponse {
+  final int id;
+  final int userId;
+  final String username;
+  final String memberName;
+  final int totalItems;
+  final String borrowDate;
+  final String dueDate;
+  final String? returnDate;
+  final String status;
+
+  BorrowResponse({
+    required this.id,
+    required this.userId,
+    required this.username,
+    required this.memberName,
+    required this.totalItems,
+    required this.borrowDate,
+    required this.dueDate,
+    this.returnDate,
+    required this.status,
+  });
+
+  BorrowStatus get borrowStatus => BorrowStatus.fromValue(status);
+
+  factory BorrowResponse.fromJson(Map<String, dynamic> json) {
+    return BorrowResponse(
+      id: _parseInt(json['id']),
+      userId: _parseInt(json['userId']),
+      username: json['username']?.toString() ?? '',
+      memberName: json['memberName']?.toString() ?? '',
+      totalItems: _parseInt(json['totalItems']),
+      borrowDate: _parseDate(json['borrowDate']),
+      dueDate: _parseDate(json['dueDate']),
+      returnDate: json['returnDate'] != null ? _parseDate(json['returnDate']) : null,
+      status: json['status']?.toString() ?? 'BORROWING',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'username': username,
+      'memberName': memberName,
+      'totalItems': totalItems,
+      'borrowDate': borrowDate,
+      'dueDate': dueDate,
+      'returnDate': returnDate,
+      'status': status,
+    };
+  }
+}
+
+class BorrowPageResponse {
+  final List<BorrowResponse> content;
+  final int page;
+  final int size;
+  final int totalElements;
+  final int totalPages;
+  final bool last;
+
+  BorrowPageResponse({
+    required this.content,
+    required this.page,
+    required this.size,
+    required this.totalElements,
+    required this.totalPages,
+    required this.last,
+  });
+
+  factory BorrowPageResponse.fromJson(Map<String, dynamic> json) {
+    return BorrowPageResponse(
+      content: json['content'] is List
+          ? (json['content'] as List)
+              .map((e) => BorrowResponse.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList()
+          : [],
+      page: _parseInt(json['page']),
+      size: _parseInt(json['size']),
+      totalElements: _parseInt(json['totalElements']),
+      totalPages: _parseInt(json['totalPages']),
+      last: json['last'] == true,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'content': content.map((e) => e.toJson()).toList(),
+      'page': page,
+      'size': size,
+      'totalElements': totalElements,
+      'totalPages': totalPages,
+      'last': last,
+    };
+  }
+}
+

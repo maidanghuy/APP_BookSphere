@@ -131,5 +131,11 @@
   "quantityInvalid": "0より大きい有効な整数を入力してください。",
   "quantityExceeded": "数量は利用可能な在庫を超えることはできません。",
   "dueDateRequired": "返却期限日を選択してください。",
-  "dueDateInvalid": "返却期限日は将来の日付にしてください。"
+  "dueDateInvalid": "返却期限日は将来の日付にしてください。",
+  "noBorrowRecords": "貸出記録がありません。",
+  "statusAll": "すべて",
+  "statusBorrowing": "貸出中",
+  "statusOverdue": "期限切れ",
+  "statusReturned": "返却済み",
+  "statusCancelled": "キャンセル"
 }

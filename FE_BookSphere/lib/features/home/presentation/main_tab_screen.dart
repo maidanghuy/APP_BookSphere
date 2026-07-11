@@ -1,6 +1,6 @@
 import 'package:booksphere_app/core/widgets/app_top_left_actions.dart';
 import 'package:booksphere_app/features/auth/presentation/widgets/logout_button.dart';
-import 'package:booksphere_app/features/home/screens/borrow_placeholder_screen.dart';
+import 'package:booksphere_app/features/borrows/presentation/my_borrow_list_screen.dart';
 import 'package:booksphere_app/features/home/screens/books_placeholder_screen.dart';
 import 'package:booksphere_app/features/home/screens/fine_placeholder_screen.dart';
 import 'package:booksphere_app/features/home/presentation/home_screen.dart';
@@ -27,7 +27,7 @@ class _MainTabScreenState extends ConsumerState<MainTabScreen> {
       onViewFines: () => _selectTab(3),
     ),
     const BooksPlaceholderScreen(),
-    const BorrowPlaceholderScreen(),
+    const MyBorrowListScreen(),
     const FinePlaceholderScreen(),
     NotificationListScreen(
       onOpenBorrow: () => _selectTab(2),

@@ -393,4 +393,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dueDateInvalid => 'Due date must be in the future.';
+
+  @override
+  String get noBorrowRecords => 'You don\'t have any borrow records.';
+
+  @override
+  String get statusAll => 'All';
+
+  @override
+  String get statusBorrowing => 'Borrowing';
+
+  @override
+  String get statusOverdue => 'Overdue';
+
+  @override
+  String get statusReturned => 'Returned';
+
+  @override
+  String get statusCancelled => 'Cancelled';
 }

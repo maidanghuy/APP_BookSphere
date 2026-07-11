@@ -131,5 +131,11 @@
   "quantityInvalid": "Vui lòng nhập số nguyên lớn hơn 0.",
   "quantityExceeded": "Số lượng không được vượt quá tồn kho khả dụng.",
   "dueDateRequired": "Vui lòng chọn hạn trả.",
-  "dueDateInvalid": "Hạn trả phải ở tương lai."
+  "dueDateInvalid": "Hạn trả phải ở tương lai.",
+  "noBorrowRecords": "Bạn chưa có phiếu mượn sách nào.",
+  "statusAll": "Tất cả",
+  "statusBorrowing": "Đang mượn",
+  "statusOverdue": "Quá hạn",
+  "statusReturned": "Đã trả",
+  "statusCancelled": "Đã hủy"
 }

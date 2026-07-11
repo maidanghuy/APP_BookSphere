@@ -849,6 +849,42 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Hạn trả phải ở tương lai.'**
   String get dueDateInvalid;
+
+  /// No description provided for @noBorrowRecords.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chưa có phiếu mượn sách nào.'**
+  String get noBorrowRecords;
+
+  /// No description provided for @statusAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả'**
+  String get statusAll;
+
+  /// No description provided for @statusBorrowing.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang mượn'**
+  String get statusBorrowing;
+
+  /// No description provided for @statusOverdue.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quá hạn'**
+  String get statusOverdue;
+
+  /// No description provided for @statusReturned.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã trả'**
+  String get statusReturned;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hủy'**
+  String get statusCancelled;
 }
 
 class _AppLocalizationsDelegate

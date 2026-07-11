@@ -6,6 +6,7 @@ import 'package:booksphere_app/features/auth/presentation/register_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/splash_screen.dart';
 import 'package:booksphere_app/features/borrows/presentation/borrow_create_screen.dart';
 import 'package:booksphere_app/features/home/presentation/main_tab_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRoutes {
@@ -16,6 +17,7 @@ class AppRoutes {
   static const register = '/register';
   static const main = '/main';
   static const borrowCreate = '/borrows/create';
+  static const borrowDetail = '/borrows/:id';
 }
 
 final _authSessionService = AuthSessionService(
@@ -47,6 +49,18 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final bookId = int.tryParse(state.uri.queryParameters['bookId'] ?? '');
         return BorrowCreateScreen(bookId: bookId);
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.borrowDetail,
+      builder: (context, state) {
+        final id = state.pathParameters['id'];
+        return Scaffold(
+          appBar: AppBar(title: Text('Borrow Detail #$id')),
+          body: Center(
+            child: Text('Borrow Detail Screen - BS-APP-17 (ID: $id)'),
+          ),
+        );
       },
     ),
   ],
