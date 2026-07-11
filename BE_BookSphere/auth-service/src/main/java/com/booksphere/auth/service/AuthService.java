@@ -5,7 +5,9 @@ import com.booksphere.auth.dto.request.LogoutRequest;
 import com.booksphere.auth.dto.request.RefreshTokenRequest;
 import com.booksphere.auth.dto.request.RegisterRequest;
 import com.booksphere.auth.dto.response.AuthResponse;
+import com.booksphere.auth.dto.response.CurrentUserResponse;
 import com.booksphere.auth.dto.response.TokenResponse;
+import org.springframework.security.core.Authentication;
 
 public interface AuthService {
 
@@ -16,4 +18,6 @@ public interface AuthService {
     TokenResponse refresh(RefreshTokenRequest request);
 
     void logout(LogoutRequest request);
+
+    CurrentUserResponse getCurrentUser(Authentication authentication);
 }
