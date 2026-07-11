@@ -6,12 +6,22 @@ class BorrowCartState {
 
   final List<BorrowCartItem> items;
 
-  int get itemCount => items.length;
+  /// Total quantity across all cart lines.
+  int get itemCount => items.fold<int>(0, (sum, item) => sum + item.quantity);
 
   bool get isEmpty => items.isEmpty;
 
   bool contains(String bookId) {
     return items.any((item) => item.bookId == bookId);
+  }
+
+  int quantityOf(String bookId) {
+    for (final item in items) {
+      if (item.bookId == bookId) {
+        return item.quantity;
+      }
+    }
+    return 0;
   }
 
   BorrowCartState copyWith({List<BorrowCartItem>? items}) {
@@ -23,16 +33,24 @@ class BorrowCartNotifier extends Notifier<BorrowCartState> {
   @override
   BorrowCartState build() => const BorrowCartState();
 
-  /// Adds a book when available and not already present.
-  /// Returns `true` on success, `false` when duplicate or unavailable.
+  /// Adds a book when available.
+  /// If the book is already in the cart, increments its quantity.
+  /// Returns `true` on success, `false` when unavailable.
   bool addBook(BorrowCartItem item) {
     if (!item.isAvailable) {
       return false;
     }
-    if (state.contains(item.bookId)) {
-      return false;
+
+    final index = state.items.indexWhere((e) => e.bookId == item.bookId);
+    if (index >= 0) {
+      final existing = state.items[index];
+      final updated = [...state.items];
+      updated[index] = existing.copyWith(quantity: existing.quantity + 1);
+      state = state.copyWith(items: updated);
+      return true;
     }
-    state = state.copyWith(items: [...state.items, item]);
+
+    state = state.copyWith(items: [...state.items, item.copyWith(quantity: 1)]);
     return true;
   }
 
@@ -43,6 +61,42 @@ class BorrowCartNotifier extends Notifier<BorrowCartState> {
     state = state.copyWith(
       items: state.items.where((item) => item.bookId != bookId).toList(),
     );
+  }
+
+  /// Decreases quantity by 1. Removes the line when quantity reaches 0.
+  void decrementQuantity(String bookId) {
+    final index = state.items.indexWhere((e) => e.bookId == bookId);
+    if (index < 0) {
+      return;
+    }
+
+    final existing = state.items[index];
+    if (existing.quantity <= 1) {
+      removeBook(bookId);
+      return;
+    }
+
+    final updated = [...state.items];
+    updated[index] = existing.copyWith(quantity: existing.quantity - 1);
+    state = state.copyWith(items: updated);
+  }
+
+  /// Increases quantity by 1 for an existing cart line.
+  bool incrementQuantity(String bookId) {
+    final index = state.items.indexWhere((e) => e.bookId == bookId);
+    if (index < 0) {
+      return false;
+    }
+
+    final existing = state.items[index];
+    if (!existing.isAvailable) {
+      return false;
+    }
+
+    final updated = [...state.items];
+    updated[index] = existing.copyWith(quantity: existing.quantity + 1);
+    state = state.copyWith(items: updated);
+    return true;
   }
 
   void clearCart() {

@@ -40,14 +40,34 @@ class BorrowCartScreen extends ConsumerWidget {
                     separatorBuilder: (_, _) => const SizedBox(height: 8),
                     itemBuilder: (context, index) {
                       final item = cart.items[index];
+                      final notifier = ref.read(borrowCartProvider.notifier);
                       return _BorrowCartTile(
                         item: item,
+                        onIncrement: () =>
+                            notifier.incrementQuantity(item.bookId),
+                        onDecrement: () {
+                          final wasLast = item.quantity <= 1;
+                          notifier.decrementQuantity(item.bookId);
+                          if (wasLast) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.removedFromBorrowList),
+                                duration: const Duration(seconds: 2),
+                                behavior: SnackBarBehavior.floating,
+                                persist: false,
+                              ),
+                            );
+                          }
+                        },
                         onRemove: () {
-                          ref
-                              .read(borrowCartProvider.notifier)
-                              .removeBook(item.bookId);
+                          notifier.removeBook(item.bookId);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.removedFromBorrowList)),
+                            SnackBar(
+                              content: Text(l10n.removedFromBorrowList),
+                              duration: const Duration(seconds: 2),
+                              behavior: SnackBarBehavior.floating,
+                              persist: false,
+                            ),
                           );
                         },
                       );
@@ -148,9 +168,16 @@ class _BorrowCartEmptyState extends StatelessWidget {
 }
 
 class _BorrowCartTile extends StatelessWidget {
-  const _BorrowCartTile({required this.item, required this.onRemove});
+  const _BorrowCartTile({
+    required this.item,
+    required this.onIncrement,
+    required this.onDecrement,
+    required this.onRemove,
+  });
 
   final BorrowCartItem item;
+  final VoidCallback onIncrement;
+  final VoidCallback onDecrement;
   final VoidCallback onRemove;
 
   @override
@@ -219,6 +246,30 @@ class _BorrowCartTile extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      _QuantityButton(
+                        icon: Icons.remove,
+                        tooltip: l10n.quantity,
+                        onPressed: onDecrement,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          '${item.quantity}',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      _QuantityButton(
+                        icon: Icons.add,
+                        tooltip: l10n.quantity,
+                        onPressed: item.isAvailable ? onIncrement : null,
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -229,6 +280,34 @@ class _BorrowCartTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _QuantityButton extends StatelessWidget {
+  const _QuantityButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Material(
+      color: colorScheme.surfaceContainerHighest,
+      shape: const CircleBorder(),
+      child: IconButton(
+        tooltip: tooltip,
+        onPressed: onPressed,
+        visualDensity: VisualDensity.compact,
+        icon: Icon(icon, size: 20),
       ),
     );
   }

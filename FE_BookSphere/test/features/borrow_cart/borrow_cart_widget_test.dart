@@ -120,7 +120,8 @@ void main() {
     await tester.pump();
 
     expect(find.textContaining('Added to borrow list'), findsOneWidget);
-    expect(find.text('Added to Borrow List'), findsOneWidget);
+    expect(find.text('Add to Borrow List'), findsOneWidget);
+    expect(find.byIcon(Icons.library_add_check), findsOneWidget);
   });
 
   testWidgets('borrow cart screen shows item, remove and empty state', (

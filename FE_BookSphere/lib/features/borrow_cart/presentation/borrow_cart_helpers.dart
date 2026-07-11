@@ -5,20 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-enum BorrowCartFeedback { added, alreadyInCart, unavailable }
+enum BorrowCartFeedback { added, unavailable }
 
 BorrowCartFeedback addBookToBorrowCart(WidgetRef ref, BorrowCartItem item) {
   if (!item.isAvailable) {
     return BorrowCartFeedback.unavailable;
   }
 
-  final notifier = ref.read(borrowCartProvider.notifier);
-  if (notifier.containsBook(item.bookId)) {
-    return BorrowCartFeedback.alreadyInCart;
-  }
-
-  final added = notifier.addBook(item);
-  return added ? BorrowCartFeedback.added : BorrowCartFeedback.alreadyInCart;
+  final added = ref.read(borrowCartProvider.notifier).addBook(item);
+  return added ? BorrowCartFeedback.added : BorrowCartFeedback.unavailable;
 }
 
 void showBorrowCartFeedback(
@@ -28,14 +23,22 @@ void showBorrowCartFeedback(
 ) {
   final l10n = context.l10n;
   final messenger = ScaffoldMessenger.of(context);
-  messenger.hideCurrentSnackBar();
+  messenger.clearSnackBars();
+
+  // Material 3 defaults persist=true when action != null, which keeps the
+  // snackbar on screen forever. Force persist: false so duration applies.
+  const duration = Duration(seconds: 3);
 
   switch (feedback) {
     case BorrowCartFeedback.unavailable:
-      messenger.showSnackBar(SnackBar(content: Text(l10n.bookUnavailable)));
-      return;
-    case BorrowCartFeedback.alreadyInCart:
-      messenger.showSnackBar(SnackBar(content: Text(l10n.alreadyInBorrowList)));
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.bookUnavailable),
+          duration: duration,
+          behavior: SnackBarBehavior.floating,
+          persist: false,
+        ),
+      );
       return;
     case BorrowCartFeedback.added:
       final count = ref.read(borrowCartProvider).itemCount;
@@ -44,9 +47,15 @@ void showBorrowCartFeedback(
           content: Text(
             '${l10n.addedToBorrowList}\n${l10n.borrowListItemCount(count)}',
           ),
+          duration: duration,
+          behavior: SnackBarBehavior.floating,
+          persist: false,
           action: SnackBarAction(
             label: l10n.viewBorrowList,
-            onPressed: () => context.push('/borrow-cart'),
+            onPressed: () {
+              messenger.hideCurrentSnackBar();
+              context.push('/borrow-cart');
+            },
           ),
         ),
       );

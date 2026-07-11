@@ -39,15 +39,18 @@ void main() {
     expect(notifier().containsBook('1'), isTrue);
   });
 
-  test('does not add duplicate book', () {
+  test('allows adding the same book multiple times', () {
     const item = BorrowCartItem(
       bookId: '1',
       title: 'Clean Code',
-      availableCopies: 2,
+      availableCopies: 5,
     );
     expect(notifier().addBook(item), isTrue);
-    expect(notifier().addBook(item), isFalse);
-    expect(state().itemCount, 1);
+    expect(notifier().addBook(item), isTrue);
+    expect(notifier().addBook(item), isTrue);
+    expect(state().items.length, 1);
+    expect(state().itemCount, 3);
+    expect(state().quantityOf('1'), 3);
   });
 
   test('does not add unavailable book', () {
@@ -75,6 +78,39 @@ void main() {
     expect(state().itemCount, 1);
     expect(state().contains('1'), isFalse);
     expect(state().contains('2'), isTrue);
+  });
+
+  test('decrements quantity and removes line at zero', () {
+    const item = BorrowCartItem(
+      bookId: '1',
+      title: 'Clean Code',
+      availableCopies: 5,
+    );
+    notifier().addBook(item);
+    notifier().addBook(item);
+    notifier().addBook(item);
+    expect(state().quantityOf('1'), 3);
+
+    notifier().decrementQuantity('1');
+    expect(state().quantityOf('1'), 2);
+    expect(state().itemCount, 2);
+
+    notifier().decrementQuantity('1');
+    notifier().decrementQuantity('1');
+    expect(state().contains('1'), isFalse);
+    expect(state().isEmpty, isTrue);
+  });
+
+  test('increments quantity from cart controls', () {
+    notifier().addBook(
+      const BorrowCartItem(
+        bookId: '1',
+        title: 'Clean Code',
+        availableCopies: 5,
+      ),
+    );
+    expect(notifier().incrementQuantity('1'), isTrue);
+    expect(state().quantityOf('1'), 2);
   });
 
   test('clear cart empties all items', () {

@@ -9,6 +9,7 @@ class BorrowCartItem {
     this.author,
     this.coverUrl,
     required this.availableCopies,
+    this.quantity = 1,
   });
 
   final String bookId;
@@ -16,8 +17,27 @@ class BorrowCartItem {
   final String? author;
   final String? coverUrl;
   final int availableCopies;
+  final int quantity;
 
   bool get isAvailable => availableCopies > 0;
+
+  BorrowCartItem copyWith({
+    String? bookId,
+    String? title,
+    String? author,
+    String? coverUrl,
+    int? availableCopies,
+    int? quantity,
+  }) {
+    return BorrowCartItem(
+      bookId: bookId ?? this.bookId,
+      title: title ?? this.title,
+      author: author ?? this.author,
+      coverUrl: coverUrl ?? this.coverUrl,
+      availableCopies: availableCopies ?? this.availableCopies,
+      quantity: quantity ?? this.quantity,
+    );
+  }
 
   factory BorrowCartItem.fromBookSummary(BookSummary book) {
     return BorrowCartItem(

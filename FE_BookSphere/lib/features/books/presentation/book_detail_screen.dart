@@ -110,7 +110,7 @@ class _BookDetailBody extends ConsumerWidget {
     final alreadyInCart = ref.watch(
       borrowCartProvider.select((s) => s.contains(book.id)),
     );
-    final canAdd = book.isAvailable && !alreadyInCart;
+    final canAdd = book.isAvailable;
 
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -155,11 +155,7 @@ class _BookDetailBody extends ConsumerWidget {
                 ? Icons.library_add_check
                 : Icons.library_add_outlined,
           ),
-          label: Text(
-            alreadyInCart
-                ? l10n.alreadyAddedToBorrowList
-                : l10n.addToBorrowList,
-          ),
+          label: Text(l10n.addToBorrowList),
         ),
       ],
     );

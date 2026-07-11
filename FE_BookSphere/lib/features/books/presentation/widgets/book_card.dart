@@ -42,7 +42,7 @@ class BookCard extends StatelessWidget {
         ? colorScheme.primary
         : colorScheme.error;
 
-    final canAdd = book.isAvailable && !isInBorrowList;
+    final canAdd = book.isAvailable;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -113,19 +113,17 @@ class BookCard extends StatelessWidget {
               ),
               if (onAddToBorrowList != null)
                 IconButton(
-                  tooltip: isInBorrowList
-                      ? l10n.addedToBorrowList
-                      : l10n.addToBorrowList,
+                  tooltip: l10n.addToBorrowList,
                   onPressed: canAdd ? onAddToBorrowList : null,
                   icon: Icon(
                     isInBorrowList
                         ? Icons.library_add_check
                         : Icons.library_add_outlined,
-                    color: isInBorrowList
-                        ? colorScheme.primary
-                        : (canAdd
-                              ? colorScheme.onSurfaceVariant
-                              : colorScheme.onSurface.withValues(alpha: 0.38)),
+                    color: canAdd
+                        ? (isInBorrowList
+                              ? colorScheme.primary
+                              : colorScheme.onSurfaceVariant)
+                        : colorScheme.onSurface.withValues(alpha: 0.38),
                   ),
                 ),
             ],
