@@ -1,11 +1,9 @@
 package com.booksphere.borrow.saga;
 
 import com.booksphere.borrow.client.BookServiceClient;
-import com.booksphere.borrow.client.FineServiceClient;
 import com.booksphere.borrow.client.NotificationServiceClient;
 import com.booksphere.borrow.client.dto.BookInternalResponse;
 import com.booksphere.borrow.client.dto.ClientApiResponse;
-import com.booksphere.borrow.client.dto.FineCreateRequest;
 import com.booksphere.borrow.client.dto.NotificationCreateRequest;
 import com.booksphere.borrow.client.dto.StockUpdateRequest;
 import com.booksphere.borrow.config.UserContext;
@@ -33,6 +31,7 @@ import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,32 +42,32 @@ public class BorrowSagaOrchestrator {
     private static final Logger log = LoggerFactory.getLogger(BorrowSagaOrchestrator.class);
 
     private final BookServiceClient bookServiceClient;
-    private final FineServiceClient fineServiceClient;
     private final NotificationServiceClient notificationServiceClient;
     private final CompensationService compensationService;
     private final BorrowRepository borrowRepository;
     private final BorrowItemRepository borrowItemRepository;
     private final SagaLogRepository sagaLogRepository;
     private final BorrowMapper borrowMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public BorrowSagaOrchestrator(
             BookServiceClient bookServiceClient,
-            FineServiceClient fineServiceClient,
             NotificationServiceClient notificationServiceClient,
             CompensationService compensationService,
             BorrowRepository borrowRepository,
             BorrowItemRepository borrowItemRepository,
             SagaLogRepository sagaLogRepository,
-            BorrowMapper borrowMapper
+            BorrowMapper borrowMapper,
+            ApplicationEventPublisher eventPublisher
     ) {
         this.bookServiceClient = bookServiceClient;
-        this.fineServiceClient = fineServiceClient;
         this.notificationServiceClient = notificationServiceClient;
         this.compensationService = compensationService;
         this.borrowRepository = borrowRepository;
         this.borrowItemRepository = borrowItemRepository;
         this.sagaLogRepository = sagaLogRepository;
         this.borrowMapper = borrowMapper;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional(noRollbackFor = BusinessException.class)
@@ -138,6 +137,14 @@ public class BorrowSagaOrchestrator {
 
     @Transactional(noRollbackFor = BusinessException.class)
     public BorrowDetailResponse returnBooks(Borrow borrow, BorrowReturnRequest request) {
+        log.info(
+                "Start return borrow borrowId={} currentStatus={} dueDate={} requestedReturnDate={}",
+                borrow.getId(),
+                borrow.getStatus(),
+                borrow.getDueDate(),
+                request.returnDate()
+        );
+
         if (BorrowStatus.RETURNED.equals(borrow.getStatus())) {
             SagaLog sagaLog = createSagaLog(
                     "RETURN-REJECTED-" + borrow.getId() + "-" + UUID.randomUUID(),
@@ -176,7 +183,15 @@ public class BorrowSagaOrchestrator {
 
         List<BorrowItem> items = borrowItemRepository.findByBorrow_Id(borrow.getId());
         LocalDateTime returnDate = request.returnDate() == null ? LocalDateTime.now() : request.returnDate();
-        boolean lateReturn = returnDate.isAfter(borrow.getDueDate()) || BorrowStatus.OVERDUE.equals(borrow.getStatus());
+        boolean lateReturn = isLateReturn(borrow, returnDate);
+        log.info(
+                "Borrow return dates resolved borrowId={} currentStatus={} dueDate={} returnDate={} lateReturn={}",
+                borrow.getId(),
+                borrow.getStatus(),
+                borrow.getDueDate(),
+                returnDate,
+                lateReturn
+        );
 
         try {
             for (BorrowItem item : items) {
@@ -190,12 +205,13 @@ public class BorrowSagaOrchestrator {
             borrow.setReturnDate(returnDate);
             borrow.setStatus(BorrowStatus.RETURNED);
             Borrow savedBorrow = borrowRepository.save(borrow);
+            log.info("Borrow saved as RETURNED borrowId={} returnDate={}", savedBorrow.getId(), savedBorrow.getReturnDate());
             items.forEach(item -> item.setStatus(BorrowItemStatus.RETURNED));
             List<BorrowItem> savedItems = borrowItemRepository.saveAll(items);
 
             if (lateReturn) {
                 updateStep(sagaLog, BorrowSagaStep.CREATE_FINE);
-                createFineBestEffort(sagaLog, savedBorrow, returnDate, "LATE_RETURN");
+                publishFineCreationRequested(sagaLog, savedBorrow, returnDate, "LATE_RETURN");
             }
 
             updateStep(sagaLog, BorrowSagaStep.SEND_NOTIFICATION);
@@ -226,11 +242,18 @@ public class BorrowSagaOrchestrator {
         SagaLog sagaLog = createSagaLog(sagaId, SagaTransactionType.OVERDUE_BORROW, BorrowSagaStep.MARK_OVERDUE);
         sagaLog.setBorrowId(borrow.getId());
 
+        log.info(
+                "Start mark overdue borrowId={} currentStatus={} dueDate={}",
+                borrow.getId(),
+                borrow.getStatus(),
+                borrow.getDueDate()
+        );
         borrow.setStatus(BorrowStatus.OVERDUE);
         borrowRepository.save(borrow);
+        log.info("Borrow saved as OVERDUE borrowId={} dueDate={}", borrow.getId(), borrow.getDueDate());
 
         updateStep(sagaLog, BorrowSagaStep.CREATE_FINE);
-        createFineBestEffort(sagaLog, borrow, LocalDateTime.now(), "OVERDUE_SCHEDULER");
+        publishFineCreationRequested(sagaLog, borrow, LocalDateTime.now(), "OVERDUE_SCHEDULER");
 
         updateStep(sagaLog, BorrowSagaStep.SEND_NOTIFICATION);
         sendNotificationBestEffort(
@@ -323,21 +346,36 @@ public class BorrowSagaOrchestrator {
         }
     }
 
-    private void createFineBestEffort(SagaLog sagaLog, Borrow borrow, LocalDateTime returnDate, String createdFrom) {
-        try {
-            long daysOverdue = Math.max(0, ChronoUnit.DAYS.between(borrow.getDueDate().toLocalDate(), returnDate.toLocalDate()));
-            fineServiceClient.createFine(new FineCreateRequest(
-                    borrow.getId(),
-                    borrow.getUserId(),
-                    borrow.getDueDate(),
-                    returnDate,
-                    daysOverdue,
-                    createdFrom
-            ));
-        } catch (Exception exception) {
-            log.warn("Fine Service best-effort call failed for borrowId={}", borrow.getId(), exception);
-            appendSagaError(sagaLog, SagaErrorMessage.rootCause("Fine Service failed", exception));
+    private void publishFineCreationRequested(SagaLog sagaLog, Borrow borrow, LocalDateTime effectiveDate, String createdFrom) {
+        long daysOverdue = resolveDaysOverdue(borrow.getDueDate(), effectiveDate);
+        eventPublisher.publishEvent(new FineCreationRequestedEvent(
+                sagaLog.getSagaId(),
+                borrow.getId(),
+                borrow.getUserId(),
+                borrow.getDueDate(),
+                effectiveDate,
+                daysOverdue,
+                createdFrom
+        ));
+        log.info(
+                "Fine creation event published borrowId={} createdFrom={} sagaId={} daysOverdue={}",
+                borrow.getId(),
+                createdFrom,
+                sagaLog.getSagaId(),
+                daysOverdue
+        );
+    }
+
+    private long resolveDaysOverdue(LocalDateTime dueDate, LocalDateTime effectiveDate) {
+        if (dueDate == null || effectiveDate == null) {
+            return 0;
         }
+        return Math.max(0, ChronoUnit.DAYS.between(dueDate.toLocalDate(), effectiveDate.toLocalDate()));
+    }
+
+    private boolean isLateReturn(Borrow borrow, LocalDateTime returnDate) {
+        return BorrowStatus.OVERDUE.equals(borrow.getStatus())
+                || (borrow.getDueDate() != null && returnDate.isAfter(borrow.getDueDate()));
     }
 
     private void sendNotificationBestEffort(SagaLog sagaLog, NotificationCreateRequest request) {
