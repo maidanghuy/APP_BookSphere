@@ -189,5 +189,18 @@
   "bookNotFoundDescription": "Sách có thể đã bị xóa hoặc không còn khả dụng.",
   "loadBookDetailFailed": "Không thể tải chi tiết sách.",
   "noDescriptionAvailable": "Chưa có mô tả.",
-  "backToBooks": "Quay lại danh sách sách"
+  "backToBooks": "Quay lại danh sách sách",
+  "filters": "Bộ lọc",
+  "applyFilters": "Áp dụng",
+  "resetFilters": "Đặt lại",
+  "clearAll": "Xóa tất cả",
+  "selectCategory": "Chọn thể loại",
+  "availability": "Tình trạng còn sách",
+  "activeFilters": "Bộ lọc đang áp dụng",
+  "noSearchResults": "Không có sách khớp với tìm kiếm của bạn.",
+  "noFilterResults": "Không có sách khớp với bộ lọc đã chọn.",
+  "tryDifferentSearch": "Hãy thử từ khóa khác.",
+  "loadCategoriesFailed": "Không thể tải danh sách thể loại.",
+  "searchBooksFailed": "Không thể tìm kiếm sách. Vui lòng thử lại.",
+  "apply": "Áp dụng"
 }

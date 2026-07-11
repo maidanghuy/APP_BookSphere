@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:booksphere_app/features/auth/providers/auth_guard_provider.dart';
 import 'package:booksphere_app/features/books/data/book_api.dart';
 import 'package:booksphere_app/features/books/data/book_repository.dart';
+import 'package:booksphere_app/features/books/data/models/book_filter.dart';
 import 'package:booksphere_app/features/books/data/models/book_summary.dart';
 import 'package:booksphere_app/features/books/data/models/category_summary.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+export 'package:booksphere_app/features/books/data/models/book_filter.dart';
 
 const int _defaultPageSize = 10;
 const Duration _searchDebounce = Duration(milliseconds: 450);
@@ -18,46 +21,43 @@ final bookRepositoryProvider = Provider<BookRepository>((ref) {
   return BookRepository(ref.watch(bookApiProvider));
 });
 
-enum BookAvailabilityFilter { all, available, unavailable }
-
 class BookListState {
   const BookListState({
     this.books = const [],
     this.categories = const [],
+    this.filter = const BookFilter(),
     this.isLoading = false,
     this.isLoadingMore = false,
     this.isRefreshing = false,
     this.errorMessage,
     this.errorCode,
     this.errorStatusCode,
-    this.searchKeyword = '',
-    this.selectedCategoryId,
-    this.availabilityFilter = BookAvailabilityFilter.all,
+    this.categoriesErrorCode,
     this.currentPage = 0,
     this.hasMore = true,
-    this.hasActiveFilters = false,
   });
 
   final List<BookSummary> books;
   final List<CategorySummary> categories;
+  final BookFilter filter;
   final bool isLoading;
   final bool isLoadingMore;
   final bool isRefreshing;
   final String? errorMessage;
   final String? errorCode;
   final int? errorStatusCode;
-  final String searchKeyword;
-  final String? selectedCategoryId;
-  final BookAvailabilityFilter availabilityFilter;
+  final String? categoriesErrorCode;
   final int currentPage;
   final bool hasMore;
-  final bool hasActiveFilters;
+
+  String get searchKeyword => filter.keyword;
+  String? get selectedCategoryId => filter.categoryId;
+  BookAvailabilityFilter get availabilityFilter => filter.availability;
+  bool get hasActiveFilters => filter.hasActiveFilters;
 
   /// Books after optional client-side availability filter.
-  ///
-  /// Backend `/api/books` does not expose an availability query parameter.
   List<BookSummary> get visibleBooks {
-    switch (availabilityFilter) {
+    switch (filter.availability) {
       case BookAvailabilityFilter.all:
         return books;
       case BookAvailabilityFilter.available:
@@ -69,27 +69,41 @@ class BookListState {
 
   bool get hasError => errorMessage != null || errorCode != null;
 
+  bool get hasCategoriesError => categoriesErrorCode != null;
+
+  String? get selectedCategoryName {
+    final id = filter.categoryId;
+    if (id == null) {
+      return null;
+    }
+    for (final category in categories) {
+      if (category.id == id) {
+        return category.name;
+      }
+    }
+    return null;
+  }
+
   BookListState copyWith({
     List<BookSummary>? books,
     List<CategorySummary>? categories,
+    BookFilter? filter,
     bool? isLoading,
     bool? isLoadingMore,
     bool? isRefreshing,
     String? errorMessage,
     String? errorCode,
     int? errorStatusCode,
-    String? searchKeyword,
-    String? selectedCategoryId,
-    BookAvailabilityFilter? availabilityFilter,
+    String? categoriesErrorCode,
     int? currentPage,
     bool? hasMore,
-    bool? hasActiveFilters,
     bool clearError = false,
-    bool clearCategory = false,
+    bool clearCategoriesError = false,
   }) {
     return BookListState(
       books: books ?? this.books,
       categories: categories ?? this.categories,
+      filter: filter ?? this.filter,
       isLoading: isLoading ?? this.isLoading,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       isRefreshing: isRefreshing ?? this.isRefreshing,
@@ -98,21 +112,19 @@ class BookListState {
       errorStatusCode: clearError
           ? null
           : errorStatusCode ?? this.errorStatusCode,
-      searchKeyword: searchKeyword ?? this.searchKeyword,
-      selectedCategoryId: clearCategory
+      categoriesErrorCode: clearCategoriesError
           ? null
-          : selectedCategoryId ?? this.selectedCategoryId,
-      availabilityFilter: availabilityFilter ?? this.availabilityFilter,
+          : categoriesErrorCode ?? this.categoriesErrorCode,
       currentPage: currentPage ?? this.currentPage,
       hasMore: hasMore ?? this.hasMore,
-      hasActiveFilters: hasActiveFilters ?? this.hasActiveFilters,
     );
   }
 }
 
 class BookListNotifier extends Notifier<BookListState> {
   Timer? _searchDebounceTimer;
-  bool _isFetchInFlight = false;
+  bool _isLoadMoreInFlight = false;
+  int _requestSequence = 0;
 
   @override
   BookListState build() {
@@ -130,16 +142,13 @@ class BookListNotifier extends Notifier<BookListState> {
   }
 
   Future<void> refresh() async {
-    if (_isFetchInFlight) {
-      return;
-    }
     await _loadPage(page: 0, replace: true, isRefreshing: true);
   }
 
   Future<void> retry() => loadInitial();
 
   Future<void> loadMore() async {
-    if (_isFetchInFlight ||
+    if (_isLoadMoreInFlight ||
         state.isLoading ||
         state.isLoadingMore ||
         state.isRefreshing ||
@@ -153,20 +162,14 @@ class BookListNotifier extends Notifier<BookListState> {
     );
   }
 
-  Future<void> setSearchKeyword(String keyword) async {
+  /// Debounced search. Does not clear category/availability filters.
+  Future<void> search(String keyword) async {
     final trimmed = keyword.trim();
-    if (trimmed == state.searchKeyword) {
+    if (trimmed == state.filter.keyword) {
       return;
     }
 
-    state = state.copyWith(
-      searchKeyword: trimmed,
-      hasActiveFilters: _computeHasActiveFilters(
-        keyword: trimmed,
-        categoryId: state.selectedCategoryId,
-        availability: state.availabilityFilter,
-      ),
-    );
+    state = state.copyWith(filter: state.filter.copyWith(keyword: trimmed));
 
     _searchDebounceTimer?.cancel();
     _searchDebounceTimer = Timer(_searchDebounce, () {
@@ -174,62 +177,105 @@ class BookListNotifier extends Notifier<BookListState> {
     });
   }
 
-  Future<void> setCategory(String? categoryId) async {
-    final normalized = categoryId?.trim();
-    final nextCategoryId = (normalized == null || normalized.isEmpty)
-        ? null
-        : normalized;
+  /// Alias used by the search field `onChanged`.
+  Future<void> setSearchKeyword(String keyword) => search(keyword);
 
-    if (nextCategoryId == state.selectedCategoryId) {
+  Future<void> applyFilter(BookFilter filter) async {
+    _searchDebounceTimer?.cancel();
+    final normalized = BookFilter(
+      keyword: filter.keyword.trim(),
+      categoryId: filter.categoryId?.trim().isEmpty ?? true
+          ? null
+          : filter.categoryId?.trim(),
+      availability: filter.availability,
+    );
+
+    if (normalized == state.filter) {
       return;
     }
 
-    state = state.copyWith(
-      selectedCategoryId: nextCategoryId,
-      clearCategory: nextCategoryId == null,
-      hasActiveFilters: _computeHasActiveFilters(
-        keyword: state.searchKeyword,
-        categoryId: nextCategoryId,
-        availability: state.availabilityFilter,
-      ),
-    );
-
+    state = state.copyWith(filter: normalized);
     await _loadPage(page: 0, replace: true, showFullLoading: true);
   }
 
-  Future<void> setAvailabilityFilter(BookAvailabilityFilter filter) async {
-    if (filter == state.availabilityFilter) {
+  Future<void> setCategory(String? categoryId) async {
+    final next = state.filter.copyWith(
+      categoryId: categoryId,
+      clearCategory: categoryId == null || categoryId.trim().isEmpty,
+    );
+    await applyFilter(next);
+  }
+
+  Future<void> setAvailabilityFilter(
+    BookAvailabilityFilter availability,
+  ) async {
+    if (availability == state.filter.availability) {
       return;
     }
-
+    // Client-side only — no API round-trip required.
     state = state.copyWith(
-      availabilityFilter: filter,
-      hasActiveFilters: _computeHasActiveFilters(
-        keyword: state.searchKeyword,
-        categoryId: state.selectedCategoryId,
-        availability: filter,
-      ),
+      filter: state.filter.copyWith(availability: availability),
     );
   }
 
   Future<void> setAvailableOnly(bool? value) async {
-    final filter = switch (value) {
+    final availability = switch (value) {
       true => BookAvailabilityFilter.available,
       false => BookAvailabilityFilter.unavailable,
       null => BookAvailabilityFilter.all,
     };
-    await setAvailabilityFilter(filter);
+    await setAvailabilityFilter(availability);
   }
 
-  Future<void> clearFilters() async {
+  Future<void> clearSearch() async {
     _searchDebounceTimer?.cancel();
-    state = state.copyWith(
-      searchKeyword: '',
-      clearCategory: true,
-      availabilityFilter: BookAvailabilityFilter.all,
-      hasActiveFilters: false,
-    );
+    if (!state.filter.hasKeyword) {
+      return;
+    }
+    state = state.copyWith(filter: state.filter.copyWith(keyword: ''));
     await _loadPage(page: 0, replace: true, showFullLoading: true);
+  }
+
+  Future<void> clearCategoryFilter() async {
+    if (!state.filter.hasCategory) {
+      return;
+    }
+    await applyFilter(state.filter.copyWith(clearCategory: true));
+  }
+
+  Future<void> clearAvailabilityFilter() async {
+    if (!state.filter.hasAvailability) {
+      return;
+    }
+    await setAvailabilityFilter(BookAvailabilityFilter.all);
+  }
+
+  Future<void> resetFilters() async {
+    _searchDebounceTimer?.cancel();
+    if (!state.filter.hasActiveFilters) {
+      return;
+    }
+    state = state.copyWith(filter: const BookFilter());
+    await _loadPage(page: 0, replace: true, showFullLoading: true);
+  }
+
+  /// Backward-compatible alias.
+  Future<void> clearFilters() => resetFilters();
+
+  Future<void> retryLoadCategories() async {
+    try {
+      final categories = await _repository.getCategories();
+      state = state.copyWith(
+        categories: categories,
+        clearCategoriesError: true,
+      );
+    } on BookException catch (error) {
+      state = state.copyWith(
+        categoriesErrorCode: error.code ?? 'UNKNOWN_ERROR',
+      );
+    } catch (_) {
+      state = state.copyWith(categoriesErrorCode: 'UNKNOWN_ERROR');
+    }
   }
 
   Future<void> _loadPage({
@@ -239,11 +285,15 @@ class BookListNotifier extends Notifier<BookListState> {
     bool isRefreshing = false,
     bool isLoadingMore = false,
   }) async {
-    if (_isFetchInFlight) {
+    if (isLoadingMore && _isLoadMoreInFlight) {
       return;
     }
 
-    _isFetchInFlight = true;
+    final sequence = ++_requestSequence;
+    if (isLoadingMore) {
+      _isLoadMoreInFlight = true;
+    }
+
     state = state.copyWith(
       isLoading: showFullLoading,
       isRefreshing: isRefreshing,
@@ -251,21 +301,34 @@ class BookListNotifier extends Notifier<BookListState> {
       clearError: true,
     );
 
+    final requestFilter = state.filter;
+
     try {
-      final bookPage = await _repository.getBooks(
+      final bookPage = await _repository.searchBooks(
         page: page,
         size: _defaultPageSize,
-        keyword: state.searchKeyword,
-        categoryId: state.selectedCategoryId,
+        filter: requestFilter,
       );
 
+      if (sequence != _requestSequence) {
+        return;
+      }
+
       List<CategorySummary> categories = state.categories;
+      var categoriesError = state.categoriesErrorCode;
       if (replace || categories.isEmpty) {
         try {
           categories = await _repository.getCategories();
-        } on BookException {
-          // Category filter is optional; keep existing list on failure.
+          categoriesError = null;
+        } on BookException catch (error) {
+          categoriesError = error.code ?? 'UNKNOWN_ERROR';
+        } catch (_) {
+          categoriesError = 'UNKNOWN_ERROR';
         }
+      }
+
+      if (sequence != _requestSequence) {
+        return;
       }
 
       final mergedBooks = replace
@@ -275,6 +338,8 @@ class BookListNotifier extends Notifier<BookListState> {
       state = state.copyWith(
         books: mergedBooks,
         categories: categories,
+        categoriesErrorCode: categoriesError,
+        clearCategoriesError: categoriesError == null,
         isLoading: false,
         isRefreshing: false,
         isLoadingMore: false,
@@ -283,7 +348,9 @@ class BookListNotifier extends Notifier<BookListState> {
         clearError: true,
       );
     } on BookException catch (error) {
-      // Keep the existing list visible when load-more fails.
+      if (sequence != _requestSequence) {
+        return;
+      }
       if (isLoadingMore) {
         state = state.copyWith(
           isLoading: false,
@@ -302,6 +369,9 @@ class BookListNotifier extends Notifier<BookListState> {
         );
       }
     } catch (_) {
+      if (sequence != _requestSequence) {
+        return;
+      }
       if (isLoadingMore) {
         state = state.copyWith(
           isLoading: false,
@@ -319,7 +389,9 @@ class BookListNotifier extends Notifier<BookListState> {
         );
       }
     } finally {
-      _isFetchInFlight = false;
+      if (isLoadingMore) {
+        _isLoadMoreInFlight = false;
+      }
     }
   }
 
@@ -335,16 +407,6 @@ class BookListNotifier extends Notifier<BookListState> {
       }
     }
     return merged;
-  }
-
-  bool _computeHasActiveFilters({
-    required String keyword,
-    required String? categoryId,
-    required BookAvailabilityFilter availability,
-  }) {
-    return keyword.isNotEmpty ||
-        (categoryId != null && categoryId.isNotEmpty) ||
-        availability != BookAvailabilityFilter.all;
   }
 }
 
