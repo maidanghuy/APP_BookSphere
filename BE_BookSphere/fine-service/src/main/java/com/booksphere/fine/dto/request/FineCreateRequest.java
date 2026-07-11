@@ -28,7 +28,7 @@ public class FineCreateRequest {
     private Integer daysOverdue;
 
     @NotBlank
-    @Schema(description = "Source flow that created the fine", example = "RETURN_LATE")
+    @Schema(description = "Source flow that created the fine", example = "LATE_RETURN")
     private String createdFrom;
 
     @Schema(description = "Fine reason", example = "Returned 3 days after due date.")

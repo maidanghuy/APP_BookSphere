@@ -27,12 +27,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FineServiceImpl implements FineService {
 
+    private static final Logger log = LoggerFactory.getLogger(FineServiceImpl.class);
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "createdAt", "amount", "status", "paidAt");
 
     private final FineRepository fineRepository;
@@ -54,9 +57,35 @@ public class FineServiceImpl implements FineService {
     public FineCreateResult createFineInternal(FineCreateRequest request) {
         validateCreateRequest(request);
 
+        log.info(
+                "Start create {} fine borrowId={} userId={} dueDate={} returnDate={} daysOverdue={}",
+                request.getCreatedFrom(),
+                request.getBorrowId(),
+                request.getUserId(),
+                request.getDueDate(),
+                request.getReturnDate(),
+                request.getDaysOverdue()
+        );
+
         return fineRepository.findByBorrowId(request.getBorrowId())
-                .map(existing -> new FineCreateResult(FineMapper.toResponse(existing), false))
-                .orElseGet(() -> new FineCreateResult(createNewFine(request), true));
+                .map(existing -> {
+                    log.info(
+                            "Fine creation skipped because existing fine borrowId={} fineId={} existingCreatedFrom={} status={}",
+                            existing.getBorrowId(),
+                            existing.getId(),
+                            existing.getCreatedFrom(),
+                            existing.getStatus()
+                    );
+                    return new FineCreateResult(FineMapper.toResponse(existing), false);
+                })
+                .orElseGet(() -> {
+                    log.info(
+                            "Existing fine not found borrowId={} createdFrom={}",
+                            request.getBorrowId(),
+                            request.getCreatedFrom()
+                    );
+                    return new FineCreateResult(createNewFine(request), true);
+                });
     }
 
     @Override
@@ -121,7 +150,15 @@ public class FineServiceImpl implements FineService {
         fine.setReason(resolveReason(request, daysOverdue));
         fine.setStatus(FineStatus.UNPAID.name());
 
-        return FineMapper.toResponse(fineRepository.save(fine));
+        Fine savedFine = fineRepository.save(fine);
+        log.info(
+                "Fine created fineId={} borrowId={} createdFrom={} amount={}",
+                savedFine.getId(),
+                savedFine.getBorrowId(),
+                savedFine.getCreatedFrom(),
+                savedFine.getAmount()
+        );
+        return FineMapper.toResponse(savedFine);
     }
 
     private BorrowInternalResponse fetchBorrow(Long borrowId) {
@@ -167,11 +204,25 @@ public class FineServiceImpl implements FineService {
         String status = borrow.getStatus() == null ? "" : borrow.getStatus().trim().toUpperCase();
         LocalDateTime dueDate = firstNonNull(request.getDueDate(), borrow.getDueDate());
         LocalDateTime returnDate = firstNonNull(request.getReturnDate(), borrow.getReturnDate());
+        log.info(
+                "Borrow validation data borrowId={} createdFrom={} status={} dueDate={} returnDate={}",
+                request.getBorrowId(),
+                createdFrom,
+                status,
+                dueDate,
+                returnDate
+        );
 
         if (createdFrom == FineCreatedFrom.OVERDUE_SCHEDULER) {
             boolean overdue = "OVERDUE".equals(status)
                     || (dueDate != null && dueDate.isBefore(LocalDateTime.now()) && returnDate == null);
             if (!overdue) {
+                log.warn(
+                        "Fine creation rejected borrowId={} createdFrom={} reason={}",
+                        request.getBorrowId(),
+                        createdFrom,
+                        overdueRejectionReason(status, dueDate, returnDate)
+                );
                 throw new BusinessException(
                         "FINE_BORROW_NOT_ELIGIBLE",
                         "Borrow is not eligible for overdue fine creation.",
@@ -186,12 +237,44 @@ public class FineServiceImpl implements FineService {
                 && returnDate != null
                 && returnDate.isAfter(dueDate);
         if (!lateReturn) {
+            log.warn(
+                    "Fine creation rejected borrowId={} createdFrom={} reason={}",
+                    request.getBorrowId(),
+                    createdFrom,
+                    lateReturnRejectionReason(status, dueDate, returnDate)
+            );
             throw new BusinessException(
                     "FINE_BORROW_NOT_ELIGIBLE",
                     "Borrow is not eligible for late return fine creation.",
                     HttpStatus.UNPROCESSABLE_ENTITY
             );
         }
+    }
+
+    private String overdueRejectionReason(String status, LocalDateTime dueDate, LocalDateTime returnDate) {
+        if (!"OVERDUE".equals(status) && (dueDate == null || !dueDate.isBefore(LocalDateTime.now()))) {
+            return "status is not OVERDUE and dueDate is not before now";
+        }
+        if (returnDate != null) {
+            return "returnDate is already set";
+        }
+        return "borrow is not overdue";
+    }
+
+    private String lateReturnRejectionReason(String status, LocalDateTime dueDate, LocalDateTime returnDate) {
+        if (!"RETURNED".equals(status)) {
+            return "status is not RETURNED";
+        }
+        if (dueDate == null) {
+            return "dueDate is null";
+        }
+        if (returnDate == null) {
+            return "returnDate is null";
+        }
+        if (!returnDate.isAfter(dueDate)) {
+            return "returnDate is not after dueDate";
+        }
+        return "borrow is not a late return";
     }
 
     private int resolveDaysOverdue(
