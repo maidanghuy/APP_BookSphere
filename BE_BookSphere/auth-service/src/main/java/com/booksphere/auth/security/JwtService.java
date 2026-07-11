@@ -1,6 +1,7 @@
 package com.booksphere.auth.security;
 
 import com.booksphere.auth.entity.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -42,6 +43,14 @@ public class JwtService {
 
     public long getAccessTokenExpiresInSeconds() {
         return jwtProperties.getAccessTokenExpirationMinutes() * 60;
+    }
+
+    public Claims parseAccessToken(String token) {
+        return Jwts.parser()
+                .verifyWith(signingKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     private SecretKey signingKey() {

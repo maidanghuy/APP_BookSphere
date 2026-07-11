@@ -31,6 +31,43 @@ docker compose up -d --build
 
 Then use the system through the API Gateway at `http://localhost:8080`.
 
+## Auth API Notes
+
+The Auth Service exposes the current authenticated user endpoint for the frontend Profile Page:
+
+```http
+GET /api/auth/me
+Authorization: Bearer <access_token>
+```
+
+Use the endpoint through the API Gateway at `http://localhost:8080/api/auth/me`.
+The response uses the standard `ApiResponse<T>` wrapper and returns a safe profile snapshot only:
+
+```json
+{
+  "success": true,
+  "message": "Get current user successfully",
+  "data": {
+    "id": 1,
+    "username": "member01",
+    "fullName": "Nguyen Van A",
+    "email": "member01@example.com",
+    "phone": "0900000000",
+    "role": "MEMBER",
+    "roles": ["MEMBER"],
+    "isActive": true
+  },
+  "errors": null,
+  "path": "/api/auth/me",
+  "status": 200
+}
+```
+
+This endpoint requires a valid Bearer access token. Missing, expired, or invalid tokens return `401 Unauthorized`.
+The response never exposes passwords, password hashes, access tokens, or refresh tokens.
+
+Postman files for Auth Service are available in `postman/auth-service/` and include `/api/auth/me` success and security error cases.
+
 For normal restarts after the images have already been built, use the existing containers/images:
 
 ```bash

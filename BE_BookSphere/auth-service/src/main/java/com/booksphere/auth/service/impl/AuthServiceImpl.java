@@ -5,6 +5,7 @@ import com.booksphere.auth.dto.request.LogoutRequest;
 import com.booksphere.auth.dto.request.RefreshTokenRequest;
 import com.booksphere.auth.dto.request.RegisterRequest;
 import com.booksphere.auth.dto.response.AuthResponse;
+import com.booksphere.auth.dto.response.CurrentUserResponse;
 import com.booksphere.auth.dto.response.TokenResponse;
 import com.booksphere.auth.dto.response.UserResponse;
 import com.booksphere.auth.entity.RefreshToken;
@@ -20,6 +21,7 @@ import com.booksphere.auth.service.AuthService;
 import com.booksphere.auth.service.RefreshTokenService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,6 +136,55 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void logout(LogoutRequest request) {
         refreshTokenService.revokeRefreshToken(request.refreshToken());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CurrentUserResponse getCurrentUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new BusinessException(
+                    "AUTH_UNAUTHORIZED",
+                    "User is not authenticated.",
+                    HttpStatus.UNAUTHORIZED
+            );
+        }
+
+        String username = authentication.getName();
+        if (username == null || username.isBlank()) {
+            throw new BusinessException(
+                    "AUTH_UNAUTHORIZED",
+                    "User is not authenticated.",
+                    HttpStatus.UNAUTHORIZED
+            );
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(
+                        "USER_NOT_FOUND",
+                        "User not found.",
+                        HttpStatus.NOT_FOUND
+                ));
+
+        if (!Boolean.TRUE.equals(user.getActive())) {
+            throw new BusinessException(
+                    "AUTH_ACCOUNT_INACTIVE",
+                    "Account is inactive.",
+                    HttpStatus.FORBIDDEN
+            );
+        }
+
+        List<String> roles = getRoleNames(user);
+
+        return new CurrentUserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getPhone(),
+                roles.isEmpty() ? null : roles.get(0),
+                roles,
+                user.getActive()
+        );
     }
 
     private AuthResponse buildAuthResponse(User user, List<String> roles, String refreshToken) {

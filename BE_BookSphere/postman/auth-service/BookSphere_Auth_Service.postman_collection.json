@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "booksphere-auth-service-collection",
     "name": "BookSphere - Auth Service",
-    "description": "Postman collection for Auth Service.\n\nCovers:\n- Register\n- Login\n- Refresh token\n- Logout\n- Internal user snapshot for service-to-service lookups\n- Basic validation and security error cases\n- Via API Gateway and Direct Service checks\n\nRecommended run order:\n1. 00 - Auth API - Via Gateway\n2. 01 - Auth API - Direct Service\n3. 02 - Validation & Error Cases\n\nPrerequisites: Auth Service and API Gateway running.",
+    "description": "Postman collection for Auth Service.\n\nCovers:\n- Register\n- Login\n- Current authenticated user (GET /api/auth/me)\n- Refresh token\n- Logout\n- Internal user snapshot for service-to-service lookups\n- Basic validation and security error cases\n- Via API Gateway and Direct Service checks\n\nRecommended run order:\n1. 00 - Auth API - Via Gateway\n2. 01 - Auth API - Direct Service\n3. 02 - Validation & Error Cases\n\nPrerequisites: Auth Service and API Gateway running.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -191,6 +191,56 @@
           ]
         },
         {
+          "name": "GET Current User MEMBER - Via Gateway",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessTokenMember}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/me",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Returns the current authenticated user profile. Used by the frontend Profile Page. Requires a Bearer access token."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('GET Current User MEMBER - Via Gateway returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Current user response is safe', function () {",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.status).to.eql(200);",
+                  "  pm.expect(body.data).to.include.keys(['id', 'username', 'fullName', 'email', 'phone', 'role', 'isActive']);",
+                  "  pm.expect(body.data).to.not.have.property('active');",
+                  "  pm.expect(body.data).to.not.have.property('password');",
+                  "  pm.expect(body.data).to.not.have.property('accessToken');",
+                  "  pm.expect(body.data).to.not.have.property('refreshToken');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "POST Refresh ADMIN Token - Via Gateway",
           "request": {
             "method": "POST",
@@ -311,11 +361,66 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
+                  "const body = pm.response.json();",
                   "pm.test('Direct login returns 200', function () { pm.response.to.have.status(200); });",
                   "pm.test('Direct login has standard ApiResponse', function () {",
-                  "  const body = pm.response.json();",
                   "  pm.expect(body.success).to.eql(true);",
                   "  pm.expect(body.status).to.eql(200);",
+                  "  pm.expect(body.data.accessToken).to.be.a('string');",
+                  "  pm.expect(body.data.refreshToken).to.be.a('string');",
+                  "});",
+                  "pm.environment.set('accessTokenMember', body.data.accessToken);",
+                  "pm.environment.set('refreshTokenMember', body.data.refreshToken);",
+                  "pm.environment.set('memberUserId', body.data.user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Current User MEMBER - Direct Service",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessTokenMember}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{authServiceBaseUrl}}/api/auth/me",
+              "host": [
+                "{{authServiceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Direct Auth Service check for the current authenticated user endpoint. Requires a Bearer access token issued by login."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('GET Current User MEMBER - Direct Service returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Current user response is safe', function () {",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.status).to.eql(200);",
+                  "  pm.expect(body.data).to.include.keys(['id', 'username', 'fullName', 'email', 'phone', 'role', 'isActive']);",
+                  "  pm.expect(body.data).to.not.have.property('active');",
+                  "  pm.expect(body.data).to.not.have.property('password');",
+                  "  pm.expect(body.data).to.not.have.property('accessToken');",
+                  "  pm.expect(body.data).to.not.have.property('refreshToken');",
                   "});"
                 ]
               }
@@ -354,7 +459,13 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Direct refresh returns 200', function () { pm.response.to.have.status(200); });"
+                  "const body = pm.response.json();",
+                  "pm.test('Direct refresh returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Direct refresh response has new access token', function () {",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.data.accessToken).to.be.a('string');",
+                  "});",
+                  "pm.environment.set('accessTokenMember', body.data.accessToken);"
                 ]
               }
             }
@@ -551,6 +662,86 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Invalid refresh token returns 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Current User Missing Token - 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/me",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Security check for GET /api/auth/me."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('GET Current User Missing Token - 401 returns 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('Error code is AUTH_TOKEN_MISSING', function () {",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.errors[0].code).to.eql('AUTH_TOKEN_MISSING');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Current User Invalid Token - 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/auth/me",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Security check for GET /api/auth/me.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "invalid-token",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('GET Current User Invalid Token - 401 returns 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('Error code is AUTH_TOKEN_INVALID', function () {",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.errors[0].code).to.eql('AUTH_TOKEN_INVALID');",
+                  "});"
                 ]
               }
             }
