@@ -1131,6 +1131,84 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Quay lại danh sách sách'**
   String get backToBooks;
+
+  /// No description provided for @filters.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bộ lọc'**
+  String get filters;
+
+  /// No description provided for @applyFilters.
+  ///
+  /// In vi, this message translates to:
+  /// **'Áp dụng'**
+  String get applyFilters;
+
+  /// No description provided for @resetFilters.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt lại'**
+  String get resetFilters;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa tất cả'**
+  String get clearAll;
+
+  /// No description provided for @selectCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn thể loại'**
+  String get selectCategory;
+
+  /// No description provided for @availability.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tình trạng còn sách'**
+  String get availability;
+
+  /// No description provided for @activeFilters.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bộ lọc đang áp dụng'**
+  String get activeFilters;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có sách khớp với tìm kiếm của bạn.'**
+  String get noSearchResults;
+
+  /// No description provided for @noFilterResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có sách khớp với bộ lọc đã chọn.'**
+  String get noFilterResults;
+
+  /// No description provided for @tryDifferentSearch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy thử từ khóa khác.'**
+  String get tryDifferentSearch;
+
+  /// No description provided for @loadCategoriesFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tải danh sách thể loại.'**
+  String get loadCategoriesFailed;
+
+  /// No description provided for @searchBooksFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tìm kiếm sách. Vui lòng thử lại.'**
+  String get searchBooksFailed;
+
+  /// No description provided for @apply.
+  ///
+  /// In vi, this message translates to:
+  /// **'Áp dụng'**
+  String get apply;
 }
 
 class _AppLocalizationsDelegate

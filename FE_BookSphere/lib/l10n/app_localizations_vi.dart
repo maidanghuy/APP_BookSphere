@@ -543,4 +543,43 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get backToBooks => 'Quay lại danh sách sách';
+
+  @override
+  String get filters => 'Bộ lọc';
+
+  @override
+  String get applyFilters => 'Áp dụng';
+
+  @override
+  String get resetFilters => 'Đặt lại';
+
+  @override
+  String get clearAll => 'Xóa tất cả';
+
+  @override
+  String get selectCategory => 'Chọn thể loại';
+
+  @override
+  String get availability => 'Tình trạng còn sách';
+
+  @override
+  String get activeFilters => 'Bộ lọc đang áp dụng';
+
+  @override
+  String get noSearchResults => 'Không có sách khớp với tìm kiếm của bạn.';
+
+  @override
+  String get noFilterResults => 'Không có sách khớp với bộ lọc đã chọn.';
+
+  @override
+  String get tryDifferentSearch => 'Hãy thử từ khóa khác.';
+
+  @override
+  String get loadCategoriesFailed => 'Không thể tải danh sách thể loại.';
+
+  @override
+  String get searchBooksFailed => 'Không thể tìm kiếm sách. Vui lòng thử lại.';
+
+  @override
+  String get apply => 'Áp dụng';
 }

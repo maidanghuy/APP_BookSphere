@@ -189,5 +189,18 @@
   "bookNotFoundDescription": "The book may have been removed or is no longer available.",
   "loadBookDetailFailed": "Unable to load book details.",
   "noDescriptionAvailable": "No description available.",
-  "backToBooks": "Back to books"
+  "backToBooks": "Back to books",
+  "filters": "Filters",
+  "applyFilters": "Apply",
+  "resetFilters": "Reset",
+  "clearAll": "Clear all",
+  "selectCategory": "Select category",
+  "availability": "Availability",
+  "activeFilters": "Active filters",
+  "noSearchResults": "No books match your search.",
+  "noFilterResults": "No books match the selected filters.",
+  "tryDifferentSearch": "Try a different keyword.",
+  "loadCategoriesFailed": "Unable to load categories.",
+  "searchBooksFailed": "Unable to search books. Please try again.",
+  "apply": "Apply"
 }

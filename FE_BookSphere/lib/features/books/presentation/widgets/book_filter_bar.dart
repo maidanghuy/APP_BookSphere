@@ -1,8 +1,10 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
+import 'package:booksphere_app/features/books/data/models/book_filter.dart';
 import 'package:booksphere_app/features/books/data/models/category_summary.dart';
-import 'package:booksphere_app/features/books/providers/book_list_provider.dart';
 import 'package:flutter/material.dart';
 
+/// Compact inline filter controls kept for compatibility/tests.
+/// Primary UX now uses [BookFilterBottomSheet] + active chips.
 class BookFilterBar extends StatelessWidget {
   const BookFilterBar({
     required this.categories,

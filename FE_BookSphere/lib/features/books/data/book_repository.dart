@@ -1,6 +1,7 @@
 import 'package:booksphere_app/core/network/api_exception.dart';
 import 'package:booksphere_app/features/books/data/book_api.dart';
 import 'package:booksphere_app/features/books/data/models/book_detail.dart';
+import 'package:booksphere_app/features/books/data/models/book_filter.dart';
 import 'package:booksphere_app/features/books/data/models/book_page.dart';
 import 'package:booksphere_app/features/books/data/models/category_summary.dart';
 import 'package:dio/dio.dart';
@@ -44,6 +45,23 @@ class BookRepository {
     } on DioException catch (error) {
       throw _mapDioError(error, fallbackMessage: 'Failed to load books.');
     }
+  }
+
+  /// Search/filter books using [BookFilter].
+  ///
+  /// Only `keyword` and `categoryId` are sent to the API. Availability is
+  /// applied client-side by the provider because Backend does not support it.
+  Future<BookPage> searchBooks({
+    required int page,
+    required int size,
+    required BookFilter filter,
+  }) {
+    return getBooks(
+      page: page,
+      size: size,
+      keyword: filter.keyword,
+      categoryId: filter.categoryId,
+    );
   }
 
   Future<List<CategorySummary>> getCategories() async {

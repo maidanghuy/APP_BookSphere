@@ -444,3 +444,19 @@ Assignee: Hiển
 - Route: `/books/:bookId` with navigation from Book List.
 - Borrow Flow is not part of BS-APP-13 and remains disabled/out of scope on this screen.
 - Vietnamese, English, and Japanese localization for Book Detail texts.
+
+## BS-APP-14 - Book Search và Filter
+
+Coder: maidanghuy  
+Assignee: Hiển
+
+- Search calls `GET /api/books` through the API Gateway with `keyword`, `categoryId`, `page`, and `size`.
+- Search is debounced (~450ms) and supports title, author, and ISBN per backend contract.
+- Category filter uses `GET /api/categories` (category ID).
+- Availability filter is client-side only (backend has no availability query parameter).
+- Filter bottom sheet supports Apply, Cancel, and Reset without firing requests on every draft change.
+- Active filter chips allow clearing category/availability individually or resetting all filters.
+- Search/filter stays synchronized with pagination; load-more and pull-to-refresh preserve the current filter.
+- Stale request protection prevents older responses from overwriting newer search results.
+- Empty/error states distinguish no books, no search results, and no filter results.
+- Does not implement Book Detail or Borrow Flow changes in this task.

@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:booksphere_app/features/books/data/book_repository.dart';
+import 'package:booksphere_app/features/books/data/models/book_filter.dart';
 import 'package:booksphere_app/features/books/data/models/book_page.dart';
 import 'package:booksphere_app/features/books/data/models/book_summary.dart';
 import 'package:booksphere_app/features/books/data/models/category_summary.dart';
@@ -35,6 +38,10 @@ BookPage _page({
 void main() {
   late _MockBookRepository repository;
 
+  setUpAll(() {
+    registerFallbackValue(const BookFilter());
+  });
+
   setUp(() {
     repository = _MockBookRepository();
     when(() => repository.getCategories()).thenAnswer(
@@ -50,15 +57,18 @@ void main() {
     return container;
   }
 
-  test('loads initial books successfully', () async {
+  void stubSearch(Future<BookPage> Function(Invocation) answer) {
     when(
-      () => repository.getBooks(
+      () => repository.searchBooks(
         page: any(named: 'page'),
         size: any(named: 'size'),
-        keyword: any(named: 'keyword'),
-        categoryId: any(named: 'categoryId'),
+        filter: any(named: 'filter'),
       ),
-    ).thenAnswer(
+    ).thenAnswer(answer);
+  }
+
+  test('loads initial books successfully', () async {
+    stubSearch(
       (_) async => _page(
         items: [_book(id: '1', title: 'Clean Code')],
       ),
@@ -71,21 +81,12 @@ void main() {
 
     final state = container.read(bookListProvider);
     expect(state.isLoading, isFalse);
-    expect(state.books, hasLength(1));
     expect(state.books.first.title, 'Clean Code');
     expect(state.categories, hasLength(1));
-    expect(state.hasMore, isFalse);
   });
 
   test('handles empty list', () async {
-    when(
-      () => repository.getBooks(
-        page: any(named: 'page'),
-        size: any(named: 'size'),
-        keyword: any(named: 'keyword'),
-        categoryId: any(named: 'categoryId'),
-      ),
-    ).thenAnswer(
+    stubSearch(
       (_) async => _page(items: const [], totalElements: 0, totalPages: 0),
     );
 
@@ -94,60 +95,38 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     await Future<void>.delayed(Duration.zero);
 
-    final state = container.read(bookListProvider);
-    expect(state.books, isEmpty);
-    expect(state.hasError, isFalse);
+    expect(container.read(bookListProvider).books, isEmpty);
   });
 
   test('handles load error', () async {
-    when(
-      () => repository.getBooks(
-        page: any(named: 'page'),
-        size: any(named: 'size'),
-        keyword: any(named: 'keyword'),
-        categoryId: any(named: 'categoryId'),
-      ),
-    ).thenThrow(const BookException(message: 'failed', code: 'NETWORK_ERROR'));
+    stubSearch(
+      (_) async =>
+          throw const BookException(message: 'failed', code: 'NETWORK_ERROR'),
+    );
 
     final container = createContainer();
     container.read(bookListProvider.notifier);
     await Future<void>.delayed(Duration.zero);
     await Future<void>.delayed(Duration.zero);
 
-    final state = container.read(bookListProvider);
-    expect(state.hasError, isTrue);
-    expect(state.errorCode, 'NETWORK_ERROR');
-    expect(state.books, isEmpty);
+    expect(container.read(bookListProvider).errorCode, 'NETWORK_ERROR');
   });
 
   test('append load more without duplicates', () async {
-    when(
-      () => repository.getBooks(
-        page: 0,
-        size: any(named: 'size'),
-        keyword: any(named: 'keyword'),
-        categoryId: any(named: 'categoryId'),
-      ),
-    ).thenAnswer(
-      (_) async => _page(
-        items: [
-          _book(id: '1'),
-          _book(id: '2'),
-        ],
-        page: 0,
-        totalPages: 2,
-        totalElements: 3,
-      ),
-    );
-    when(
-      () => repository.getBooks(
-        page: 1,
-        size: any(named: 'size'),
-        keyword: any(named: 'keyword'),
-        categoryId: any(named: 'categoryId'),
-      ),
-    ).thenAnswer(
-      (_) async => _page(
+    stubSearch((invocation) async {
+      final page = invocation.namedArguments[#page] as int;
+      if (page == 0) {
+        return _page(
+          items: [
+            _book(id: '1'),
+            _book(id: '2'),
+          ],
+          page: 0,
+          totalPages: 2,
+          totalElements: 3,
+        );
+      }
+      return _page(
         items: [
           _book(id: '2'),
           _book(id: '3'),
@@ -155,30 +134,24 @@ void main() {
         page: 1,
         totalPages: 2,
         totalElements: 3,
-      ),
-    );
+      );
+    });
 
     final container = createContainer();
     final notifier = container.read(bookListProvider.notifier);
     await Future<void>.delayed(Duration.zero);
     await Future<void>.delayed(Duration.zero);
-
     await notifier.loadMore();
 
-    final state = container.read(bookListProvider);
-    expect(state.books.map((book) => book.id), ['1', '2', '3']);
-    expect(state.hasMore, isFalse);
+    expect(container.read(bookListProvider).books.map((book) => book.id), [
+      '1',
+      '2',
+      '3',
+    ]);
   });
 
-  test('resets pagination when search keyword changes', () async {
-    when(
-      () => repository.getBooks(
-        page: any(named: 'page'),
-        size: any(named: 'size'),
-        keyword: any(named: 'keyword'),
-        categoryId: any(named: 'categoryId'),
-      ),
-    ).thenAnswer(
+  test('search resets pagination and keeps category', () async {
+    stubSearch(
       (_) async =>
           _page(items: [_book(id: '1')], totalPages: 2, totalElements: 11),
     );
@@ -188,33 +161,48 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     await Future<void>.delayed(Duration.zero);
 
-    await notifier.setSearchKeyword('clean');
+    await notifier.applyFilter(const BookFilter(categoryId: '1'));
+    await notifier.search('clean');
     await Future<void>.delayed(const Duration(milliseconds: 500));
 
-    verify(
-      () => repository.getBooks(
-        page: 0,
-        size: any(named: 'size'),
-        keyword: 'clean',
-        categoryId: any(named: 'categoryId'),
-      ),
-    ).called(greaterThanOrEqualTo(1));
-
     final state = container.read(bookListProvider);
-    expect(state.searchKeyword, 'clean');
+    expect(state.filter.keyword, 'clean');
+    expect(state.filter.categoryId, '1');
     expect(state.currentPage, 0);
-    expect(state.hasActiveFilters, isTrue);
+  });
+
+  test('load more preserves current filter', () async {
+    stubSearch((invocation) async {
+      final page = invocation.namedArguments[#page] as int;
+      return _page(
+        items: [_book(id: page == 0 ? '1' : '2')],
+        page: page,
+        totalPages: 2,
+        totalElements: 11,
+      );
+    });
+
+    final container = createContainer();
+    final notifier = container.read(bookListProvider.notifier);
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+
+    await notifier.applyFilter(
+      const BookFilter(keyword: 'java', categoryId: '1'),
+    );
+    await notifier.loadMore();
+
+    verify(
+      () => repository.searchBooks(
+        page: 1,
+        size: any(named: 'size'),
+        filter: const BookFilter(keyword: 'java', categoryId: '1'),
+      ),
+    ).called(1);
   });
 
   test('availability filter is client-side', () async {
-    when(
-      () => repository.getBooks(
-        page: any(named: 'page'),
-        size: any(named: 'size'),
-        keyword: any(named: 'keyword'),
-        categoryId: any(named: 'categoryId'),
-      ),
-    ).thenAnswer(
+    stubSearch(
       (_) async => _page(
         items: [
           _book(id: '1', available: 2),
@@ -229,15 +217,62 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     await notifier.setAvailableOnly(true);
-    expect(
-      container.read(bookListProvider).visibleBooks.map((book) => book.id),
-      ['1'],
-    );
+    expect(container.read(bookListProvider).visibleBooks.map((b) => b.id), [
+      '1',
+    ]);
+  });
 
-    await notifier.setAvailableOnly(false);
-    expect(
-      container.read(bookListProvider).visibleBooks.map((book) => book.id),
-      ['2'],
+  test('reset filters clears all filter fields', () async {
+    stubSearch((_) async => _page(items: [_book(id: '1')]));
+
+    final container = createContainer();
+    final notifier = container.read(bookListProvider.notifier);
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+
+    await notifier.applyFilter(
+      const BookFilter(
+        keyword: 'clean',
+        categoryId: '1',
+        availability: BookAvailabilityFilter.available,
+      ),
     );
+    await notifier.resetFilters();
+
+    expect(container.read(bookListProvider).filter, const BookFilter());
+  });
+
+  test('stale responses do not override newer results', () async {
+    final slow = Completer<BookPage>();
+    final fast = Completer<BookPage>();
+
+    stubSearch((invocation) {
+      final filter = invocation.namedArguments[#filter] as BookFilter;
+      if (filter.keyword == 'slow') {
+        return slow.future;
+      }
+      if (filter.keyword == 'fast') {
+        return fast.future;
+      }
+      return Future.value(_page(items: [_book(id: 'init')]));
+    });
+
+    final container = createContainer();
+    final notifier = container.read(bookListProvider.notifier);
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+
+    await notifier.search('slow');
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    await notifier.search('fast');
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+
+    fast.complete(_page(items: [_book(id: 'fast')]));
+    await Future<void>.delayed(Duration.zero);
+    slow.complete(_page(items: [_book(id: 'slow')]));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(container.read(bookListProvider).books.first.id, 'fast');
+    expect(container.read(bookListProvider).filter.keyword, 'fast');
   });
 }

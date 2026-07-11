@@ -529,4 +529,43 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get backToBooks => '本の一覧に戻る';
+
+  @override
+  String get filters => 'フィルター';
+
+  @override
+  String get applyFilters => '適用';
+
+  @override
+  String get resetFilters => 'リセット';
+
+  @override
+  String get clearAll => 'すべてクリア';
+
+  @override
+  String get selectCategory => 'カテゴリを選択';
+
+  @override
+  String get availability => '貸出状況';
+
+  @override
+  String get activeFilters => '適用中のフィルター';
+
+  @override
+  String get noSearchResults => '検索条件に一致する本がありません。';
+
+  @override
+  String get noFilterResults => '選択したフィルターに一致する本がありません。';
+
+  @override
+  String get tryDifferentSearch => '別のキーワードを試してください。';
+
+  @override
+  String get loadCategoriesFailed => 'カテゴリを読み込めませんでした。';
+
+  @override
+  String get searchBooksFailed => '本を検索できませんでした。もう一度お試しください。';
+
+  @override
+  String get apply => '適用';
 }

@@ -542,4 +542,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backToBooks => 'Back to books';
+
+  @override
+  String get filters => 'Filters';
+
+  @override
+  String get applyFilters => 'Apply';
+
+  @override
+  String get resetFilters => 'Reset';
+
+  @override
+  String get clearAll => 'Clear all';
+
+  @override
+  String get selectCategory => 'Select category';
+
+  @override
+  String get availability => 'Availability';
+
+  @override
+  String get activeFilters => 'Active filters';
+
+  @override
+  String get noSearchResults => 'No books match your search.';
+
+  @override
+  String get noFilterResults => 'No books match the selected filters.';
+
+  @override
+  String get tryDifferentSearch => 'Try a different keyword.';
+
+  @override
+  String get loadCategoriesFailed => 'Unable to load categories.';
+
+  @override
+  String get searchBooksFailed => 'Unable to search books. Please try again.';
+
+  @override
+  String get apply => 'Apply';
 }

@@ -189,5 +189,18 @@
   "bookNotFoundDescription": "本が削除されたか、現在利用できない可能性があります。",
   "loadBookDetailFailed": "本の詳細を読み込めませんでした。",
   "noDescriptionAvailable": "説明はありません。",
-  "backToBooks": "本の一覧に戻る"
+  "backToBooks": "本の一覧に戻る",
+  "filters": "フィルター",
+  "applyFilters": "適用",
+  "resetFilters": "リセット",
+  "clearAll": "すべてクリア",
+  "selectCategory": "カテゴリを選択",
+  "availability": "貸出状況",
+  "activeFilters": "適用中のフィルター",
+  "noSearchResults": "検索条件に一致する本がありません。",
+  "noFilterResults": "選択したフィルターに一致する本がありません。",
+  "tryDifferentSearch": "別のキーワードを試してください。",
+  "loadCategoriesFailed": "カテゴリを読み込めませんでした。",
+  "searchBooksFailed": "本を検索できませんでした。もう一度お試しください。",
+  "apply": "適用"
 }
