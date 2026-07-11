@@ -23,4 +23,8 @@ class AppMessageKeys {
   static const String bookOutOfStock = 'BOOK_OUT_OF_STOCK';
   static const String bookInactive = 'BOOK_INACTIVE';
   static const String borrowSagaFailed = 'BORROW_SAGA_FAILED';
+
+  static const String borrowAlreadyReturned = 'BORROW_ALREADY_RETURNED';
+  static const String borrowNotFound = 'BORROW_NOT_FOUND';
+  static const String borrowNotAllowed = 'BORROW_NOT_ALLOWED';
 }

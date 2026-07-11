@@ -921,6 +921,30 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Trả sách thành công!'**
   String get returnSuccess;
+
+  /// No description provided for @borrowAlreadyReturned.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiếu mượn này đã được trả sách.'**
+  String get borrowAlreadyReturned;
+
+  /// No description provided for @borrowNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy thông tin phiếu mượn.'**
+  String get borrowNotFound;
+
+  /// No description provided for @borrowNotAllowed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không có quyền trả sách cho phiếu mượn này.'**
+  String get borrowNotAllowed;
+
+  /// No description provided for @overdueReturnWarning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiếu mượn này đã quá hạn. Việc trả sách có thể phát sinh phí phạt.'**
+  String get overdueReturnWarning;
 }
 
 class _AppLocalizationsDelegate

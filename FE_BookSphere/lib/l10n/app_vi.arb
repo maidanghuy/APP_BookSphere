@@ -143,5 +143,9 @@
   "returnBook": "Trả sách",
   "confirmReturnTitle": "Xác nhận trả sách",
   "confirmReturnMessage": "Bạn có chắc chắn muốn trả sách cho phiếu mượn này không?",
-  "returnSuccess": "Trả sách thành công!"
+  "returnSuccess": "Trả sách thành công!",
+  "borrowAlreadyReturned": "Phiếu mượn này đã được trả sách.",
+  "borrowNotFound": "Không tìm thấy thông tin phiếu mượn.",
+  "borrowNotAllowed": "Bạn không có quyền trả sách cho phiếu mượn này.",
+  "overdueReturnWarning": "Phiếu mượn này đã quá hạn. Việc trả sách có thể phát sinh phí phạt."
 }

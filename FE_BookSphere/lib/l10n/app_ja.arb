@@ -143,5 +143,9 @@
   "returnBook": "本を返却する",
   "confirmReturnTitle": "返却の確認",
   "confirmReturnMessage": "この貸出申請の本を返却しますか？",
-  "returnSuccess": "本が正常に返却されました！"
+  "returnSuccess": "本が正常に返却されました！",
+  "borrowAlreadyReturned": "この貸出はすでに返却されています。",
+  "borrowNotFound": "貸出記録が見つかりません。",
+  "borrowNotAllowed": "この貸出の返却は許可されていません。",
+  "overdueReturnWarning": "この貸出は期限切れです。本を返却すると罰金が発生する可能性があります。"
 }

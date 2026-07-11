@@ -430,4 +430,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get returnSuccess => 'Books returned successfully!';
+
+  @override
+  String get borrowAlreadyReturned => 'This borrow has already been returned.';
+
+  @override
+  String get borrowNotFound => 'Borrow record not found.';
+
+  @override
+  String get borrowNotAllowed => 'You are not allowed to return this borrow.';
+
+  @override
+  String get overdueReturnWarning =>
+      'This borrow is overdue. Returning the book may incur a fine.';
 }
