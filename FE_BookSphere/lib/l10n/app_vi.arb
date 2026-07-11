@@ -224,5 +224,27 @@
   "tryDifferentSearch": "Hãy thử từ khóa khác.",
   "loadCategoriesFailed": "Không thể tải danh sách thể loại.",
   "searchBooksFailed": "Không thể tìm kiếm sách. Vui lòng thử lại.",
-  "apply": "Áp dụng"
+  "apply": "Áp dụng",
+  "addToBorrowList": "Thêm vào danh sách mượn",
+  "addedToBorrowList": "Đã thêm vào danh sách mượn.",
+  "alreadyAddedToBorrowList": "Đã thêm vào danh sách mượn",
+  "alreadyInBorrowList": "Sách này đã có trong danh sách mượn.",
+  "borrowList": "Danh sách mượn",
+  "borrowListItemCount": "{count, plural, =0{Chưa có sách trong danh sách mượn} =1{1 sách trong danh sách mượn} other{{count} sách trong danh sách mượn}}",
+  "@borrowListItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "viewBorrowList": "Xem danh sách",
+  "removeFromBorrowList": "Xóa khỏi danh sách mượn",
+  "removedFromBorrowList": "Đã xóa khỏi danh sách mượn.",
+  "clearBorrowList": "Xóa tất cả",
+  "clearBorrowListConfirm": "Xóa toàn bộ sách khỏi danh sách mượn?",
+  "borrowListEmpty": "Danh sách mượn của bạn đang trống.",
+  "borrowListEmptyDescription": "Thêm sách từ danh sách sách hoặc trang chi tiết sách.",
+  "browseBooks": "Duyệt sách",
+  "bookUnavailable": "Sách này hiện không khả dụng.",
+  "added": "Đã thêm",
+  "confirmBorrowLaterNote": "Xác nhận mượn sẽ được triển khai ở task sau."
 }

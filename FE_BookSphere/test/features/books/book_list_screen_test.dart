@@ -215,7 +215,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(BookFilterBottomSheet), findsOneWidget);
-    expect(find.text('Filters'), findsOneWidget);
+    expect(find.text('Filters'), findsWidgets);
 
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();

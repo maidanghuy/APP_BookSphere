@@ -445,6 +445,72 @@ class AppLocalizationsEn extends AppLocalizations {
       'This borrow is overdue. Returning the book may incur a fine.';
 
   @override
+  String get myFines => 'My Fines';
+
+  @override
+  String get loadFinesFailed => 'Failed to load fines.';
+
+  @override
+  String get noFinesFound => 'No fines found.';
+
+  @override
+  String get fineStatusAll => 'All';
+
+  @override
+  String get fineStatusUnpaid => 'Unpaid';
+
+  @override
+  String get fineStatusPaid => 'Paid';
+
+  @override
+  String get fineStatusCancelled => 'Cancelled';
+
+  @override
+  String get fineDetail => 'Fine Detail';
+
+  @override
+  String get fineId => 'Fine #';
+
+  @override
+  String get borrowId => 'Borrow ID';
+
+  @override
+  String get reason => 'Reason';
+
+  @override
+  String get createdFrom => 'Created From';
+
+  @override
+  String get createdAt => 'Created At';
+
+  @override
+  String get paidAt => 'Paid At';
+
+  @override
+  String get payFine => 'Pay Fine';
+
+  @override
+  String get payNow => 'Pay Now';
+
+  @override
+  String get cash => 'Cash';
+
+  @override
+  String get bankTransfer => 'Bank Transfer';
+
+  @override
+  String get eWallet => 'E-Wallet';
+
+  @override
+  String get selectPaymentMethod => 'Select Payment Method';
+
+  @override
+  String get confirmSelection => 'Confirm';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
   String get searchByTitleAuthorIsbn => 'Search by title, author or ISBN';
 
   @override
@@ -581,4 +647,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get apply => 'Apply';
+
+  @override
+  String get addToBorrowList => 'Add to Borrow List';
+
+  @override
+  String get addedToBorrowList => 'Added to borrow list.';
+
+  @override
+  String get alreadyAddedToBorrowList => 'Added to Borrow List';
+
+  @override
+  String get alreadyInBorrowList => 'This book is already in your borrow list.';
+
+  @override
+  String get borrowList => 'Borrow List';
+
+  @override
+  String borrowListItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count books in borrow list',
+      one: '1 book in borrow list',
+      zero: 'No books in borrow list',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get viewBorrowList => 'View list';
+
+  @override
+  String get removeFromBorrowList => 'Remove from borrow list';
+
+  @override
+  String get removedFromBorrowList => 'Removed from borrow list.';
+
+  @override
+  String get clearBorrowList => 'Clear all';
+
+  @override
+  String get clearBorrowListConfirm => 'Remove all books from the borrow list?';
+
+  @override
+  String get borrowListEmpty => 'Your borrow list is empty.';
+
+  @override
+  String get borrowListEmptyDescription =>
+      'Add books from the book list or book details.';
+
+  @override
+  String get browseBooks => 'Browse Books';
+
+  @override
+  String get bookUnavailable => 'This book is currently unavailable.';
+
+  @override
+  String get added => 'Added';
+
+  @override
+  String get confirmBorrowLaterNote =>
+      'Confirm Borrow will be implemented in a later task.';
 }

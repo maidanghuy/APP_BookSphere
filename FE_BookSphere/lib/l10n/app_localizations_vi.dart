@@ -446,6 +446,72 @@ class AppLocalizationsVi extends AppLocalizations {
       'Phiếu mượn này đã quá hạn. Việc trả sách có thể phát sinh phí phạt.';
 
   @override
+  String get myFines => 'Tiền phạt của tôi';
+
+  @override
+  String get loadFinesFailed => 'Không thể tải danh sách tiền phạt.';
+
+  @override
+  String get noFinesFound => 'Không có tiền phạt nào.';
+
+  @override
+  String get fineStatusAll => 'Tất cả';
+
+  @override
+  String get fineStatusUnpaid => 'Chưa thanh toán';
+
+  @override
+  String get fineStatusPaid => 'Đã thanh toán';
+
+  @override
+  String get fineStatusCancelled => 'Đã hủy';
+
+  @override
+  String get fineDetail => 'Chi tiết tiền phạt';
+
+  @override
+  String get fineId => 'Mã phạt #';
+
+  @override
+  String get borrowId => 'Mã phiếu mượn';
+
+  @override
+  String get reason => 'Lý do';
+
+  @override
+  String get createdFrom => 'Nguồn tạo';
+
+  @override
+  String get createdAt => 'Ngày tạo';
+
+  @override
+  String get paidAt => 'Ngày thanh toán';
+
+  @override
+  String get payFine => 'Thanh toán tiền phạt';
+
+  @override
+  String get payNow => 'Thanh toán ngay';
+
+  @override
+  String get cash => 'Tiền mặt';
+
+  @override
+  String get bankTransfer => 'Chuyển khoản';
+
+  @override
+  String get eWallet => 'Ví điện tử';
+
+  @override
+  String get selectPaymentMethod => 'Chọn phương thức thanh toán';
+
+  @override
+  String get confirmSelection => 'Xác nhận';
+
+  @override
+  String get confirm => 'Xác nhận';
+
+  @override
   String get searchByTitleAuthorIsbn => 'Tìm theo tên sách, tác giả hoặc ISBN';
 
   @override
@@ -582,4 +648,66 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get apply => 'Áp dụng';
+
+  @override
+  String get addToBorrowList => 'Thêm vào danh sách mượn';
+
+  @override
+  String get addedToBorrowList => 'Đã thêm vào danh sách mượn.';
+
+  @override
+  String get alreadyAddedToBorrowList => 'Đã thêm vào danh sách mượn';
+
+  @override
+  String get alreadyInBorrowList => 'Sách này đã có trong danh sách mượn.';
+
+  @override
+  String get borrowList => 'Danh sách mượn';
+
+  @override
+  String borrowListItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sách trong danh sách mượn',
+      one: '1 sách trong danh sách mượn',
+      zero: 'Chưa có sách trong danh sách mượn',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get viewBorrowList => 'Xem danh sách';
+
+  @override
+  String get removeFromBorrowList => 'Xóa khỏi danh sách mượn';
+
+  @override
+  String get removedFromBorrowList => 'Đã xóa khỏi danh sách mượn.';
+
+  @override
+  String get clearBorrowList => 'Xóa tất cả';
+
+  @override
+  String get clearBorrowListConfirm => 'Xóa toàn bộ sách khỏi danh sách mượn?';
+
+  @override
+  String get borrowListEmpty => 'Danh sách mượn của bạn đang trống.';
+
+  @override
+  String get borrowListEmptyDescription =>
+      'Thêm sách từ danh sách sách hoặc trang chi tiết sách.';
+
+  @override
+  String get browseBooks => 'Duyệt sách';
+
+  @override
+  String get bookUnavailable => 'Sách này hiện không khả dụng.';
+
+  @override
+  String get added => 'Đã thêm';
+
+  @override
+  String get confirmBorrowLaterNote =>
+      'Xác nhận mượn sẽ được triển khai ở task sau.';
 }

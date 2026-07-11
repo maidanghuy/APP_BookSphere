@@ -224,5 +224,27 @@
   "tryDifferentSearch": "別のキーワードを試してください。",
   "loadCategoriesFailed": "カテゴリを読み込めませんでした。",
   "searchBooksFailed": "本を検索できませんでした。もう一度お試しください。",
-  "apply": "適用"
+  "apply": "適用",
+  "addToBorrowList": "貸出リストに追加",
+  "addedToBorrowList": "貸出リストに追加しました。",
+  "alreadyAddedToBorrowList": "貸出リストに追加済み",
+  "alreadyInBorrowList": "この本はすでに貸出リストにあります。",
+  "borrowList": "貸出リスト",
+  "borrowListItemCount": "{count, plural, =0{貸出リストに本はありません} =1{貸出リストに1冊あります} other{貸出リストに{count}冊あります}}",
+  "@borrowListItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "viewBorrowList": "リストを見る",
+  "removeFromBorrowList": "貸出リストから削除",
+  "removedFromBorrowList": "貸出リストから削除しました。",
+  "clearBorrowList": "すべてクリア",
+  "clearBorrowListConfirm": "貸出リストからすべての本を削除しますか？",
+  "borrowListEmpty": "貸出リストは空です。",
+  "borrowListEmptyDescription": "本の一覧または詳細画面から本を追加してください。",
+  "browseBooks": "本を見る",
+  "bookUnavailable": "この本は現在利用できません。",
+  "added": "追加済み",
+  "confirmBorrowLaterNote": "貸出確定は後続タスクで実装されます。"
 }

@@ -434,6 +434,72 @@ class AppLocalizationsJa extends AppLocalizations {
   String get overdueReturnWarning => 'この貸出は期限切れです。本を返却すると罰金が発生する可能性があります。';
 
   @override
+  String get myFines => '罰金一覧';
+
+  @override
+  String get loadFinesFailed => '罰金の読み込みに失敗しました。';
+
+  @override
+  String get noFinesFound => '罰金はありません。';
+
+  @override
+  String get fineStatusAll => 'すべて';
+
+  @override
+  String get fineStatusUnpaid => '未払い';
+
+  @override
+  String get fineStatusPaid => '支払済み';
+
+  @override
+  String get fineStatusCancelled => 'キャンセル';
+
+  @override
+  String get fineDetail => '罰金詳細';
+
+  @override
+  String get fineId => '罰金 #';
+
+  @override
+  String get borrowId => '貸出ID';
+
+  @override
+  String get reason => '理由';
+
+  @override
+  String get createdFrom => '発生元';
+
+  @override
+  String get createdAt => '作成日';
+
+  @override
+  String get paidAt => '支払日';
+
+  @override
+  String get payFine => '罰金を支払う';
+
+  @override
+  String get payNow => '今すぐ支払う';
+
+  @override
+  String get cash => '現金';
+
+  @override
+  String get bankTransfer => '銀行振込';
+
+  @override
+  String get eWallet => '電子ウォレット';
+
+  @override
+  String get selectPaymentMethod => '支払方法を選択';
+
+  @override
+  String get confirmSelection => '確認';
+
+  @override
+  String get confirm => '確認';
+
+  @override
   String get searchByTitleAuthorIsbn => 'タイトル・著者・ISBNで検索';
 
   @override
@@ -568,4 +634,64 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get apply => '適用';
+
+  @override
+  String get addToBorrowList => '貸出リストに追加';
+
+  @override
+  String get addedToBorrowList => '貸出リストに追加しました。';
+
+  @override
+  String get alreadyAddedToBorrowList => '貸出リストに追加済み';
+
+  @override
+  String get alreadyInBorrowList => 'この本はすでに貸出リストにあります。';
+
+  @override
+  String get borrowList => '貸出リスト';
+
+  @override
+  String borrowListItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '貸出リストに$count冊あります',
+      one: '貸出リストに1冊あります',
+      zero: '貸出リストに本はありません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get viewBorrowList => 'リストを見る';
+
+  @override
+  String get removeFromBorrowList => '貸出リストから削除';
+
+  @override
+  String get removedFromBorrowList => '貸出リストから削除しました。';
+
+  @override
+  String get clearBorrowList => 'すべてクリア';
+
+  @override
+  String get clearBorrowListConfirm => '貸出リストからすべての本を削除しますか？';
+
+  @override
+  String get borrowListEmpty => '貸出リストは空です。';
+
+  @override
+  String get borrowListEmptyDescription => '本の一覧または詳細画面から本を追加してください。';
+
+  @override
+  String get browseBooks => '本を見る';
+
+  @override
+  String get bookUnavailable => 'この本は現在利用できません。';
+
+  @override
+  String get added => '追加済み';
+
+  @override
+  String get confirmBorrowLaterNote => '貸出確定は後続タスクで実装されます。';
 }

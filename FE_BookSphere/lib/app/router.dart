@@ -5,6 +5,7 @@ import 'package:booksphere_app/features/auth/presentation/login_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/register_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/splash_screen.dart';
 import 'package:booksphere_app/features/books/presentation/book_detail_screen.dart';
+import 'package:booksphere_app/features/borrow_cart/presentation/borrow_cart_screen.dart';
 import 'package:booksphere_app/features/borrows/presentation/borrow_create_screen.dart';
 import 'package:booksphere_app/features/borrows/presentation/borrow_detail_screen.dart';
 import 'package:booksphere_app/features/home/presentation/main_tab_screen.dart';
@@ -18,6 +19,7 @@ class AppRoutes {
   static const register = '/register';
   static const main = '/main';
   static const bookDetail = '/books/:bookId';
+  static const borrowCart = '/borrow-cart';
   static const borrowCreate = '/borrows/create';
   static const borrowDetail = '/borrows/:id';
 }
@@ -55,6 +57,11 @@ final appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: AppRoutes.borrowCart,
+      name: 'borrow-cart',
+      builder: (context, state) => const BorrowCartScreen(),
+    ),
+    GoRoute(
       path: AppRoutes.borrowCreate,
       builder: (context, state) {
         final bookId = int.tryParse(state.uri.queryParameters['bookId'] ?? '');
@@ -77,11 +84,13 @@ final appRouter = GoRouter(
     }
 
     final isBookDetail = matchedLocation.startsWith('/books/');
+    final isBorrowCart = matchedLocation == AppRoutes.borrowCart;
     final isProtected =
         matchedLocation == AppRoutes.login ||
         matchedLocation == AppRoutes.register ||
         matchedLocation == AppRoutes.main ||
-        isBookDetail;
+        isBookDetail ||
+        isBorrowCart;
 
     if (isProtected) {
       final status = await _authSessionService.checkSession();
@@ -91,7 +100,7 @@ final appRouter = GoRouter(
             ? AppRoutes.main
             : null;
       }
-      if (matchedLocation == AppRoutes.main || isBookDetail) {
+      if (matchedLocation == AppRoutes.main || isBookDetail || isBorrowCart) {
         return AppRoutes.login;
       }
       return null;

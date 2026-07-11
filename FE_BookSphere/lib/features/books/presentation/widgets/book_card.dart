@@ -3,12 +3,23 @@ import 'package:booksphere_app/features/books/data/models/book_summary.dart';
 import 'package:flutter/material.dart';
 
 class BookCard extends StatelessWidget {
-  const BookCard({required this.book, this.onTap, super.key});
+  const BookCard({
+    required this.book,
+    this.onTap,
+    this.onAddToBorrowList,
+    this.isInBorrowList = false,
+    super.key,
+  });
 
   final BookSummary book;
 
   /// Optional tap handler used to open Book Detail.
   final VoidCallback? onTap;
+
+  /// Optional action to add the book to the temporary borrow list.
+  final VoidCallback? onAddToBorrowList;
+
+  final bool isInBorrowList;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +41,8 @@ class BookCard extends StatelessWidget {
     final availabilityColor = book.isAvailable
         ? colorScheme.primary
         : colorScheme.error;
+
+    final canAdd = book.isAvailable && !isInBorrowList;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -98,6 +111,23 @@ class BookCard extends StatelessWidget {
                   ],
                 ),
               ),
+              if (onAddToBorrowList != null)
+                IconButton(
+                  tooltip: isInBorrowList
+                      ? l10n.addedToBorrowList
+                      : l10n.addToBorrowList,
+                  onPressed: canAdd ? onAddToBorrowList : null,
+                  icon: Icon(
+                    isInBorrowList
+                        ? Icons.library_add_check
+                        : Icons.library_add_outlined,
+                    color: isInBorrowList
+                        ? colorScheme.primary
+                        : (canAdd
+                              ? colorScheme.onSurfaceVariant
+                              : colorScheme.onSurface.withValues(alpha: 0.38)),
+                  ),
+                ),
             ],
           ),
         ),

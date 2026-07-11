@@ -946,6 +946,138 @@ abstract class AppLocalizations {
   /// **'Phiếu mượn này đã quá hạn. Việc trả sách có thể phát sinh phí phạt.'**
   String get overdueReturnWarning;
 
+  /// No description provided for @myFines.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiền phạt của tôi'**
+  String get myFines;
+
+  /// No description provided for @loadFinesFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tải danh sách tiền phạt.'**
+  String get loadFinesFailed;
+
+  /// No description provided for @noFinesFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có tiền phạt nào.'**
+  String get noFinesFound;
+
+  /// No description provided for @fineStatusAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả'**
+  String get fineStatusAll;
+
+  /// No description provided for @fineStatusUnpaid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa thanh toán'**
+  String get fineStatusUnpaid;
+
+  /// No description provided for @fineStatusPaid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thanh toán'**
+  String get fineStatusPaid;
+
+  /// No description provided for @fineStatusCancelled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hủy'**
+  String get fineStatusCancelled;
+
+  /// No description provided for @fineDetail.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiết tiền phạt'**
+  String get fineDetail;
+
+  /// No description provided for @fineId.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mã phạt #'**
+  String get fineId;
+
+  /// No description provided for @borrowId.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mã phiếu mượn'**
+  String get borrowId;
+
+  /// No description provided for @reason.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lý do'**
+  String get reason;
+
+  /// No description provided for @createdFrom.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nguồn tạo'**
+  String get createdFrom;
+
+  /// No description provided for @createdAt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày tạo'**
+  String get createdAt;
+
+  /// No description provided for @paidAt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày thanh toán'**
+  String get paidAt;
+
+  /// No description provided for @payFine.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thanh toán tiền phạt'**
+  String get payFine;
+
+  /// No description provided for @payNow.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thanh toán ngay'**
+  String get payNow;
+
+  /// No description provided for @cash.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiền mặt'**
+  String get cash;
+
+  /// No description provided for @bankTransfer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển khoản'**
+  String get bankTransfer;
+
+  /// No description provided for @eWallet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví điện tử'**
+  String get eWallet;
+
+  /// No description provided for @selectPaymentMethod.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn phương thức thanh toán'**
+  String get selectPaymentMethod;
+
+  /// No description provided for @confirmSelection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận'**
+  String get confirmSelection;
+
+  /// No description provided for @confirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận'**
+  String get confirm;
+
   /// No description provided for @searchByTitleAuthorIsbn.
   ///
   /// In vi, this message translates to:
@@ -1209,6 +1341,108 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Áp dụng'**
   String get apply;
+
+  /// No description provided for @addToBorrowList.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm vào danh sách mượn'**
+  String get addToBorrowList;
+
+  /// No description provided for @addedToBorrowList.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thêm vào danh sách mượn.'**
+  String get addedToBorrowList;
+
+  /// No description provided for @alreadyAddedToBorrowList.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thêm vào danh sách mượn'**
+  String get alreadyAddedToBorrowList;
+
+  /// No description provided for @alreadyInBorrowList.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách này đã có trong danh sách mượn.'**
+  String get alreadyInBorrowList;
+
+  /// No description provided for @borrowList.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh sách mượn'**
+  String get borrowList;
+
+  /// No description provided for @borrowListItemCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{Chưa có sách trong danh sách mượn} =1{1 sách trong danh sách mượn} other{{count} sách trong danh sách mượn}}'**
+  String borrowListItemCount(int count);
+
+  /// No description provided for @viewBorrowList.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem danh sách'**
+  String get viewBorrowList;
+
+  /// No description provided for @removeFromBorrowList.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa khỏi danh sách mượn'**
+  String get removeFromBorrowList;
+
+  /// No description provided for @removedFromBorrowList.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xóa khỏi danh sách mượn.'**
+  String get removedFromBorrowList;
+
+  /// No description provided for @clearBorrowList.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa tất cả'**
+  String get clearBorrowList;
+
+  /// No description provided for @clearBorrowListConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa toàn bộ sách khỏi danh sách mượn?'**
+  String get clearBorrowListConfirm;
+
+  /// No description provided for @borrowListEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh sách mượn của bạn đang trống.'**
+  String get borrowListEmpty;
+
+  /// No description provided for @borrowListEmptyDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm sách từ danh sách sách hoặc trang chi tiết sách.'**
+  String get borrowListEmptyDescription;
+
+  /// No description provided for @browseBooks.
+  ///
+  /// In vi, this message translates to:
+  /// **'Duyệt sách'**
+  String get browseBooks;
+
+  /// No description provided for @bookUnavailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách này hiện không khả dụng.'**
+  String get bookUnavailable;
+
+  /// No description provided for @added.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thêm'**
+  String get added;
+
+  /// No description provided for @confirmBorrowLaterNote.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận mượn sẽ được triển khai ở task sau.'**
+  String get confirmBorrowLaterNote;
 }
 
 class _AppLocalizationsDelegate
