@@ -4,6 +4,7 @@ import 'package:booksphere_app/features/auth/data/auth_session_service.dart';
 import 'package:booksphere_app/features/auth/presentation/login_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/register_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/splash_screen.dart';
+import 'package:booksphere_app/features/borrows/presentation/borrow_create_screen.dart';
 import 'package:booksphere_app/features/home/presentation/main_tab_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,6 +15,7 @@ class AppRoutes {
   static const login = '/login';
   static const register = '/register';
   static const main = '/main';
+  static const borrowCreate = '/borrows/create';
 }
 
 final _authSessionService = AuthSessionService(
@@ -39,6 +41,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.main,
       builder: (context, state) => const MainTabScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.borrowCreate,
+      builder: (context, state) {
+        final bookId = int.tryParse(state.uri.queryParameters['bookId'] ?? '');
+        return BorrowCreateScreen(bookId: bookId);
+      },
     ),
   ],
   redirect: (context, state) async {

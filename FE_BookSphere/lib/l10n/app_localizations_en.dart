@@ -342,4 +342,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileScreenPlaceholder => 'Profile Screen - BS-APP-16';
+
+  @override
+  String get borrowBook => 'Borrow Book';
+
+  @override
+  String get bookInfo => 'Book Information';
+
+  @override
+  String get quantity => 'Quantity';
+
+  @override
+  String get dueDate => 'Due Date';
+
+  @override
+  String get selectDueDate => 'Select due date';
+
+  @override
+  String get confirmBorrowTitle => 'Confirm Borrow';
+
+  @override
+  String confirmBorrowMessage(int quantity, String title, String date) {
+    return 'Are you sure you want to borrow $quantity copy/copies of \'$title\' until $date?';
+  }
+
+  @override
+  String get borrowSuccess => 'Borrow request created successfully!';
+
+  @override
+  String get bookOutOfStock => 'The requested quantity is no longer available.';
+
+  @override
+  String get bookInactive => 'This book is currently unavailable.';
+
+  @override
+  String get borrowSagaFailed =>
+      'Unable to create borrow request. Please try again.';
+
+  @override
+  String get quantityRequired => 'Please enter quantity.';
+
+  @override
+  String get quantityInvalid => 'Please enter a valid integer greater than 0.';
+
+  @override
+  String get quantityExceeded => 'Quantity cannot exceed available stock.';
+
+  @override
+  String get dueDateRequired => 'Please select a due date.';
+
+  @override
+  String get dueDateInvalid => 'Due date must be in the future.';
 }

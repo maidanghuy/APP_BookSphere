@@ -334,4 +334,54 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get profileScreenPlaceholder => 'プロフィール画面 - BS-APP-16';
+
+  @override
+  String get borrowBook => '本を借りる';
+
+  @override
+  String get bookInfo => '書籍情報';
+
+  @override
+  String get quantity => '数量';
+
+  @override
+  String get dueDate => '返却期限';
+
+  @override
+  String get selectDueDate => '返却期限を選択';
+
+  @override
+  String get confirmBorrowTitle => '貸出の確認';
+
+  @override
+  String confirmBorrowMessage(int quantity, String title, String date) {
+    return '「$title」を $quantity 冊、$date まで借りますか？';
+  }
+
+  @override
+  String get borrowSuccess => '貸出申請が正常に作成されました！';
+
+  @override
+  String get bookOutOfStock => '要求された数量はもう利用できません。';
+
+  @override
+  String get bookInactive => 'この本は現在利用できません。';
+
+  @override
+  String get borrowSagaFailed => '貸出申請を作成できません。もう一度お試しください。';
+
+  @override
+  String get quantityRequired => '数量を入力してください。';
+
+  @override
+  String get quantityInvalid => '0より大きい有効な整数を入力してください。';
+
+  @override
+  String get quantityExceeded => '数量は利用可能な在庫を超えることはできません。';
+
+  @override
+  String get dueDateRequired => '返却期限日を選択してください。';
+
+  @override
+  String get dueDateInvalid => '返却期限日は将来の日付にしてください。';
 }

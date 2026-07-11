@@ -108,5 +108,28 @@
   "categoryScreenPlaceholder": "Category Screen - BS-APP-13",
   "borrowScreenPlaceholder": "Borrow Screen - BS-APP-14",
   "notificationScreenPlaceholder": "Notification Screen - BS-APP-15",
-  "profileScreenPlaceholder": "Profile Screen - BS-APP-16"
+  "profileScreenPlaceholder": "Profile Screen - BS-APP-16",
+  "borrowBook": "Borrow Book",
+  "bookInfo": "Book Information",
+  "quantity": "Quantity",
+  "dueDate": "Due Date",
+  "selectDueDate": "Select due date",
+  "confirmBorrowTitle": "Confirm Borrow",
+  "confirmBorrowMessage": "Are you sure you want to borrow {quantity} copy/copies of '{title}' until {date}?",
+  "@confirmBorrowMessage": {
+    "placeholders": {
+      "quantity": { "type": "int" },
+      "title": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "borrowSuccess": "Borrow request created successfully!",
+  "bookOutOfStock": "The requested quantity is no longer available.",
+  "bookInactive": "This book is currently unavailable.",
+  "borrowSagaFailed": "Unable to create borrow request. Please try again.",
+  "quantityRequired": "Please enter quantity.",
+  "quantityInvalid": "Please enter a valid integer greater than 0.",
+  "quantityExceeded": "Quantity cannot exceed available stock.",
+  "dueDateRequired": "Please select a due date.",
+  "dueDateInvalid": "Due date must be in the future."
 }

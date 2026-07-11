@@ -753,6 +753,102 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Màn hình Hồ sơ - BS-APP-16'**
   String get profileScreenPlaceholder;
+
+  /// No description provided for @borrowBook.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mượn sách'**
+  String get borrowBook;
+
+  /// No description provided for @bookInfo.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông tin sách'**
+  String get bookInfo;
+
+  /// No description provided for @quantity.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số lượng'**
+  String get quantity;
+
+  /// No description provided for @dueDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hạn trả'**
+  String get dueDate;
+
+  /// No description provided for @selectDueDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn hạn trả sách'**
+  String get selectDueDate;
+
+  /// No description provided for @confirmBorrowTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận mượn sách'**
+  String get confirmBorrowTitle;
+
+  /// No description provided for @confirmBorrowMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có chắc chắn muốn mượn {quantity} cuốn \'{title}\' đến ngày {date} không?'**
+  String confirmBorrowMessage(int quantity, String title, String date);
+
+  /// No description provided for @borrowSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký mượn sách thành công!'**
+  String get borrowSuccess;
+
+  /// No description provided for @bookOutOfStock.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số lượng sách yêu cầu không còn đủ.'**
+  String get bookOutOfStock;
+
+  /// No description provided for @bookInactive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách này hiện không khả dụng.'**
+  String get bookInactive;
+
+  /// No description provided for @borrowSagaFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tạo yêu cầu mượn sách. Vui lòng thử lại.'**
+  String get borrowSagaFailed;
+
+  /// No description provided for @quantityRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập số lượng.'**
+  String get quantityRequired;
+
+  /// No description provided for @quantityInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập số nguyên lớn hơn 0.'**
+  String get quantityInvalid;
+
+  /// No description provided for @quantityExceeded.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số lượng không được vượt quá tồn kho khả dụng.'**
+  String get quantityExceeded;
+
+  /// No description provided for @dueDateRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng chọn hạn trả.'**
+  String get dueDateRequired;
+
+  /// No description provided for @dueDateInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hạn trả phải ở tương lai.'**
+  String get dueDateInvalid;
 }
 
 class _AppLocalizationsDelegate
