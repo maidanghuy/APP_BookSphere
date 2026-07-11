@@ -386,4 +386,18 @@ Coder: khduong84
 - Configured tap events navigating to `/borrows/:id` placeholder route.
 - Handles empty state ("You don't have any borrow records.") and network exceptions gracefully.
 
+## BS-APP-17 - Borrow Detail Screen
+
+Coder: khduong84
+
+- Implemented `BorrowDetailScreen` showing individual borrow session details.
+- Loads details using `GET /api/borrows/{borrowId}` mapped through `borrowDetailsProvider`.
+- Displays borrow session header: ID, Member Name, Username, status chip, and date logs.
+- Displays list of borrow items using `BorrowItemCard` rendering book metadata, quantities, and statuses.
+- Overdue warning banner displays when status is `OVERDUE` ("This borrow is overdue.").
+- Action return book button displays for `BORROWING`/`OVERDUE` statuses.
+- Calls `POST /api/borrows/{borrowId}/return` on confirmed action, showing a loading indicator and reloading the screens on success.
+- Handled network errors and empty states gracefully.
+
+
 

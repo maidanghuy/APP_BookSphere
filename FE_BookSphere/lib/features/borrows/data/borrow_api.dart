@@ -98,4 +98,53 @@ class BorrowApi {
       rethrow;
     }
   }
+
+  Future<BorrowDetailResponse> getBorrowDetail(int borrowId) async {
+    try {
+      final response = await _dioClient.get<Object?>(
+        '${ApiEndpoints.borrows}/$borrowId',
+      );
+      final responseData = response.data;
+      dev.log('BorrowApi.getBorrowDetail Response: $responseData');
+
+      if (responseData is! Map) {
+        throw Exception('Invalid response format: $responseData');
+      }
+
+      final data = responseData['data'];
+      if (data is! Map) {
+        throw Exception('Invalid response data format: $data');
+      }
+
+      return BorrowDetailResponse.fromJson(Map<String, dynamic>.from(data));
+    } catch (e, s) {
+      dev.log('BorrowApi.getBorrowDetail Exception: $e', error: e, stackTrace: s);
+      rethrow;
+    }
+  }
+
+  Future<BorrowDetailResponse> returnBorrow(int borrowId) async {
+    try {
+      final response = await _dioClient.post<Object?>(
+        '${ApiEndpoints.borrows}/$borrowId/return',
+        data: {},
+      );
+      final responseData = response.data;
+      dev.log('BorrowApi.returnBorrow Response: $responseData');
+
+      if (responseData is! Map) {
+        throw Exception('Invalid response format: $responseData');
+      }
+
+      final data = responseData['data'];
+      if (data is! Map) {
+        throw Exception('Invalid response data format: $data');
+      }
+
+      return BorrowDetailResponse.fromJson(Map<String, dynamic>.from(data));
+    } catch (e, s) {
+      dev.log('BorrowApi.returnBorrow Exception: $e', error: e, stackTrace: s);
+      rethrow;
+    }
+  }
 }

@@ -885,6 +885,42 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Đã hủy'**
   String get statusCancelled;
+
+  /// No description provided for @borrowDetails.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiết mượn sách'**
+  String get borrowDetails;
+
+  /// No description provided for @overdueWarning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiếu mượn này đã quá hạn!'**
+  String get overdueWarning;
+
+  /// No description provided for @returnBook.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trả sách'**
+  String get returnBook;
+
+  /// No description provided for @confirmReturnTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận trả sách'**
+  String get confirmReturnTitle;
+
+  /// No description provided for @confirmReturnMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có chắc chắn muốn trả sách cho phiếu mượn này không?'**
+  String get confirmReturnMessage;
+
+  /// No description provided for @returnSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trả sách thành công!'**
+  String get returnSuccess;
 }
 
 class _AppLocalizationsDelegate
