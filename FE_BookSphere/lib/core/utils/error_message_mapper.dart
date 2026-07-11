@@ -32,6 +32,9 @@ class ErrorMessageMapper {
       AppMessageKeys.bookOutOfStock => l10n.bookOutOfStock,
       AppMessageKeys.bookInactive => l10n.bookInactive,
       AppMessageKeys.borrowSagaFailed => l10n.borrowSagaFailed,
+      AppMessageKeys.borrowAlreadyReturned => l10n.borrowAlreadyReturned,
+      AppMessageKeys.borrowNotFound => l10n.borrowNotFound,
+      AppMessageKeys.borrowNotAllowed => l10n.borrowNotAllowed,
       AppMessageKeys.unknownError => l10n.unknownError,
       _ => l10n.unknownError,
     };

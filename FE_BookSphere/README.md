@@ -399,5 +399,19 @@ Coder: khduong84
 - Calls `POST /api/borrows/{borrowId}/return` on confirmed action, showing a loading indicator and reloading the screens on success.
 - Handled network errors and empty states gracefully.
 
+## BS-APP-18 - Return Book Flow
+
+Coder: khduong84
+
+- Implemented the complete **Return Book Flow** allowing users to return books from `BorrowDetailScreen`.
+- **Confirm Dialog**: Shows a verification dialog displaying the Borrow ID, Borrow Date, Due Date, and Status before calling the API.
+- **Overdue warning inside dialog**: Shows the alert warning *"This borrow is overdue. Returning the book may incur a fine."* if the borrow status is `OVERDUE`.
+- **Loading & Blocker State**: Displays a loader on the return button and blocks UI interactions with a semi-transparent `ModalBarrier` to prevent double-clicks or multiple submissions during API processing.
+- **API Integration**: Connects to `POST /api/borrows/{borrowId}/return`.
+- **Success & Refresh**: Displays a success message and invalidates `borrowDetailsProvider` and `borrowListProvider` to trigger automatic reloads.
+- **Business Error Handling**: Gracefully maps specific business error codes (`BORROW_ALREADY_RETURNED`, `BORROW_NOT_FOUND`, `BORROW_NOT_ALLOWED`) through the error message mapper and shows friendly warning messages to the user.
 
 
+
+
+<!-- BS-APP-18: Return Book Flow Completed -->

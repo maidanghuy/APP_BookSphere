@@ -143,5 +143,9 @@
   "returnBook": "Return Book",
   "confirmReturnTitle": "Confirm Return",
   "confirmReturnMessage": "Are you sure you want to return books for this borrow request?",
-  "returnSuccess": "Books returned successfully!"
+  "returnSuccess": "Books returned successfully!",
+  "borrowAlreadyReturned": "This borrow has already been returned.",
+  "borrowNotFound": "Borrow record not found.",
+  "borrowNotAllowed": "You are not allowed to return this borrow.",
+  "overdueReturnWarning": "This borrow is overdue. Returning the book may incur a fine."
 }

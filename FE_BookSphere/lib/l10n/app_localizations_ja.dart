@@ -420,4 +420,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get returnSuccess => '本が正常に返却されました！';
+
+  @override
+  String get borrowAlreadyReturned => 'この貸出はすでに返却されています。';
+
+  @override
+  String get borrowNotFound => '貸出記録が見つかりません。';
+
+  @override
+  String get borrowNotAllowed => 'この貸出の返却は許可されていません。';
+
+  @override
+  String get overdueReturnWarning => 'この貸出は期限切れです。本を返却すると罰金が発生する可能性があります。';
 }

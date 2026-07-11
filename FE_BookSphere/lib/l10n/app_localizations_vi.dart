@@ -430,4 +430,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get returnSuccess => 'Trả sách thành công!';
+
+  @override
+  String get borrowAlreadyReturned => 'Phiếu mượn này đã được trả sách.';
+
+  @override
+  String get borrowNotFound => 'Không tìm thấy thông tin phiếu mượn.';
+
+  @override
+  String get borrowNotAllowed =>
+      'Bạn không có quyền trả sách cho phiếu mượn này.';
+
+  @override
+  String get overdueReturnWarning =>
+      'Phiếu mượn này đã quá hạn. Việc trả sách có thể phát sinh phí phạt.';
 }
