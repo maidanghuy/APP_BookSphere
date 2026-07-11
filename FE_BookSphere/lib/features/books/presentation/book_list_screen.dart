@@ -7,7 +7,12 @@ import 'package:booksphere_app/features/books/presentation/widgets/book_card.dar
 import 'package:booksphere_app/features/books/presentation/widgets/book_empty_state.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/book_filter_bottom_sheet.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/book_list_skeleton.dart';
+import 'package:booksphere_app/features/books/presentation/widgets/book_search_filter_bar.dart';
 import 'package:booksphere_app/features/books/providers/book_list_provider.dart';
+import 'package:booksphere_app/features/borrow_cart/data/borrow_cart_item.dart';
+import 'package:booksphere_app/features/borrow_cart/presentation/borrow_cart_helpers.dart';
+import 'package:booksphere_app/features/borrow_cart/presentation/widgets/borrow_cart_icon.dart';
+import 'package:booksphere_app/features/borrow_cart/providers/borrow_cart_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -93,6 +98,14 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
     }
   }
 
+  void _addToBorrowCart(BookSummary book) {
+    final feedback = addBookToBorrowCart(
+      ref,
+      BorrowCartItem.fromBookSummary(book),
+    );
+    showBorrowCartFeedback(context, ref, feedback);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -100,6 +113,7 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
     final colorScheme = theme.colorScheme;
     final state = ref.watch(bookListProvider);
     final notifier = ref.read(bookListProvider.notifier);
+    final cart = ref.watch(borrowCartProvider);
     final visibleBooks = state.visibleBooks;
 
     if (state.searchKeyword.isEmpty && _searchController.text.isNotEmpty) {
@@ -119,51 +133,21 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: colorScheme.onSurface,
+        actions: const [BorrowCartIcon()],
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    textInputAction: TextInputAction.search,
-                    onChanged: notifier.search,
-                    onSubmitted: (value) {
-                      notifier.search(value);
-                    },
-                    decoration: InputDecoration(
-                      hintText: l10n.searchByTitleAuthorIsbn,
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: state.searchKeyword.isEmpty
-                          ? null
-                          : IconButton(
-                              tooltip: l10n.clearSearch,
-                              onPressed: () {
-                                _searchController.clear();
-                                notifier.clearSearch();
-                              },
-                              icon: const Icon(Icons.clear),
-                            ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton.filledTonal(
-                  tooltip: l10n.filters,
-                  onPressed: _openFilters,
-                  icon: Badge(
-                    isLabelVisible: state.filter.hasNonKeywordFilters,
-                    child: const Icon(Icons.tune),
-                  ),
-                ),
-              ],
-            ),
+          BookSearchFilterBar(
+            controller: _searchController,
+            searchKeyword: state.searchKeyword,
+            hasActiveNonKeywordFilters: state.filter.hasNonKeywordFilters,
+            onChanged: notifier.search,
+            onSubmitted: notifier.search,
+            onClearSearch: () {
+              _searchController.clear();
+              notifier.clearSearch();
+            },
+            onOpenFilters: _openFilters,
           ),
           if (state.filter.hasCategory || state.filter.hasAvailability)
             Padding(
@@ -179,7 +163,9 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
                 },
               ),
             ),
-          Expanded(child: _buildBody(context, state, visibleBooks, notifier)),
+          Expanded(
+            child: _buildBody(context, state, visibleBooks, notifier, cart),
+          ),
         ],
       ),
     );
@@ -190,6 +176,7 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
     BookListState state,
     List<BookSummary> visibleBooks,
     BookListNotifier notifier,
+    BorrowCartState cart,
   ) {
     final l10n = context.l10n;
     final colorScheme = Theme.of(context).colorScheme;
@@ -279,7 +266,9 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
                 final book = visibleBooks[index];
                 return BookCard(
                   book: book,
+                  isInBorrowList: cart.contains(book.id),
                   onTap: () => context.push('/books/${book.id}'),
+                  onAddToBorrowList: () => _addToBorrowCart(book),
                 );
               },
             ),

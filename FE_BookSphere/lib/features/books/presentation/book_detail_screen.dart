@@ -7,6 +7,10 @@ import 'package:booksphere_app/features/books/presentation/widgets/book_detail_h
 import 'package:booksphere_app/features/books/presentation/widgets/book_detail_skeleton.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/book_information_section.dart';
 import 'package:booksphere_app/features/books/providers/book_detail_provider.dart';
+import 'package:booksphere_app/features/borrow_cart/data/borrow_cart_item.dart';
+import 'package:booksphere_app/features/borrow_cart/presentation/borrow_cart_helpers.dart';
+import 'package:booksphere_app/features/borrow_cart/presentation/widgets/borrow_cart_icon.dart';
+import 'package:booksphere_app/features/borrow_cart/providers/borrow_cart_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -45,6 +49,7 @@ class BookDetailScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         foregroundColor: colorScheme.onSurface,
         actions: [
+          const BorrowCartIcon(),
           IconButton(
             tooltip: l10n.retry,
             onPressed: () {
@@ -92,16 +97,20 @@ class BookDetailScreen extends ConsumerWidget {
   }
 }
 
-class _BookDetailBody extends StatelessWidget {
+class _BookDetailBody extends ConsumerWidget {
   const _BookDetailBody({required this.book});
 
   final BookDetail book;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final description = book.description?.trim();
+    final alreadyInCart = ref.watch(
+      borrowCartProvider.select((s) => s.contains(book.id)),
+    );
+    final canAdd = book.isAvailable;
 
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -130,9 +139,24 @@ class _BookDetailBody extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 28),
-        // Borrow Flow is out of BS-APP-13 scope.
-        // TODO(BS-APP-14/15): Wire borrow action when product flow requires it.
-        FilledButton(onPressed: null, child: Text(l10n.borrowBook)),
+        // Temporary borrow cart only — real borrow API is a later task.
+        FilledButton.icon(
+          onPressed: canAdd
+              ? () {
+                  final feedback = addBookToBorrowCart(
+                    ref,
+                    BorrowCartItem.fromBookDetail(book),
+                  );
+                  showBorrowCartFeedback(context, ref, feedback);
+                }
+              : null,
+          icon: Icon(
+            alreadyInCart
+                ? Icons.library_add_check
+                : Icons.library_add_outlined,
+          ),
+          label: Text(l10n.addToBorrowList),
+        ),
       ],
     );
   }

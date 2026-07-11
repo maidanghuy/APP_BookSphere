@@ -460,3 +460,16 @@ Assignee: Hiển
 - Stale request protection prevents older responses from overwriting newer search results.
 - Empty/error states distinguish no books, no search results, and no filter results.
 - Does not implement Book Detail or Borrow Flow changes in this task.
+
+## BS-APP-14A - Responsive Search/Filter và Borrow Cart UI
+
+Coder: maidanghuy  
+Assignee: Hiển
+
+- Search and Filter layout is responsive for phones: column under ~420px width, row on wider screens, with spacing so controls are not stuck together.
+- Shared temporary Borrow Cart (Riverpod, in-memory) used by Book List and Book Detail.
+- Cart badge shows item count; Add / Remove / Clear are supported.
+- Duplicate books and unavailable books cannot be added.
+- Snackbars cover success, already-in-list, and unavailable cases with a View list action.
+- Route: `/borrow-cart` (auth-guarded). Confirm Borrow / borrow API is not called in this task.
+- Vietnamese, English, and Japanese localization for Borrow Cart texts.

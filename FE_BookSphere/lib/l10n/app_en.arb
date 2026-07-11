@@ -224,5 +224,27 @@
   "tryDifferentSearch": "Try a different keyword.",
   "loadCategoriesFailed": "Unable to load categories.",
   "searchBooksFailed": "Unable to search books. Please try again.",
-  "apply": "Apply"
+  "apply": "Apply",
+  "addToBorrowList": "Add to Borrow List",
+  "addedToBorrowList": "Added to borrow list.",
+  "alreadyAddedToBorrowList": "Added to Borrow List",
+  "alreadyInBorrowList": "This book is already in your borrow list.",
+  "borrowList": "Borrow List",
+  "borrowListItemCount": "{count, plural, =0{No books in borrow list} =1{1 book in borrow list} other{{count} books in borrow list}}",
+  "@borrowListItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "viewBorrowList": "View list",
+  "removeFromBorrowList": "Remove from borrow list",
+  "removedFromBorrowList": "Removed from borrow list.",
+  "clearBorrowList": "Clear all",
+  "clearBorrowListConfirm": "Remove all books from the borrow list?",
+  "borrowListEmpty": "Your borrow list is empty.",
+  "borrowListEmptyDescription": "Add books from the book list or book details.",
+  "browseBooks": "Browse Books",
+  "bookUnavailable": "This book is currently unavailable.",
+  "added": "Added",
+  "confirmBorrowLaterNote": "Confirm Borrow will be implemented in a later task."
 }
