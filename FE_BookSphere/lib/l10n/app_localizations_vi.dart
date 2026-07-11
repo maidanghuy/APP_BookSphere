@@ -411,4 +411,23 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get statusCancelled => 'Đã hủy';
+
+  @override
+  String get borrowDetails => 'Chi tiết mượn sách';
+
+  @override
+  String get overdueWarning => 'Phiếu mượn này đã quá hạn!';
+
+  @override
+  String get returnBook => 'Trả sách';
+
+  @override
+  String get confirmReturnTitle => 'Xác nhận trả sách';
+
+  @override
+  String get confirmReturnMessage =>
+      'Bạn có chắc chắn muốn trả sách cho phiếu mượn này không?';
+
+  @override
+  String get returnSuccess => 'Trả sách thành công!';
 }

@@ -137,5 +137,11 @@
   "statusBorrowing": "貸出中",
   "statusOverdue": "期限切れ",
   "statusReturned": "返却済み",
-  "statusCancelled": "キャンセル"
+  "statusCancelled": "キャンセル",
+  "borrowDetails": "貸出詳細",
+  "overdueWarning": "この貸出は期限切れです。",
+  "returnBook": "本を返却する",
+  "confirmReturnTitle": "返却の確認",
+  "confirmReturnMessage": "この貸出申請の本を返却しますか？",
+  "returnSuccess": "本が正常に返却されました！"
 }

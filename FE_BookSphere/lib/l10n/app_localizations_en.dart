@@ -411,4 +411,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusCancelled => 'Cancelled';
+
+  @override
+  String get borrowDetails => 'Borrow Details';
+
+  @override
+  String get overdueWarning => 'This borrow is overdue.';
+
+  @override
+  String get returnBook => 'Return Book';
+
+  @override
+  String get confirmReturnTitle => 'Confirm Return';
+
+  @override
+  String get confirmReturnMessage =>
+      'Are you sure you want to return books for this borrow request?';
+
+  @override
+  String get returnSuccess => 'Books returned successfully!';
 }

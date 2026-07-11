@@ -199,3 +199,54 @@ class BorrowListNotifier extends Notifier<BorrowListState> {
 final borrowListProvider = NotifierProvider<BorrowListNotifier, BorrowListState>(
   BorrowListNotifier.new,
 );
+
+final borrowDetailsProvider = FutureProvider.family.autoDispose<BorrowDetailResponse, int>((ref, id) async {
+  return ref.read(borrowRepositoryProvider).getBorrowDetail(id);
+});
+
+class BorrowReturnState {
+  final bool isLoading;
+  final bool isSuccess;
+  final String? errorCode;
+  final String? errorMessage;
+
+  const BorrowReturnState({
+    this.isLoading = false,
+    this.isSuccess = false,
+    this.errorCode,
+    this.errorMessage,
+  });
+}
+
+class BorrowReturnController extends Notifier<BorrowReturnState> {
+  @override
+  BorrowReturnState build() {
+    return const BorrowReturnState();
+  }
+
+  Future<bool> returnBorrow(int id) async {
+    if (state.isLoading) return false;
+    state = const BorrowReturnState(isLoading: true);
+
+    try {
+      await ref.read(borrowRepositoryProvider).returnBorrow(id);
+      state = const BorrowReturnState(isSuccess: true);
+      return true;
+    } on BorrowException catch (error) {
+      dev.log('BorrowReturnController.returnBorrow BorrowException: ${error.code}');
+      state = BorrowReturnState(
+        errorCode: error.code,
+        errorMessage: error.message,
+      );
+      return false;
+    } catch (error, stackTrace) {
+      dev.log('BorrowReturnController.returnBorrow Unexpected Error: $error', error: error, stackTrace: stackTrace);
+      state = const BorrowReturnState(errorCode: 'UNKNOWN_ERROR');
+      return false;
+    }
+  }
+}
+
+final borrowReturnControllerProvider = NotifierProvider<BorrowReturnController, BorrowReturnState>(
+  BorrowReturnController.new,
+);

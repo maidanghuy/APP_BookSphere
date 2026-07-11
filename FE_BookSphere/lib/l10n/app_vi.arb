@@ -137,5 +137,11 @@
   "statusBorrowing": "Đang mượn",
   "statusOverdue": "Quá hạn",
   "statusReturned": "Đã trả",
-  "statusCancelled": "Đã hủy"
+  "statusCancelled": "Đã hủy",
+  "borrowDetails": "Chi tiết mượn sách",
+  "overdueWarning": "Phiếu mượn này đã quá hạn!",
+  "returnBook": "Trả sách",
+  "confirmReturnTitle": "Xác nhận trả sách",
+  "confirmReturnMessage": "Bạn có chắc chắn muốn trả sách cho phiếu mượn này không?",
+  "returnSuccess": "Trả sách thành công!"
 }

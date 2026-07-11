@@ -137,5 +137,11 @@
   "statusBorrowing": "Borrowing",
   "statusOverdue": "Overdue",
   "statusReturned": "Returned",
-  "statusCancelled": "Cancelled"
+  "statusCancelled": "Cancelled",
+  "borrowDetails": "Borrow Details",
+  "overdueWarning": "This borrow is overdue.",
+  "returnBook": "Return Book",
+  "confirmReturnTitle": "Confirm Return",
+  "confirmReturnMessage": "Are you sure you want to return books for this borrow request?",
+  "returnSuccess": "Books returned successfully!"
 }

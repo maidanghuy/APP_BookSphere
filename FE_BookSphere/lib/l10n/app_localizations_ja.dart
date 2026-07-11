@@ -402,4 +402,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get statusCancelled => 'キャンセル';
+
+  @override
+  String get borrowDetails => '貸出詳細';
+
+  @override
+  String get overdueWarning => 'この貸出は期限切れです。';
+
+  @override
+  String get returnBook => '本を返却する';
+
+  @override
+  String get confirmReturnTitle => '返却の確認';
+
+  @override
+  String get confirmReturnMessage => 'この貸出申請の本を返却しますか？';
+
+  @override
+  String get returnSuccess => '本が正常に返却されました！';
 }

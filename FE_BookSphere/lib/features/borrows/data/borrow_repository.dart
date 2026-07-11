@@ -61,6 +61,22 @@ class BorrowRepository {
     }
   }
 
+  Future<BorrowDetailResponse> getBorrowDetail(int borrowId) async {
+    try {
+      return await _borrowApi.getBorrowDetail(borrowId);
+    } on DioException catch (error) {
+      throw _mapDioError(error);
+    }
+  }
+
+  Future<BorrowDetailResponse> returnBorrow(int borrowId) async {
+    try {
+      return await _borrowApi.returnBorrow(borrowId);
+    } on DioException catch (error) {
+      throw _mapDioError(error);
+    }
+  }
+
   BorrowException _mapDioError(DioException error) {
     final apiException = ApiException.fromDioException(error);
     final code = _resolveErrorCode(apiException);
