@@ -945,6 +945,102 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Phiếu mượn này đã quá hạn. Việc trả sách có thể phát sinh phí phạt.'**
   String get overdueReturnWarning;
+
+  /// No description provided for @searchByTitleAuthorIsbn.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm theo tên sách, tác giả hoặc ISBN'**
+  String get searchByTitleAuthorIsbn;
+
+  /// No description provided for @allCategories.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả thể loại'**
+  String get allCategories;
+
+  /// No description provided for @allAvailability.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả'**
+  String get allAvailability;
+
+  /// No description provided for @available.
+  ///
+  /// In vi, this message translates to:
+  /// **'Còn sách'**
+  String get available;
+
+  /// No description provided for @unavailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hết sách'**
+  String get unavailable;
+
+  /// No description provided for @availableOnly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ sách còn sẵn'**
+  String get availableOnly;
+
+  /// No description provided for @copiesAvailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Còn {count} bản'**
+  String copiesAvailable(int count);
+
+  /// No description provided for @noBooks.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thư viện chưa có sách nào.'**
+  String get noBooks;
+
+  /// No description provided for @noBooksFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy sách phù hợp với tìm kiếm hoặc bộ lọc.'**
+  String get noBooksFound;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa bộ lọc'**
+  String get clearFilters;
+
+  /// No description provided for @loadBooksFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tải danh sách sách.'**
+  String get loadBooksFailed;
+
+  /// No description provided for @checkConnectionAndRetry.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng kiểm tra kết nối và thử lại.'**
+  String get checkConnectionAndRetry;
+
+  /// No description provided for @loadingMore.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải thêm...'**
+  String get loadingMore;
+
+  /// No description provided for @unknownAuthor.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa rõ tác giả'**
+  String get unknownAuthor;
+
+  /// No description provided for @unknownCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa phân loại'**
+  String get unknownCategory;
+
+  /// No description provided for @accessDenied.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không có quyền xem nội dung này.'**
+  String get accessDenied;
 }
 
 class _AppLocalizationsDelegate

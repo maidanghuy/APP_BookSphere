@@ -415,3 +415,18 @@ Coder: khduong84
 
 
 <!-- BS-APP-18: Return Book Flow Completed -->
+
+## BS-APP-12 - Book List Screen
+
+Coder: maidanghuy  
+Assignee: Hiển
+
+- Book List calls book APIs through the API Gateway (`AppConfig.apiBaseUrl` + `ApiEndpoints.books` / `ApiEndpoints.categories`).
+- Search books by title, author, or ISBN with debounce.
+- Category filter from `GET /api/categories`.
+- Availability filter is client-side only (backend does not expose an availability query parameter).
+- Pagination / infinite scroll with pull-to-refresh.
+- Loading skeleton, empty, and error states with retry.
+- Books tab in Main Tab shows `BookListScreen`.
+- Vietnamese, English, and Japanese localization for Book List texts.
+- Book Detail will be implemented in BS-APP-13.
