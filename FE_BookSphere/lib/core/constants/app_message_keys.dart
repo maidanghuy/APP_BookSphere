@@ -19,4 +19,8 @@ class AppMessageKeys {
   static const String networkError = 'NETWORK_ERROR';
   static const String serverUnavailable = 'SERVER_UNAVAILABLE';
   static const String unknownError = 'UNKNOWN_ERROR';
+
+  static const String bookOutOfStock = 'BOOK_OUT_OF_STOCK';
+  static const String bookInactive = 'BOOK_INACTIVE';
+  static const String borrowSagaFailed = 'BORROW_SAGA_FAILED';
 }

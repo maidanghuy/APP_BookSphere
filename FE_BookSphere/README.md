@@ -340,11 +340,23 @@ Coder: maidanghuy
 - Real book API integration will be implemented in later Book tasks.
 - Main Tab Layout is provided by BS-APP-10.
 
-## API Base URL
-
 Pass `API_BASE_URL` with `--dart-define`:
 
 ```bash
 flutter run \
   --dart-define=API_BASE_URL=http://192.168.1.10:8080
 ```
+
+## BS-APP-15 - Borrow Create Screen
+
+Coder: Codex
+
+- Implemented `BorrowCreateScreen` to allow members to request a book loan.
+- Decoupled from `BookDetailScreen` by loading book information independently using a `bookId` parameter.
+- Validates quantity input (required, positive integer, up to available quantity).
+- Features a due date picker that defaults to 14 days from today and enforces future dates.
+- Requires confirmation before submission.
+- Calls `POST /api/borrows` to initiate the SAGA workflow.
+- Gracefully handles business exceptions (`BOOK_OUT_OF_STOCK`, `BOOK_INACTIVE`, `BORROW_SAGA_FAILED`).
+- Automatically invalidates/reloads book details on successful borrow creation.
+

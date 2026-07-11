@@ -299,4 +299,56 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profileScreenPlaceholder => 'Màn hình Hồ sơ - BS-APP-16';
+
+  @override
+  String get borrowBook => 'Mượn sách';
+
+  @override
+  String get bookInfo => 'Thông tin sách';
+
+  @override
+  String get quantity => 'Số lượng';
+
+  @override
+  String get dueDate => 'Hạn trả';
+
+  @override
+  String get selectDueDate => 'Chọn hạn trả sách';
+
+  @override
+  String get confirmBorrowTitle => 'Xác nhận mượn sách';
+
+  @override
+  String confirmBorrowMessage(int quantity, String title, String date) {
+    return 'Bạn có chắc chắn muốn mượn $quantity cuốn \'$title\' đến ngày $date không?';
+  }
+
+  @override
+  String get borrowSuccess => 'Đăng ký mượn sách thành công!';
+
+  @override
+  String get bookOutOfStock => 'Số lượng sách yêu cầu không còn đủ.';
+
+  @override
+  String get bookInactive => 'Sách này hiện không khả dụng.';
+
+  @override
+  String get borrowSagaFailed =>
+      'Không thể tạo yêu cầu mượn sách. Vui lòng thử lại.';
+
+  @override
+  String get quantityRequired => 'Vui lòng nhập số lượng.';
+
+  @override
+  String get quantityInvalid => 'Vui lòng nhập số nguyên lớn hơn 0.';
+
+  @override
+  String get quantityExceeded =>
+      'Số lượng không được vượt quá tồn kho khả dụng.';
+
+  @override
+  String get dueDateRequired => 'Vui lòng chọn hạn trả.';
+
+  @override
+  String get dueDateInvalid => 'Hạn trả phải ở tương lai.';
 }

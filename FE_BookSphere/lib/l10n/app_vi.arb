@@ -94,5 +94,28 @@
   "categoryScreenPlaceholder": "Màn hình Danh mục - BS-APP-13",
   "borrowScreenPlaceholder": "Màn hình Mượn sách - BS-APP-14",
   "notificationScreenPlaceholder": "Màn hình Thông báo - BS-APP-15",
-  "profileScreenPlaceholder": "Màn hình Hồ sơ - BS-APP-16"
+  "profileScreenPlaceholder": "Màn hình Hồ sơ - BS-APP-16",
+  "borrowBook": "Mượn sách",
+  "bookInfo": "Thông tin sách",
+  "quantity": "Số lượng",
+  "dueDate": "Hạn trả",
+  "selectDueDate": "Chọn hạn trả sách",
+  "confirmBorrowTitle": "Xác nhận mượn sách",
+  "confirmBorrowMessage": "Bạn có chắc chắn muốn mượn {quantity} cuốn '{title}' đến ngày {date} không?",
+  "@confirmBorrowMessage": {
+    "placeholders": {
+      "quantity": { "type": "int" },
+      "title": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "borrowSuccess": "Đăng ký mượn sách thành công!",
+  "bookOutOfStock": "Số lượng sách yêu cầu không còn đủ.",
+  "bookInactive": "Sách này hiện không khả dụng.",
+  "borrowSagaFailed": "Không thể tạo yêu cầu mượn sách. Vui lòng thử lại.",
+  "quantityRequired": "Vui lòng nhập số lượng.",
+  "quantityInvalid": "Vui lòng nhập số nguyên lớn hơn 0.",
+  "quantityExceeded": "Số lượng không được vượt quá tồn kho khả dụng.",
+  "dueDateRequired": "Vui lòng chọn hạn trả.",
+  "dueDateInvalid": "Hạn trả phải ở tương lai."
 }

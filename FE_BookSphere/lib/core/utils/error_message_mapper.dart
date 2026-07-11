@@ -29,6 +29,9 @@ class ErrorMessageMapper {
       AppMessageKeys.authRegisterInvalidResponse => l10n.serverUnavailable,
       AppMessageKeys.invalidRegistrationData => l10n.invalidRegistrationData,
       AppMessageKeys.registrationConflict => l10n.registrationConflict,
+      AppMessageKeys.bookOutOfStock => l10n.bookOutOfStock,
+      AppMessageKeys.bookInactive => l10n.bookInactive,
+      AppMessageKeys.borrowSagaFailed => l10n.borrowSagaFailed,
       AppMessageKeys.unknownError => l10n.unknownError,
       _ => l10n.unknownError,
     };
