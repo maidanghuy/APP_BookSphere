@@ -246,5 +246,44 @@
   "browseBooks": "Duyệt sách",
   "bookUnavailable": "Sách này hiện không khả dụng.",
   "added": "Đã thêm",
-  "confirmBorrowLaterNote": "Xác nhận mượn sẽ được triển khai ở task sau."
+  "confirmBorrowLaterNote": "Xác nhận mượn sẽ được triển khai ở task sau.",
+  "borrowCart": "Giỏ mượn",
+  "borrowCartQuantity": "{count, plural, =0{Chưa có sách trong danh sách mượn} =1{1 sách trong danh sách mượn} other{{count} sách trong danh sách mượn}}",
+  "@borrowCartQuantity": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "distinctBooks": "{count, plural, =0{0 đầu sách} =1{1 đầu sách} other{{count} đầu sách}}",
+  "@distinctBooks": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "totalBooks": "{count, plural, =0{Tổng 0 sách} =1{Tổng 1 sách} other{Tổng {count} sách}}",
+  "@totalBooks": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "selectedQuantity": "Đã chọn {selected} / {available} bản còn lại",
+  "@selectedQuantity": {
+    "placeholders": {
+      "selected": { "type": "int" },
+      "available": { "type": "int" }
+    }
+  },
+  "addToBorrowCart": "Thêm vào giỏ mượn",
+  "updateBorrowCart": "Cập nhật giỏ mượn",
+  "editCartItem": "Sửa",
+  "removeFromCart": "Xóa",
+  "quantityMinimumError": "Số lượng phải ít nhất là 1.",
+  "quantityExceedsAvailable": "Hiện chỉ còn {count} bản.",
+  "@quantityExceedsAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "bookAlreadyInCart": "Sách này đã có trong giỏ mượn.",
+  "viewBorrowCart": "Xem"
 }

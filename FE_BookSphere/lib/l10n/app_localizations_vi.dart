@@ -710,4 +710,74 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get confirmBorrowLaterNote =>
       'Xác nhận mượn sẽ được triển khai ở task sau.';
+
+  @override
+  String get borrowCart => 'Giỏ mượn';
+
+  @override
+  String borrowCartQuantity(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sách trong danh sách mượn',
+      one: '1 sách trong danh sách mượn',
+      zero: 'Chưa có sách trong danh sách mượn',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String distinctBooks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count đầu sách',
+      one: '1 đầu sách',
+      zero: '0 đầu sách',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String totalBooks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tổng $count sách',
+      one: 'Tổng 1 sách',
+      zero: 'Tổng 0 sách',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String selectedQuantity(int selected, int available) {
+    return 'Đã chọn $selected / $available bản còn lại';
+  }
+
+  @override
+  String get addToBorrowCart => 'Thêm vào giỏ mượn';
+
+  @override
+  String get updateBorrowCart => 'Cập nhật giỏ mượn';
+
+  @override
+  String get editCartItem => 'Sửa';
+
+  @override
+  String get removeFromCart => 'Xóa';
+
+  @override
+  String get quantityMinimumError => 'Số lượng phải ít nhất là 1.';
+
+  @override
+  String quantityExceedsAvailable(int count) {
+    return 'Hiện chỉ còn $count bản.';
+  }
+
+  @override
+  String get bookAlreadyInCart => 'Sách này đã có trong giỏ mượn.';
+
+  @override
+  String get viewBorrowCart => 'Xem';
 }

@@ -2,6 +2,7 @@ import 'package:booksphere_app/core/constants/app_message_keys.dart';
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:booksphere_app/core/utils/error_message_mapper.dart';
 import 'package:booksphere_app/features/books/data/models/book_summary.dart';
+import 'package:booksphere_app/features/books/presentation/book_detail_route_args.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/active_filter_chips.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/book_card.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/book_empty_state.dart';
@@ -9,9 +10,7 @@ import 'package:booksphere_app/features/books/presentation/widgets/book_filter_b
 import 'package:booksphere_app/features/books/presentation/widgets/book_list_skeleton.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/book_search_filter_bar.dart';
 import 'package:booksphere_app/features/books/providers/book_list_provider.dart';
-import 'package:booksphere_app/features/borrow_cart/data/borrow_cart_item.dart';
-import 'package:booksphere_app/features/borrow_cart/presentation/borrow_cart_helpers.dart';
-import 'package:booksphere_app/features/borrow_cart/presentation/widgets/borrow_cart_icon.dart';
+import 'package:booksphere_app/features/borrow_cart/presentation/widgets/floating_borrow_cart.dart';
 import 'package:booksphere_app/features/borrow_cart/providers/borrow_cart_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,12 +97,11 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
     }
   }
 
-  void _addToBorrowCart(BookSummary book) {
-    final feedback = addBookToBorrowCart(
-      ref,
-      BorrowCartItem.fromBookSummary(book),
+  void _openBookDetail(BookSummary book) {
+    context.push(
+      '/books/${book.id}',
+      extra: const BookDetailRouteArgs(mode: BookDetailMode.add),
     );
-    showBorrowCartFeedback(context, ref, feedback);
   }
 
   @override
@@ -115,6 +113,7 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
     final notifier = ref.read(bookListProvider.notifier);
     final cart = ref.watch(borrowCartProvider);
     final visibleBooks = state.visibleBooks;
+    final hasFloatingCart = !cart.isEmpty;
 
     if (state.searchKeyword.isEmpty && _searchController.text.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -133,7 +132,6 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: colorScheme.onSurface,
-        actions: const [BorrowCartIcon()],
       ),
       body: Column(
         children: [
@@ -164,10 +162,18 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
               ),
             ),
           Expanded(
-            child: _buildBody(context, state, visibleBooks, notifier, cart),
+            child: _buildBody(
+              context,
+              state,
+              visibleBooks,
+              notifier,
+              cart,
+              hasFloatingCart: hasFloatingCart,
+            ),
           ),
         ],
       ),
+      bottomNavigationBar: const FloatingBorrowCart(),
     );
   }
 
@@ -176,10 +182,12 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
     BookListState state,
     List<BookSummary> visibleBooks,
     BookListNotifier notifier,
-    BorrowCartState cart,
-  ) {
+    BorrowCartState cart, {
+    required bool hasFloatingCart,
+  }) {
     final l10n = context.l10n;
     final colorScheme = Theme.of(context).colorScheme;
+    final bottomPadding = hasFloatingCart ? 96.0 : 24.0;
 
     if (state.isLoading && state.books.isEmpty) {
       return const BookListSkeleton();
@@ -240,7 +248,7 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
           : ListView.builder(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              padding: EdgeInsets.fromLTRB(16, 0, 16, bottomPadding),
               itemCount: visibleBooks.length + (state.isLoadingMore ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index >= visibleBooks.length) {
@@ -267,8 +275,8 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
                 return BookCard(
                   book: book,
                   isInBorrowList: cart.contains(book.id),
-                  onTap: () => context.push('/books/${book.id}'),
-                  onAddToBorrowList: () => _addToBorrowCart(book),
+                  onTap: () => _openBookDetail(book),
+                  onAddToBorrowList: () => _openBookDetail(book),
                 );
               },
             ),

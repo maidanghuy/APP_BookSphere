@@ -473,3 +473,16 @@ Assignee: Hiển
 - Snackbars cover success, already-in-list, and unavailable cases with a View list action.
 - Route: `/borrow-cart` (auth-guarded). Confirm Borrow / borrow API is not called in this task.
 - Vietnamese, English, and Japanese localization for Borrow Cart texts.
+
+## BS-APP-14B - Borrow Cart Interaction và Quantity Flow
+
+Coder: maidanghuy  
+Assignee: Hiển
+
+- Book List card and plus action open Book Detail Add mode (no direct cart add from the list).
+- Book Detail has a quantity selector validated against available copies.
+- Add mode returns to Book List; Edit mode returns to Borrow Cart.
+- Floating Borrow Cart on Book List shows total quantity and opens `/borrow-cart`.
+- No success popup/snackbar after add or update; validation errors still show messages.
+- Borrow Cart Screen shows quantity, Edit, and Remove per item.
+- Borrow Cart remains local-only; borrow transaction API is not called.
