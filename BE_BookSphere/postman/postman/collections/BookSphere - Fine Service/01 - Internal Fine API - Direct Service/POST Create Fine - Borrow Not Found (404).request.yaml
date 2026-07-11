@@ -1,0 +1,22 @@
+$kind: http-request
+description: Requires Borrow Service running.
+url: "{{fineServiceBaseUrl}}/internal/fines"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "borrowId": {{invalidBorrowId}},
+      "userId": 4,
+      "daysOverdue": 1,
+      "createdFrom": "LATE_RETURN"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 404', function () { pm.response.to.have.status(404); });
+      pm.test('Error code BORROW_NOT_FOUND', function () { pm.expect(pm.response.json().errors[0].code).to.eql('BORROW_NOT_FOUND'); });
+    language: text/javascript
+order: 4000

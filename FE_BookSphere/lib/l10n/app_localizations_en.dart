@@ -443,4 +443,103 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get overdueReturnWarning =>
       'This borrow is overdue. Returning the book may incur a fine.';
+
+  @override
+  String get searchByTitleAuthorIsbn => 'Search by title, author or ISBN';
+
+  @override
+  String get allCategories => 'All categories';
+
+  @override
+  String get allAvailability => 'All';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get unavailable => 'Unavailable';
+
+  @override
+  String get availableOnly => 'Available books only';
+
+  @override
+  String copiesAvailable(int count) {
+    return '$count copies available';
+  }
+
+  @override
+  String get noBooks => 'No books in the library yet.';
+
+  @override
+  String get noBooksFound => 'No books match your search or filters.';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
+  String get loadBooksFailed => 'Unable to load the book list.';
+
+  @override
+  String get checkConnectionAndRetry =>
+      'Please check your connection and try again.';
+
+  @override
+  String get loadingMore => 'Loading more...';
+
+  @override
+  String get unknownAuthor => 'Unknown author';
+
+  @override
+  String get unknownCategory => 'Uncategorized';
+
+  @override
+  String get accessDenied => 'You do not have permission to view this content.';
+
+  @override
+  String get bookDetails => 'Book Details';
+
+  @override
+  String get author => 'Author';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get isbn => 'ISBN';
+
+  @override
+  String get publisher => 'Publisher';
+
+  @override
+  String get publicationYear => 'Publication year';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get totalCopies => 'Total copies';
+
+  @override
+  String get availableCopies => 'Available copies';
+
+  @override
+  String copiesAvailableOfTotal(int available, int total) {
+    return '$available / $total copies available';
+  }
+
+  @override
+  String get bookNotFound => 'Book not found.';
+
+  @override
+  String get bookNotFoundDescription =>
+      'The book may have been removed or is no longer available.';
+
+  @override
+  String get loadBookDetailFailed => 'Unable to load book details.';
+
+  @override
+  String get noDescriptionAvailable => 'No description available.';
+
+  @override
+  String get backToBooks => 'Back to books';
 }

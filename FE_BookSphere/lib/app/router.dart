@@ -4,6 +4,7 @@ import 'package:booksphere_app/features/auth/data/auth_session_service.dart';
 import 'package:booksphere_app/features/auth/presentation/login_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/register_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/splash_screen.dart';
+import 'package:booksphere_app/features/books/presentation/book_detail_screen.dart';
 import 'package:booksphere_app/features/borrows/presentation/borrow_create_screen.dart';
 import 'package:booksphere_app/features/borrows/presentation/borrow_detail_screen.dart';
 import 'package:booksphere_app/features/home/presentation/main_tab_screen.dart';
@@ -16,6 +17,7 @@ class AppRoutes {
   static const login = '/login';
   static const register = '/register';
   static const main = '/main';
+  static const bookDetail = '/books/:bookId';
   static const borrowCreate = '/borrows/create';
   static const borrowDetail = '/borrows/:id';
 }
@@ -45,6 +47,14 @@ final appRouter = GoRouter(
       builder: (context, state) => const MainTabScreen(),
     ),
     GoRoute(
+      path: AppRoutes.bookDetail,
+      name: 'book-detail',
+      builder: (context, state) {
+        final bookId = state.pathParameters['bookId'] ?? '';
+        return BookDetailScreen(bookId: bookId);
+      },
+    ),
+    GoRoute(
       path: AppRoutes.borrowCreate,
       builder: (context, state) {
         final bookId = int.tryParse(state.uri.queryParameters['bookId'] ?? '');
@@ -66,9 +76,14 @@ final appRouter = GoRouter(
       return null;
     }
 
-    if (matchedLocation == AppRoutes.login ||
+    final isBookDetail = matchedLocation.startsWith('/books/');
+    final isProtected =
+        matchedLocation == AppRoutes.login ||
         matchedLocation == AppRoutes.register ||
-        matchedLocation == AppRoutes.main) {
+        matchedLocation == AppRoutes.main ||
+        isBookDetail;
+
+    if (isProtected) {
       final status = await _authSessionService.checkSession();
       if (status == AuthSessionStatus.authenticated) {
         return matchedLocation == AppRoutes.login ||
@@ -76,7 +91,10 @@ final appRouter = GoRouter(
             ? AppRoutes.main
             : null;
       }
-      return matchedLocation == AppRoutes.main ? AppRoutes.login : null;
+      if (matchedLocation == AppRoutes.main || isBookDetail) {
+        return AppRoutes.login;
+      }
+      return null;
     }
 
     return null;

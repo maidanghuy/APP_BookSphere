@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{gatewayBaseUrl}}/api/fines/{{fineId}}"
+method: GET
+headers:
+  Authorization: Bearer {{accessTokenMember}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 403', function () { pm.response.to.have.status(403); });
+      pm.test('Error code FORBIDDEN', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FORBIDDEN'); });
+    language: text/javascript
+order: 10000

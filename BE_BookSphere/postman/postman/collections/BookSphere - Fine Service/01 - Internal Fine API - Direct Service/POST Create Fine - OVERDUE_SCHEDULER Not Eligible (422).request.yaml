@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{fineServiceBaseUrl}}/internal/fines"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "borrowId": {{borrowingBorrowId}},
+      "userId": 3,
+      "dueDate": "2026-07-08T23:59:59",
+      "daysOverdue": 1,
+      "createdFrom": "OVERDUE_SCHEDULER"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 422', function () { pm.response.to.have.status(422); });
+      pm.test('Error code FINE_BORROW_NOT_ELIGIBLE', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FINE_BORROW_NOT_ELIGIBLE'); });
+    language: text/javascript
+order: 6000

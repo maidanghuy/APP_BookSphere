@@ -169,5 +169,47 @@
   "eWallet": "Ví điện tử",
   "selectPaymentMethod": "Chọn phương thức thanh toán",
   "confirmSelection": "Xác nhận",
-  "confirm": "Xác nhận"
+  "confirm": "Xác nhận",
+  "searchByTitleAuthorIsbn": "Tìm theo tên sách, tác giả hoặc ISBN",
+  "allCategories": "Tất cả thể loại",
+  "allAvailability": "Tất cả",
+  "available": "Còn sách",
+  "unavailable": "Hết sách",
+  "availableOnly": "Chỉ sách còn sẵn",
+  "copiesAvailable": "Còn {count} bản",
+  "@copiesAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noBooks": "Thư viện chưa có sách nào.",
+  "noBooksFound": "Không tìm thấy sách phù hợp với tìm kiếm hoặc bộ lọc.",
+  "clearFilters": "Xóa bộ lọc",
+  "loadBooksFailed": "Không thể tải danh sách sách.",
+  "checkConnectionAndRetry": "Vui lòng kiểm tra kết nối và thử lại.",
+  "loadingMore": "Đang tải thêm...",
+  "unknownAuthor": "Chưa rõ tác giả",
+  "unknownCategory": "Chưa phân loại",
+  "accessDenied": "Bạn không có quyền xem nội dung này.",
+  "bookDetails": "Chi tiết sách",
+  "author": "Tác giả",
+  "category": "Thể loại",
+  "isbn": "ISBN",
+  "publisher": "Nhà xuất bản",
+  "publicationYear": "Năm xuất bản",
+  "description": "Mô tả",
+  "totalCopies": "Tổng số bản",
+  "availableCopies": "Số bản còn lại",
+  "copiesAvailableOfTotal": "Còn {available} / {total} bản",
+  "@copiesAvailableOfTotal": {
+    "placeholders": {
+      "available": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "bookNotFound": "Không tìm thấy sách.",
+  "bookNotFoundDescription": "Sách có thể đã bị xóa hoặc không còn khả dụng.",
+  "loadBookDetailFailed": "Không thể tải chi tiết sách.",
+  "noDescriptionAvailable": "Chưa có mô tả.",
+  "backToBooks": "Quay lại danh sách sách"
 }

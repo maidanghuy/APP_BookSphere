@@ -169,5 +169,47 @@
   "eWallet": "E-Wallet",
   "selectPaymentMethod": "Select Payment Method",
   "confirmSelection": "Confirm",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+  "searchByTitleAuthorIsbn": "Search by title, author or ISBN",
+  "allCategories": "All categories",
+  "allAvailability": "All",
+  "available": "Available",
+  "unavailable": "Unavailable",
+  "availableOnly": "Available books only",
+  "copiesAvailable": "{count} copies available",
+  "@copiesAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noBooks": "No books in the library yet.",
+  "noBooksFound": "No books match your search or filters.",
+  "clearFilters": "Clear filters",
+  "loadBooksFailed": "Unable to load the book list.",
+  "checkConnectionAndRetry": "Please check your connection and try again.",
+  "loadingMore": "Loading more...",
+  "unknownAuthor": "Unknown author",
+  "unknownCategory": "Uncategorized",
+  "accessDenied": "You do not have permission to view this content.",
+  "bookDetails": "Book Details",
+  "author": "Author",
+  "category": "Category",
+  "isbn": "ISBN",
+  "publisher": "Publisher",
+  "publicationYear": "Publication year",
+  "description": "Description",
+  "totalCopies": "Total copies",
+  "availableCopies": "Available copies",
+  "copiesAvailableOfTotal": "{available} / {total} copies available",
+  "@copiesAvailableOfTotal": {
+    "placeholders": {
+      "available": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "bookNotFound": "Book not found.",
+  "bookNotFoundDescription": "The book may have been removed or is no longer available.",
+  "loadBookDetailFailed": "Unable to load book details.",
+  "noDescriptionAvailable": "No description available.",
+  "backToBooks": "Back to books"
 }

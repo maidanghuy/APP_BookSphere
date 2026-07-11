@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{gatewayBaseUrl}}/api/fines?page=0&size=50"
+method: GET
+headers:
+  Authorization: Bearer {{accessTokenMember}}
+queryParams:
+  page: "0"
+  size: "50"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 200', function () { pm.response.to.have.status(200); });
+      pm.test('Only own fines returned', function () { pm.response.json().data.content.forEach(function (f) { pm.expect(f.userId).to.eql(parseInt(pm.environment.get('otherMemberUserId'))); }); });
+    language: text/javascript
+order: 11000

@@ -1,0 +1,46 @@
+name: BookSphere - Fine Service (Local)
+values:
+  - key: gatewayBaseUrl
+    value: 'http://localhost:8080'
+  - key: fineServiceBaseUrl
+    value: 'http://localhost:8084'
+  - key: adminUsername
+    value: adminsys
+  - key: adminPassword
+    value: '@1'
+  - key: librarianUsername
+    value: librarian01
+  - key: librarianPassword
+    value: '@1'
+  - key: memberUsername
+    value: huy.member
+  - key: memberPassword
+    value: '@1'
+  - key: memberOwnerUsername
+    value: hien.member
+  - key: memberOwnerPassword
+    value: '@1'
+  - key: accessTokenAdmin
+    value: ''
+  - key: accessTokenLibrarian
+    value: ''
+  - key: accessTokenMember
+    value: ''
+  - key: accessTokenMemberOwner
+    value: ''
+  - key: fineId
+    value: '1'
+  - key: borrowId
+    value: '2'
+  - key: seedFineUserId
+    value: '4'
+  - key: otherMemberUserId
+    value: '3'
+  - key: invalidFineId
+    value: '99999'
+  - key: invalidBorrowId
+    value: '99999'
+  - key: borrowingBorrowId
+    value: '1'
+  - key: fineAmountPerDay
+    value: '5000'

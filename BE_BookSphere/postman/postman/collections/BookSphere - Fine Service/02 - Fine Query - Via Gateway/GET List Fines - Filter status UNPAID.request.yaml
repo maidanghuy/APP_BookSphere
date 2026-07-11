@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{gatewayBaseUrl}}/api/fines?status=UNPAID&page=0&size=10"
+method: GET
+headers:
+  Authorization: Bearer {{accessTokenAdmin}}
+queryParams:
+  status: UNPAID
+  page: "0"
+  size: "10"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 200', function () { pm.response.to.have.status(200); });
+      pm.test('All items UNPAID', function () { pm.response.json().data.content.forEach(function (f) { pm.expect(f.status).to.eql('UNPAID'); }); });
+    language: text/javascript
+order: 2000

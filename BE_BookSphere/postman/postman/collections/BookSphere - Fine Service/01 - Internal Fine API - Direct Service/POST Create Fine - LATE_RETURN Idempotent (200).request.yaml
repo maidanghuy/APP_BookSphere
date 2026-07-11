@@ -1,0 +1,30 @@
+$kind: http-request
+description: Seed borrow_id=2 already has a fine.
+url: "{{fineServiceBaseUrl}}/internal/fines"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "borrowId": {{borrowId}},
+      "userId": {{seedFineUserId}},
+      "dueDate": "2026-06-27T23:59:59",
+      "returnDate": "2026-06-30T14:00:00",
+      "daysOverdue": 3,
+      "createdFrom": "LATE_RETURN",
+      "reason": "Trả sách trễ 3 ngày"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 200', function () { pm.response.to.have.status(200); });
+      pm.test('Idempotent message', function () { pm.expect(pm.response.json().message).to.include('already exists'); });
+      pm.test('borrowId matches', function () { pm.expect(pm.response.json().data.borrowId).to.eql(parseInt(pm.environment.get('borrowId'))); });
+      pm.test('status is UNPAID', function () { pm.expect(pm.response.json().data.status).to.eql('UNPAID'); });
+      pm.test('Response has no Jackson @class metadata', function () {
+          pm.expect(JSON.stringify(pm.response.json())).to.not.include('@class');
+      });
+    language: text/javascript
+order: 1000

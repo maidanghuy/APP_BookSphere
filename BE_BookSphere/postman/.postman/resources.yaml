@@ -1,0 +1,25 @@
+# Use this workspace to collaborate
+workspace:
+  id: 62ccec20-a3be-4460-84d0-cfedd5890c2a
+
+localResources:
+  collections:
+    - ../auth-service/BookSphere_Auth_Service.postman_collection.json
+    - ../book-service/BookSphere_Book_Service.postman_collection.json
+    - ../borrow-service/BookSphere_Borrow_Service.postman_collection.json
+    - ../config-server/BookSphere_Config_Server.postman_collection.json
+    - ../discovery-server/BookSphere_Discovery_Server.postman_collection.json
+    - ../notification-service/BookSphere_Notification_Service.postman_collection.json
+    - ../fine-service/BookSphere_Fine_Service.postman_collection.json
+  environments:
+    - ../auth-service/BookSphere_Auth_Service_Local.postman_environment.json
+    - ../book-service/BookSphere_Book_Service_Local.postman_environment.json
+    - ../borrow-service/BookSphere_Borrow_Service_Local.postman_environment.json
+    - ../config-server/BookSphere_Config_Server_Local.postman_environment.json
+    - ../discovery-server/BookSphere_Discovery_Server_Local.postman_environment.json
+    - ../notification-service/BookSphere_Notification_Service_Local.postman_environment.json
+    - ../fine-service/BookSphere_Fine_Service_Local.postman_environment.json
+
+cloudResources:
+  collections:
+    ../postman/collections/BookSphere - Fine Service: a49ccd8f-232e-4562-888f-c42d15a38d3b

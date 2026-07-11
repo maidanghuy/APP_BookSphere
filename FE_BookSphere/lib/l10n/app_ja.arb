@@ -169,5 +169,47 @@
   "eWallet": "電子ウォレット",
   "selectPaymentMethod": "支払方法を選択",
   "confirmSelection": "確認",
-  "confirm": "確認"
+  "confirm": "確認",
+  "searchByTitleAuthorIsbn": "タイトル・著者・ISBNで検索",
+  "allCategories": "すべてのカテゴリ",
+  "allAvailability": "すべて",
+  "available": "貸出可能",
+  "unavailable": "貸出不可",
+  "availableOnly": "貸出可能な本のみ",
+  "copiesAvailable": "残り{count}冊",
+  "@copiesAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noBooks": "まだ本が登録されていません。",
+  "noBooksFound": "検索条件やフィルターに一致する本がありません。",
+  "clearFilters": "フィルターをクリア",
+  "loadBooksFailed": "本の一覧を読み込めませんでした。",
+  "checkConnectionAndRetry": "接続を確認して、もう一度お試しください。",
+  "loadingMore": "さらに読み込み中...",
+  "unknownAuthor": "著者不明",
+  "unknownCategory": "未分類",
+  "accessDenied": "このコンテンツを表示する権限がありません。",
+  "bookDetails": "本の詳細",
+  "author": "著者",
+  "category": "カテゴリ",
+  "isbn": "ISBN",
+  "publisher": "出版社",
+  "publicationYear": "出版年",
+  "description": "説明",
+  "totalCopies": "総冊数",
+  "availableCopies": "貸出可能数",
+  "copiesAvailableOfTotal": "残り {available} / {total} 冊",
+  "@copiesAvailableOfTotal": {
+    "placeholders": {
+      "available": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "bookNotFound": "本が見つかりません。",
+  "bookNotFoundDescription": "本が削除されたか、現在利用できない可能性があります。",
+  "loadBookDetailFailed": "本の詳細を読み込めませんでした。",
+  "noDescriptionAvailable": "説明はありません。",
+  "backToBooks": "本の一覧に戻る"
 }
