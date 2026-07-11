@@ -1,5 +1,5 @@
-import 'package:booksphere_app/core/network/dio_client.dart';
 import 'package:booksphere_app/core/storage/secure_storage_service.dart';
+import 'package:booksphere_app/features/auth/providers/auth_guard_provider.dart';
 import 'package:booksphere_app/features/fines/data/fine_api.dart';
 import 'package:booksphere_app/features/fines/data/fine_models.dart';
 import 'package:booksphere_app/features/fines/data/fine_repository.dart';
@@ -8,10 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ── Providers ────────────────────────────────────────────────
 
 final _fineApiProvider = Provider<FineApi>((ref) {
-  return FineApi(ref.watch(_dioClientProvider));
+  return FineApi(ref.watch(dioClientProvider));
 });
-
-final _dioClientProvider = Provider<DioClient>((ref) => DioClient());
 
 final _storageProvider = Provider<SecureStorageService>(
   (_) => SecureStorageService(),
@@ -24,28 +22,29 @@ final fineRepositoryProvider = Provider<FineRepository>((ref) {
   );
 });
 
-// ── My Fines list (paginated, filterable) ────────────────────
+// ── My Fines list (filterable) ────────────────────────────────
 
 final myFinesProvider =
-    StateNotifierProvider<MyFinesNotifier, AsyncValue<List<FineResponse>>>(
-  (ref) => MyFinesNotifier(ref.watch(fineRepositoryProvider)),
+    NotifierProvider<MyFinesNotifier, AsyncValue<List<FineResponse>>>(
+  MyFinesNotifier.new,
 );
 
-class MyFinesNotifier extends StateNotifier<AsyncValue<List<FineResponse>>> {
-  MyFinesNotifier(this._repository) : super(const AsyncValue.loading()) {
-    loadFines();
-  }
-
-  final FineRepository _repository;
+class MyFinesNotifier extends Notifier<AsyncValue<List<FineResponse>>> {
   String? _currentFilter;
 
   String? get currentFilter => _currentFilter;
+
+  @override
+  AsyncValue<List<FineResponse>> build() {
+    Future.microtask(() => loadFines());
+    return const AsyncValue.loading();
+  }
 
   Future<void> loadFines({String? status}) async {
     state = const AsyncValue.loading();
     _currentFilter = status;
     try {
-      final fines = await _repository.getMyFines(status: status);
+      final fines = await ref.read(fineRepositoryProvider).getMyFines(status: status);
       state = AsyncValue.data(fines);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
