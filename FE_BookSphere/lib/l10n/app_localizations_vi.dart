@@ -9,6 +9,48 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get notificationListTitle => 'Thông báo';
+
+  @override
+  String get allNotifications => 'Tất cả';
+
+  @override
+  String get unreadNotifications => 'Chưa đọc';
+
+  @override
+  String get noNotifications => 'Chưa có thông báo';
+
+  @override
+  String get noUnreadNotifications => 'Không có thông báo chưa đọc';
+
+  @override
+  String get markAsReadFailed => 'Không thể đánh dấu thông báo là đã đọc.';
+
+  @override
+  String get notificationTypeBorrow => 'Mượn sách';
+
+  @override
+  String get notificationTypeReturn => 'Trả sách';
+
+  @override
+  String get notificationTypeDueSoon => 'Sắp đến hạn';
+
+  @override
+  String get notificationTypeOverdue => 'Quá hạn';
+
+  @override
+  String get notificationTypeFine => 'Tiền phạt';
+
+  @override
+  String get notificationTypePayment => 'Thanh toán';
+
+  @override
+  String get notificationTypeSystem => 'Hệ thống';
+
+  @override
+  String get notificationTypeUnknown => 'Khác';
+
+  @override
   String get books => 'Sách';
 
   @override
