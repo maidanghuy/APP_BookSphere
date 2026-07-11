@@ -10,7 +10,6 @@ import 'package:booksphere_app/features/books/presentation/widgets/book_filter_b
 import 'package:booksphere_app/features/books/presentation/widgets/book_list_skeleton.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/book_search_filter_bar.dart';
 import 'package:booksphere_app/features/books/providers/book_list_provider.dart';
-import 'package:booksphere_app/features/borrow_cart/presentation/widgets/borrow_cart_icon.dart';
 import 'package:booksphere_app/features/borrow_cart/presentation/widgets/floating_borrow_cart.dart';
 import 'package:booksphere_app/features/borrow_cart/providers/borrow_cart_provider.dart';
 import 'package:flutter/material.dart';
@@ -133,7 +132,6 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: colorScheme.onSurface,
-        actions: const [BorrowCartIcon()],
       ),
       body: Column(
         children: [

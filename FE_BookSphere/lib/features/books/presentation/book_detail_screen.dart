@@ -10,7 +10,6 @@ import 'package:booksphere_app/features/books/presentation/widgets/book_informat
 import 'package:booksphere_app/features/books/presentation/widgets/book_quantity_selector.dart';
 import 'package:booksphere_app/features/books/providers/book_detail_provider.dart';
 import 'package:booksphere_app/features/borrow_cart/data/borrow_cart_item.dart';
-import 'package:booksphere_app/features/borrow_cart/presentation/widgets/borrow_cart_icon.dart';
 import 'package:booksphere_app/features/borrow_cart/providers/borrow_cart_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,7 +54,6 @@ class BookDetailScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         foregroundColor: colorScheme.onSurface,
         actions: [
-          const BorrowCartIcon(),
           IconButton(
             tooltip: l10n.retry,
             onPressed: () {
