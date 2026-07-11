@@ -59,4 +59,43 @@ class BorrowApi {
       rethrow;
     }
   }
+
+  Future<BorrowPageResponse> searchBorrows({
+    String? status,
+    int page = 0,
+    int size = 10,
+  }) async {
+    try {
+      final queryParams = <String, dynamic>{
+        'page': page,
+        'size': size,
+        'sortBy': 'createdAt',
+        'sortDir': 'desc',
+      };
+      if (status != null && status.isNotEmpty) {
+        queryParams['status'] = status;
+      }
+
+      final response = await _dioClient.get<Object?>(
+        ApiEndpoints.borrows,
+        queryParameters: queryParams,
+      );
+      final responseData = response.data;
+      dev.log('BorrowApi.searchBorrows Response: $responseData');
+
+      if (responseData is! Map) {
+        throw Exception('Invalid response format: $responseData');
+      }
+
+      final data = responseData['data'];
+      if (data is! Map) {
+        throw Exception('Invalid response data format: $data');
+      }
+
+      return BorrowPageResponse.fromJson(Map<String, dynamic>.from(data));
+    } catch (e, s) {
+      dev.log('BorrowApi.searchBorrows Exception: $e', error: e, stackTrace: s);
+      rethrow;
+    }
+  }
 }

@@ -384,4 +384,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dueDateInvalid => '返却期限日は将来の日付にしてください。';
+
+  @override
+  String get noBorrowRecords => '貸出記録がありません。';
+
+  @override
+  String get statusAll => 'すべて';
+
+  @override
+  String get statusBorrowing => '貸出中';
+
+  @override
+  String get statusOverdue => '期限切れ';
+
+  @override
+  String get statusReturned => '返却済み';
+
+  @override
+  String get statusCancelled => 'キャンセル';
 }

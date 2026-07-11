@@ -131,5 +131,11 @@
   "quantityInvalid": "Please enter a valid integer greater than 0.",
   "quantityExceeded": "Quantity cannot exceed available stock.",
   "dueDateRequired": "Please select a due date.",
-  "dueDateInvalid": "Due date must be in the future."
+  "dueDateInvalid": "Due date must be in the future.",
+  "noBorrowRecords": "You don't have any borrow records.",
+  "statusAll": "All",
+  "statusBorrowing": "Borrowing",
+  "statusOverdue": "Overdue",
+  "statusReturned": "Returned",
+  "statusCancelled": "Cancelled"
 }

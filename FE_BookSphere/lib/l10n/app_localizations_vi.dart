@@ -393,4 +393,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get dueDateInvalid => 'Hạn trả phải ở tương lai.';
+
+  @override
+  String get noBorrowRecords => 'Bạn chưa có phiếu mượn sách nào.';
+
+  @override
+  String get statusAll => 'Tất cả';
+
+  @override
+  String get statusBorrowing => 'Đang mượn';
+
+  @override
+  String get statusOverdue => 'Quá hạn';
+
+  @override
+  String get statusReturned => 'Đã trả';
+
+  @override
+  String get statusCancelled => 'Đã hủy';
 }

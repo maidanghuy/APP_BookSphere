@@ -45,6 +45,22 @@ class BorrowRepository {
     }
   }
 
+  Future<BorrowPageResponse> searchBorrows({
+    String? status,
+    int page = 0,
+    int size = 10,
+  }) async {
+    try {
+      return await _borrowApi.searchBorrows(
+        status: status,
+        page: page,
+        size: size,
+      );
+    } on DioException catch (error) {
+      throw _mapDioError(error);
+    }
+  }
+
   BorrowException _mapDioError(DioException error) {
     final apiException = ApiException.fromDioException(error);
     final code = _resolveErrorCode(apiException);
