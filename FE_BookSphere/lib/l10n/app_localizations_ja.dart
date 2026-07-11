@@ -9,6 +9,48 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get notificationListTitle => '通知';
+
+  @override
+  String get allNotifications => 'すべて';
+
+  @override
+  String get unreadNotifications => '未読';
+
+  @override
+  String get noNotifications => '通知はまだありません';
+
+  @override
+  String get noUnreadNotifications => '未読の通知はありません';
+
+  @override
+  String get markAsReadFailed => '通知を既読にできませんでした。';
+
+  @override
+  String get notificationTypeBorrow => '貸出';
+
+  @override
+  String get notificationTypeReturn => '返却';
+
+  @override
+  String get notificationTypeDueSoon => '返却期限間近';
+
+  @override
+  String get notificationTypeOverdue => '延滞';
+
+  @override
+  String get notificationTypeFine => '罰金';
+
+  @override
+  String get notificationTypePayment => '支払い';
+
+  @override
+  String get notificationTypeSystem => 'システム';
+
+  @override
+  String get notificationTypeUnknown => 'その他';
+
+  @override
   String get books => '本';
 
   @override

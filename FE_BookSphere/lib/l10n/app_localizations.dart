@@ -100,6 +100,90 @@ abstract class AppLocalizations {
     Locale('vi'),
   ];
 
+  /// No description provided for @notificationListTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo'**
+  String get notificationListTitle;
+
+  /// No description provided for @allNotifications.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả'**
+  String get allNotifications;
+
+  /// No description provided for @unreadNotifications.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa đọc'**
+  String get unreadNotifications;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có thông báo'**
+  String get noNotifications;
+
+  /// No description provided for @noUnreadNotifications.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có thông báo chưa đọc'**
+  String get noUnreadNotifications;
+
+  /// No description provided for @markAsReadFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể đánh dấu thông báo là đã đọc.'**
+  String get markAsReadFailed;
+
+  /// No description provided for @notificationTypeBorrow.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mượn sách'**
+  String get notificationTypeBorrow;
+
+  /// No description provided for @notificationTypeReturn.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trả sách'**
+  String get notificationTypeReturn;
+
+  /// No description provided for @notificationTypeDueSoon.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sắp đến hạn'**
+  String get notificationTypeDueSoon;
+
+  /// No description provided for @notificationTypeOverdue.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quá hạn'**
+  String get notificationTypeOverdue;
+
+  /// No description provided for @notificationTypeFine.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiền phạt'**
+  String get notificationTypeFine;
+
+  /// No description provided for @notificationTypePayment.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thanh toán'**
+  String get notificationTypePayment;
+
+  /// No description provided for @notificationTypeSystem.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hệ thống'**
+  String get notificationTypeSystem;
+
+  /// No description provided for @notificationTypeUnknown.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khác'**
+  String get notificationTypeUnknown;
+
   /// No description provided for @books.
   ///
   /// In vi, this message translates to:

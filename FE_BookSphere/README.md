@@ -340,6 +340,20 @@ Coder: maidanghuy
 - Real book API integration will be implemented in later Book tasks.
 - Main Tab Layout is provided by BS-APP-10.
 
+## BS-APP-22 - Notification List Screen
+
+Coder: nguyenminhhuong
+
+- Notification list for the authenticated user
+- Read/unread state and unread filter
+- Mark notification as read
+- Borrow/Fine navigation mapping
+- Pull-to-refresh
+- Loading, empty, and error states
+- English, Vietnamese, and Japanese localization
+
+## API Base URL
+
 Pass `API_BASE_URL` with `--dart-define`:
 
 ```bash

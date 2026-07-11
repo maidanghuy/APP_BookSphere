@@ -9,6 +9,48 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get notificationListTitle => 'Notifications';
+
+  @override
+  String get allNotifications => 'All';
+
+  @override
+  String get unreadNotifications => 'Unread';
+
+  @override
+  String get noNotifications => 'No notifications yet';
+
+  @override
+  String get noUnreadNotifications => 'No unread notifications';
+
+  @override
+  String get markAsReadFailed => 'Unable to mark this notification as read.';
+
+  @override
+  String get notificationTypeBorrow => 'Borrow';
+
+  @override
+  String get notificationTypeReturn => 'Return';
+
+  @override
+  String get notificationTypeDueSoon => 'Due soon';
+
+  @override
+  String get notificationTypeOverdue => 'Overdue';
+
+  @override
+  String get notificationTypeFine => 'Fine';
+
+  @override
+  String get notificationTypePayment => 'Payment';
+
+  @override
+  String get notificationTypeSystem => 'System';
+
+  @override
+  String get notificationTypeUnknown => 'Other';
+
+  @override
   String get books => 'Books';
 
   @override
