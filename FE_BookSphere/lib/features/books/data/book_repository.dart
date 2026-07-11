@@ -1,5 +1,6 @@
 import 'package:booksphere_app/core/network/api_exception.dart';
 import 'package:booksphere_app/features/books/data/book_api.dart';
+import 'package:booksphere_app/features/books/data/models/book_detail.dart';
 import 'package:booksphere_app/features/books/data/models/book_page.dart';
 import 'package:booksphere_app/features/books/data/models/category_summary.dart';
 import 'package:dio/dio.dart';
@@ -53,6 +54,23 @@ class BookRepository {
     }
   }
 
+  Future<BookDetail> getBookDetail(String bookId) async {
+    final trimmedId = bookId.trim();
+    if (trimmedId.isEmpty) {
+      throw const BookException(
+        message: 'Book ID is required.',
+        code: 'INVALID_BOOK_ID',
+        statusCode: 400,
+      );
+    }
+
+    try {
+      return await _bookApi.getBookDetail(trimmedId);
+    } on DioException catch (error) {
+      throw _mapDioError(error, fallbackMessage: 'Failed to load book detail.');
+    }
+  }
+
   BookException _mapDioError(
     DioException error, {
     required String fallbackMessage,
@@ -87,6 +105,9 @@ class BookRepository {
     }
     if (statusCode == 403) {
       return 'FORBIDDEN';
+    }
+    if (statusCode == 404) {
+      return 'BOOK_NOT_FOUND';
     }
     if (statusCode == null || statusCode == 0) {
       return 'NETWORK_ERROR';

@@ -1041,6 +1041,96 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bạn không có quyền xem nội dung này.'**
   String get accessDenied;
+
+  /// No description provided for @bookDetails.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiết sách'**
+  String get bookDetails;
+
+  /// No description provided for @author.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tác giả'**
+  String get author;
+
+  /// No description provided for @category.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thể loại'**
+  String get category;
+
+  /// No description provided for @isbn.
+  ///
+  /// In vi, this message translates to:
+  /// **'ISBN'**
+  String get isbn;
+
+  /// No description provided for @publisher.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhà xuất bản'**
+  String get publisher;
+
+  /// No description provided for @publicationYear.
+  ///
+  /// In vi, this message translates to:
+  /// **'Năm xuất bản'**
+  String get publicationYear;
+
+  /// No description provided for @description.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mô tả'**
+  String get description;
+
+  /// No description provided for @totalCopies.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng số bản'**
+  String get totalCopies;
+
+  /// No description provided for @availableCopies.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số bản còn lại'**
+  String get availableCopies;
+
+  /// No description provided for @copiesAvailableOfTotal.
+  ///
+  /// In vi, this message translates to:
+  /// **'Còn {available} / {total} bản'**
+  String copiesAvailableOfTotal(int available, int total);
+
+  /// No description provided for @bookNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy sách.'**
+  String get bookNotFound;
+
+  /// No description provided for @bookNotFoundDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách có thể đã bị xóa hoặc không còn khả dụng.'**
+  String get bookNotFoundDescription;
+
+  /// No description provided for @loadBookDetailFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tải chi tiết sách.'**
+  String get loadBookDetailFailed;
+
+  /// No description provided for @noDescriptionAvailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có mô tả.'**
+  String get noDescriptionAvailable;
+
+  /// No description provided for @backToBooks.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quay lại danh sách sách'**
+  String get backToBooks;
 }
 
 class _AppLocalizationsDelegate

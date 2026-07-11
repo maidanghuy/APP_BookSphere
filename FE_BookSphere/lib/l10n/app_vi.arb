@@ -168,5 +168,26 @@
   "loadingMore": "Đang tải thêm...",
   "unknownAuthor": "Chưa rõ tác giả",
   "unknownCategory": "Chưa phân loại",
-  "accessDenied": "Bạn không có quyền xem nội dung này."
+  "accessDenied": "Bạn không có quyền xem nội dung này.",
+  "bookDetails": "Chi tiết sách",
+  "author": "Tác giả",
+  "category": "Thể loại",
+  "isbn": "ISBN",
+  "publisher": "Nhà xuất bản",
+  "publicationYear": "Năm xuất bản",
+  "description": "Mô tả",
+  "totalCopies": "Tổng số bản",
+  "availableCopies": "Số bản còn lại",
+  "copiesAvailableOfTotal": "Còn {available} / {total} bản",
+  "@copiesAvailableOfTotal": {
+    "placeholders": {
+      "available": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "bookNotFound": "Không tìm thấy sách.",
+  "bookNotFoundDescription": "Sách có thể đã bị xóa hoặc không còn khả dụng.",
+  "loadBookDetailFailed": "Không thể tải chi tiết sách.",
+  "noDescriptionAvailable": "Chưa có mô tả.",
+  "backToBooks": "Quay lại danh sách sách"
 }

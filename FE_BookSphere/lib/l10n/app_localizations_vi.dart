@@ -495,4 +495,52 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get accessDenied => 'Bạn không có quyền xem nội dung này.';
+
+  @override
+  String get bookDetails => 'Chi tiết sách';
+
+  @override
+  String get author => 'Tác giả';
+
+  @override
+  String get category => 'Thể loại';
+
+  @override
+  String get isbn => 'ISBN';
+
+  @override
+  String get publisher => 'Nhà xuất bản';
+
+  @override
+  String get publicationYear => 'Năm xuất bản';
+
+  @override
+  String get description => 'Mô tả';
+
+  @override
+  String get totalCopies => 'Tổng số bản';
+
+  @override
+  String get availableCopies => 'Số bản còn lại';
+
+  @override
+  String copiesAvailableOfTotal(int available, int total) {
+    return 'Còn $available / $total bản';
+  }
+
+  @override
+  String get bookNotFound => 'Không tìm thấy sách.';
+
+  @override
+  String get bookNotFoundDescription =>
+      'Sách có thể đã bị xóa hoặc không còn khả dụng.';
+
+  @override
+  String get loadBookDetailFailed => 'Không thể tải chi tiết sách.';
+
+  @override
+  String get noDescriptionAvailable => 'Chưa có mô tả.';
+
+  @override
+  String get backToBooks => 'Quay lại danh sách sách';
 }
