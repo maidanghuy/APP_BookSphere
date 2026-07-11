@@ -1,5 +1,10 @@
 package com.booksphere.borrow.service.impl;
 
+import com.booksphere.borrow.client.AuthServiceClient;
+import com.booksphere.borrow.client.BookServiceClient;
+import com.booksphere.borrow.client.dto.BookInternalResponse;
+import com.booksphere.borrow.client.dto.ClientApiResponse;
+import com.booksphere.borrow.client.dto.UserInternalResponse;
 import com.booksphere.borrow.config.UserContext;
 import com.booksphere.borrow.dto.request.BorrowCreateRequest;
 import com.booksphere.borrow.dto.request.BorrowReturnRequest;
@@ -9,6 +14,7 @@ import com.booksphere.borrow.dto.response.BorrowResponse;
 import com.booksphere.borrow.dto.response.InternalBorrowResponse;
 import com.booksphere.borrow.dto.response.PageResponse;
 import com.booksphere.borrow.entity.Borrow;
+import com.booksphere.borrow.entity.BorrowItem;
 import com.booksphere.borrow.entity.enums.BorrowStatus;
 import com.booksphere.borrow.exception.BusinessException;
 import com.booksphere.borrow.mapper.BorrowMapper;
@@ -19,7 +25,13 @@ import com.booksphere.borrow.service.BorrowService;
 import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,21 +44,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class BorrowServiceImpl implements BorrowService {
 
+    private static final Logger log = LoggerFactory.getLogger(BorrowServiceImpl.class);
     private static final int MAX_PAGE_SIZE = 100;
 
     private final BorrowRepository borrowRepository;
     private final BorrowItemRepository borrowItemRepository;
+    private final BookServiceClient bookServiceClient;
+    private final AuthServiceClient authServiceClient;
     private final BorrowMapper borrowMapper;
     private final BorrowSagaOrchestrator borrowSagaOrchestrator;
 
     public BorrowServiceImpl(
             BorrowRepository borrowRepository,
             BorrowItemRepository borrowItemRepository,
+            BookServiceClient bookServiceClient,
+            AuthServiceClient authServiceClient,
             BorrowMapper borrowMapper,
             BorrowSagaOrchestrator borrowSagaOrchestrator
     ) {
         this.borrowRepository = borrowRepository;
         this.borrowItemRepository = borrowItemRepository;
+        this.bookServiceClient = bookServiceClient;
+        this.authServiceClient = authServiceClient;
         this.borrowMapper = borrowMapper;
         this.borrowSagaOrchestrator = borrowSagaOrchestrator;
     }
@@ -55,7 +74,8 @@ public class BorrowServiceImpl implements BorrowService {
     public BorrowDetailResponse createBorrow(BorrowCreateRequest request, UserContext userContext) {
         requireAuthenticated(userContext);
         validateBorrowRequest(request);
-        return borrowSagaOrchestrator.borrowBooks(request, userContext);
+        BorrowDetailResponse createdBorrow = borrowSagaOrchestrator.borrowBooks(request, userContext);
+        return buildDetailResponse(createdBorrow.id(), userContext);
     }
 
     @Override
@@ -64,7 +84,8 @@ public class BorrowServiceImpl implements BorrowService {
         requireAuthenticated(userContext);
         Borrow borrow = getBorrowEntity(borrowId);
         requireBorrowAccess(borrow, userContext);
-        return borrowSagaOrchestrator.returnBooks(borrow, request);
+        borrowSagaOrchestrator.returnBooks(borrow, request);
+        return buildDetailResponse(borrowId, userContext);
     }
 
     @Override
@@ -79,8 +100,24 @@ public class BorrowServiceImpl implements BorrowService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         Page<Borrow> borrows = borrowRepository.findAll(buildSpecification(request, userContext), pageable);
+        List<Long> borrowIds = borrows.getContent().stream()
+                .map(Borrow::getId)
+                .toList();
+        Map<Long, List<BorrowItem>> itemsByBorrowId = borrowIds.isEmpty()
+                ? Map.of()
+                : borrowItemRepository.findByBorrow_IdIn(borrowIds)
+                        .stream()
+                        .collect(Collectors.groupingBy(item -> item.getBorrow().getId()));
+        Map<Long, UserInternalResponse> usersById = loadUsersById(
+                borrows.getContent().stream().map(Borrow::getUserId).collect(Collectors.toSet()),
+                userContext
+        );
         List<BorrowResponse> content = borrows.getContent().stream()
-                .map(borrowMapper::toResponse)
+                .map(borrow -> borrowMapper.toResponse(
+                        borrow,
+                        totalItems(itemsByBorrowId.getOrDefault(borrow.getId(), List.of())),
+                        usersById.get(borrow.getUserId())
+                ))
                 .toList();
 
         return new PageResponse<>(
@@ -97,10 +134,7 @@ public class BorrowServiceImpl implements BorrowService {
     @Transactional(readOnly = true)
     public BorrowDetailResponse getBorrow(Long borrowId, UserContext userContext) {
         requireAuthenticated(userContext);
-        Borrow borrow = getBorrowEntity(borrowId);
-        requireBorrowAccess(borrow, userContext);
-
-        return borrowMapper.toDetailResponse(borrow, borrowItemRepository.findByBorrow_Id(borrow.getId()));
+        return buildDetailResponse(borrowId, userContext);
     }
 
     @Override
@@ -140,6 +174,79 @@ public class BorrowServiceImpl implements BorrowService {
                         "Borrow not found.",
                         HttpStatus.NOT_FOUND
                 ));
+    }
+
+    private BorrowDetailResponse buildDetailResponse(Long borrowId, UserContext userContext) {
+        Borrow borrow = getBorrowEntity(borrowId);
+        requireBorrowAccess(borrow, userContext);
+
+        List<BorrowItem> items = borrowItemRepository.findByBorrow_Id(borrow.getId());
+        Map<Long, BookInternalResponse> booksById = loadBooksById(
+                items.stream().map(BorrowItem::getBookId).collect(Collectors.toSet())
+        );
+        UserInternalResponse user = loadUserById(borrow.getUserId(), userContext);
+
+        return borrowMapper.toDetailResponse(borrow, items, user, booksById);
+    }
+
+    private Map<Long, BookInternalResponse> loadBooksById(Set<Long> bookIds) {
+        Map<Long, BookInternalResponse> booksById = new HashMap<>();
+        for (Long bookId : bookIds) {
+            try {
+                ClientApiResponse<BookInternalResponse> response = bookServiceClient.getInternalBook(bookId);
+                if (response != null && response.getData() != null) {
+                    booksById.put(bookId, response.getData());
+                }
+            } catch (Exception exception) {
+                log.warn("Book Service metadata lookup failed for bookId={}", bookId, exception);
+            }
+        }
+        return booksById;
+    }
+
+    private Map<Long, UserInternalResponse> loadUsersById(Set<Long> userIds, UserContext userContext) {
+        Map<Long, UserInternalResponse> usersById = new HashMap<>();
+        for (Long userId : userIds) {
+            UserInternalResponse user = loadUserById(userId, userContext);
+            if (user != null) {
+                usersById.put(userId, user);
+            }
+        }
+        return usersById;
+    }
+
+    private UserInternalResponse loadUserById(Long userId, UserContext userContext) {
+        try {
+            ClientApiResponse<UserInternalResponse> response = authServiceClient.getInternalUser(userId);
+            if (response != null && response.getData() != null) {
+                return response.getData();
+            }
+        } catch (Exception exception) {
+            log.warn("Auth Service user lookup failed for userId={}", userId, exception);
+        }
+        return fallbackCurrentUser(userId, userContext);
+    }
+
+    private UserInternalResponse fallbackCurrentUser(Long userId, UserContext userContext) {
+        if (userContext == null || !userId.equals(userContext.userId())) {
+            return null;
+        }
+
+        UserInternalResponse user = new UserInternalResponse();
+        user.setId(userContext.userId());
+        user.setUsername(userContext.username());
+        user.setFullName(userContext.username());
+        user.setEmail(userContext.email());
+        user.setIsActive(true);
+        return user;
+    }
+
+    private Integer totalItems(List<BorrowItem> items) {
+        return items.stream()
+                .map(BorrowItem::getQuantity)
+                .filter(quantity -> quantity != null)
+                .mapToInt(Integer::intValue)
+                .sum();
     }
 
     private void requireAuthenticated(UserContext userContext) {

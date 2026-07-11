@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b7ad4c6c-3ed2-4699-a61b-b9d44f1a14ef",
     "name": "BookSphere - Borrow Service",
-    "description": "Postman collection for BS-BE-06 Borrow Service & Saga Pattern. Run the folders from top to bottom. Public Borrow APIs are called through API Gateway with JWT. Internal and header-validation probes call Borrow Service directly. Manual probes cover branches that require prepared DB state or intentionally stopped downstream services.",
+    "description": "Postman collection for BS-BE-06 Borrow Service & Saga Pattern. Run the folders from top to bottom. Public Borrow APIs are called through API Gateway with JWT. Borrow list/detail responses include frontend metadata such as member snapshot, totalItems, and book snapshot fields. Internal and header-validation probes call Borrow Service directly. Manual probes cover branches that require prepared DB state or intentionally stopped downstream services.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -339,6 +339,13 @@
                   "  pm.expect(json.data.items).to.be.an(\"array\").that.is.not.empty;",
                   "  pm.expect(json.data.items[0].status).to.eql(\"BORROWED\");",
                   "});",
+                  "pm.test(\"created detail includes frontend metadata\", function () {",
+                  "  pm.expect(json.data).to.have.property(\"memberName\");",
+                  "  pm.expect(json.data.totalItems).to.be.a(\"number\");",
+                  "  pm.expect(json.data.items[0]).to.have.property(\"bookTitle\");",
+                  "  pm.expect(json.data.items[0]).to.have.property(\"bookAuthor\");",
+                  "  pm.expect(json.data.items[0]).to.have.property(\"isbn\");",
+                  "});",
                   "pm.environment.set(\"createdBorrowId\", String(json.data.id));",
                   "pm.environment.set(\"returnTargetBorrowId\", String(json.data.id));",
                   "pm.environment.set(\"coverageCreateSuccess\", \"PASS\");"
@@ -592,7 +599,7 @@
     },
     {
       "name": "02 - Search & Permission",
-      "description": "Covers MEMBER scoped search, ADMIN/LIBRARIAN all-search, status/user filters, and invalid enum query branch.",
+      "description": "Covers MEMBER scoped search, ADMIN/LIBRARIAN all-search, status/user filters, enriched borrow summary fields, and invalid enum query branch.",
       "item": [
         {
           "name": "MEMBER list own borrows -> 200",
@@ -645,6 +652,14 @@
                   "pm.test(\"all rows belong to MEMBER\", function () {",
                   "  pm.expect(json.success).to.eql(true);",
                   "  json.data.content.forEach(function (row) { pm.expect(row.userId).to.eql(memberUserId); });",
+                  "});",
+                  "pm.test(\"summary rows include frontend metadata\", function () {",
+                  "  json.data.content.forEach(function (row) {",
+                  "    pm.expect(row).to.have.property(\"totalItems\");",
+                  "    pm.expect(row.totalItems).to.be.a(\"number\");",
+                  "    pm.expect(row).to.have.property(\"username\");",
+                  "    pm.expect(row).to.have.property(\"memberName\");",
+                  "  });",
                   "});",
                   "pm.environment.set(\"coverageSearchMemberScope\", \"PASS\");"
                 ],
@@ -758,6 +773,14 @@
                   "  pm.expect(json.success).to.eql(true);",
                   "  pm.expect(json.data.content).to.be.an(\"array\");",
                   "  pm.expect(json.data.totalElements).to.be.a(\"number\");",
+                  "});",
+                  "pm.test(\"admin summary rows include frontend metadata\", function () {",
+                  "  json.data.content.forEach(function (row) {",
+                  "    pm.expect(row).to.have.property(\"totalItems\");",
+                  "    pm.expect(row.totalItems).to.be.a(\"number\");",
+                  "    pm.expect(row).to.have.property(\"username\");",
+                  "    pm.expect(row).to.have.property(\"memberName\");",
+                  "  });",
                   "});",
                   "pm.environment.set(\"coverageSearchAdminAll\", \"PASS\");"
                 ],
@@ -973,7 +996,7 @@
     },
     {
       "name": "03 - Detail & Internal",
-      "description": "Covers detail success, 403 permission, 404 not found, direct internal endpoint, and Gateway /internal/** blocking.",
+      "description": "Covers enriched detail success, 403 permission, 404 not found, direct internal endpoint, and Gateway /internal/** blocking.",
       "item": [
         {
           "name": "MEMBER get own seed borrow detail -> 200",
@@ -1009,6 +1032,15 @@
                   "  pm.expect(json.success).to.eql(true);",
                   "  pm.expect(String(json.data.userId)).to.eql(pm.environment.get(\"memberUserId\"));",
                   "  pm.expect(json.data.items).to.be.an(\"array\").that.is.not.empty;",
+                  "});",
+                  "pm.test(\"detail includes member, total, and book metadata\", function () {",
+                  "  pm.expect(json.data).to.have.property(\"username\");",
+                  "  pm.expect(json.data).to.have.property(\"memberName\");",
+                  "  pm.expect(json.data.totalItems).to.be.a(\"number\");",
+                  "  const item = json.data.items[0];",
+                  "  pm.expect(item).to.have.property(\"bookTitle\");",
+                  "  pm.expect(item).to.have.property(\"bookAuthor\");",
+                  "  pm.expect(item).to.have.property(\"isbn\");",
                   "});",
                   "pm.environment.set(\"coverageDetailMemberOwn\", \"PASS\");"
                 ],
@@ -1088,6 +1120,8 @@
                   "pm.test(\"admin can see detail\", function () {",
                   "  pm.expect(json.success).to.eql(true);",
                   "  pm.expect(json.data.id).to.eql(Number(pm.environment.get(\"seedBorrowOtherUserId\")));",
+                  "  pm.expect(json.data).to.have.property(\"memberName\");",
+                  "  pm.expect(json.data.totalItems).to.be.a(\"number\");",
                   "});",
                   "pm.environment.set(\"coverageDetailAdminOther\", \"PASS\");"
                 ],
@@ -1257,6 +1291,13 @@
                   "  pm.expect(json.success).to.eql(true);",
                   "  pm.expect(json.data.status).to.eql(\"RETURNED\");",
                   "  json.data.items.forEach(function (item) { pm.expect(item.status).to.eql(\"RETURNED\"); });",
+                  "});",
+                  "pm.test(\"returned detail includes frontend metadata\", function () {",
+                  "  pm.expect(json.data).to.have.property(\"memberName\");",
+                  "  pm.expect(json.data.totalItems).to.be.a(\"number\");",
+                  "  pm.expect(json.data.items[0]).to.have.property(\"bookTitle\");",
+                  "  pm.expect(json.data.items[0]).to.have.property(\"bookAuthor\");",
+                  "  pm.expect(json.data.items[0]).to.have.property(\"isbn\");",
                   "});",
                   "pm.environment.set(\"returnedBorrowId\", String(json.data.id));",
                   "pm.environment.set(\"coverageReturnSuccess\", \"PASS\");"

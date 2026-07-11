@@ -27,6 +27,7 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/refresh",
                                 "/api/auth/logout").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/internal/users/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
