@@ -147,5 +147,26 @@
   "borrowAlreadyReturned": "Phiếu mượn này đã được trả sách.",
   "borrowNotFound": "Không tìm thấy thông tin phiếu mượn.",
   "borrowNotAllowed": "Bạn không có quyền trả sách cho phiếu mượn này.",
-  "overdueReturnWarning": "Phiếu mượn này đã quá hạn. Việc trả sách có thể phát sinh phí phạt."
+  "overdueReturnWarning": "Phiếu mượn này đã quá hạn. Việc trả sách có thể phát sinh phí phạt.",
+  "searchByTitleAuthorIsbn": "Tìm theo tên sách, tác giả hoặc ISBN",
+  "allCategories": "Tất cả thể loại",
+  "allAvailability": "Tất cả",
+  "available": "Còn sách",
+  "unavailable": "Hết sách",
+  "availableOnly": "Chỉ sách còn sẵn",
+  "copiesAvailable": "Còn {count} bản",
+  "@copiesAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noBooks": "Thư viện chưa có sách nào.",
+  "noBooksFound": "Không tìm thấy sách phù hợp với tìm kiếm hoặc bộ lọc.",
+  "clearFilters": "Xóa bộ lọc",
+  "loadBooksFailed": "Không thể tải danh sách sách.",
+  "checkConnectionAndRetry": "Vui lòng kiểm tra kết nối và thử lại.",
+  "loadingMore": "Đang tải thêm...",
+  "unknownAuthor": "Chưa rõ tác giả",
+  "unknownCategory": "Chưa phân loại",
+  "accessDenied": "Bạn không có quyền xem nội dung này."
 }

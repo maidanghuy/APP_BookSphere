@@ -432,4 +432,54 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get overdueReturnWarning => 'この貸出は期限切れです。本を返却すると罰金が発生する可能性があります。';
+
+  @override
+  String get searchByTitleAuthorIsbn => 'タイトル・著者・ISBNで検索';
+
+  @override
+  String get allCategories => 'すべてのカテゴリ';
+
+  @override
+  String get allAvailability => 'すべて';
+
+  @override
+  String get available => '貸出可能';
+
+  @override
+  String get unavailable => '貸出不可';
+
+  @override
+  String get availableOnly => '貸出可能な本のみ';
+
+  @override
+  String copiesAvailable(int count) {
+    return '残り$count冊';
+  }
+
+  @override
+  String get noBooks => 'まだ本が登録されていません。';
+
+  @override
+  String get noBooksFound => '検索条件やフィルターに一致する本がありません。';
+
+  @override
+  String get clearFilters => 'フィルターをクリア';
+
+  @override
+  String get loadBooksFailed => '本の一覧を読み込めませんでした。';
+
+  @override
+  String get checkConnectionAndRetry => '接続を確認して、もう一度お試しください。';
+
+  @override
+  String get loadingMore => 'さらに読み込み中...';
+
+  @override
+  String get unknownAuthor => '著者不明';
+
+  @override
+  String get unknownCategory => '未分類';
+
+  @override
+  String get accessDenied => 'このコンテンツを表示する権限がありません。';
 }

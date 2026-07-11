@@ -444,4 +444,55 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get overdueReturnWarning =>
       'Phiếu mượn này đã quá hạn. Việc trả sách có thể phát sinh phí phạt.';
+
+  @override
+  String get searchByTitleAuthorIsbn => 'Tìm theo tên sách, tác giả hoặc ISBN';
+
+  @override
+  String get allCategories => 'Tất cả thể loại';
+
+  @override
+  String get allAvailability => 'Tất cả';
+
+  @override
+  String get available => 'Còn sách';
+
+  @override
+  String get unavailable => 'Hết sách';
+
+  @override
+  String get availableOnly => 'Chỉ sách còn sẵn';
+
+  @override
+  String copiesAvailable(int count) {
+    return 'Còn $count bản';
+  }
+
+  @override
+  String get noBooks => 'Thư viện chưa có sách nào.';
+
+  @override
+  String get noBooksFound =>
+      'Không tìm thấy sách phù hợp với tìm kiếm hoặc bộ lọc.';
+
+  @override
+  String get clearFilters => 'Xóa bộ lọc';
+
+  @override
+  String get loadBooksFailed => 'Không thể tải danh sách sách.';
+
+  @override
+  String get checkConnectionAndRetry => 'Vui lòng kiểm tra kết nối và thử lại.';
+
+  @override
+  String get loadingMore => 'Đang tải thêm...';
+
+  @override
+  String get unknownAuthor => 'Chưa rõ tác giả';
+
+  @override
+  String get unknownCategory => 'Chưa phân loại';
+
+  @override
+  String get accessDenied => 'Bạn không có quyền xem nội dung này.';
 }

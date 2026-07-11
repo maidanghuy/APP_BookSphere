@@ -147,5 +147,26 @@
   "borrowAlreadyReturned": "This borrow has already been returned.",
   "borrowNotFound": "Borrow record not found.",
   "borrowNotAllowed": "You are not allowed to return this borrow.",
-  "overdueReturnWarning": "This borrow is overdue. Returning the book may incur a fine."
+  "overdueReturnWarning": "This borrow is overdue. Returning the book may incur a fine.",
+  "searchByTitleAuthorIsbn": "Search by title, author or ISBN",
+  "allCategories": "All categories",
+  "allAvailability": "All",
+  "available": "Available",
+  "unavailable": "Unavailable",
+  "availableOnly": "Available books only",
+  "copiesAvailable": "{count} copies available",
+  "@copiesAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noBooks": "No books in the library yet.",
+  "noBooksFound": "No books match your search or filters.",
+  "clearFilters": "Clear filters",
+  "loadBooksFailed": "Unable to load the book list.",
+  "checkConnectionAndRetry": "Please check your connection and try again.",
+  "loadingMore": "Loading more...",
+  "unknownAuthor": "Unknown author",
+  "unknownCategory": "Uncategorized",
+  "accessDenied": "You do not have permission to view this content."
 }
