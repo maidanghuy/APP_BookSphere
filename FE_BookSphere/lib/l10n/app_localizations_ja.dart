@@ -694,4 +694,74 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get confirmBorrowLaterNote => '貸出確定は後続タスクで実装されます。';
+
+  @override
+  String get borrowCart => '貸出カート';
+
+  @override
+  String borrowCartQuantity(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '貸出リストに$count冊あります',
+      one: '貸出リストに1冊あります',
+      zero: '貸出リストに本はありません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String distinctBooks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countタイトル',
+      one: '1タイトル',
+      zero: '0タイトル',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String totalBooks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '合計$count冊',
+      one: '合計1冊',
+      zero: '合計0冊',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String selectedQuantity(int selected, int available) {
+    return '利用可能$available冊のうち$selected冊を選択';
+  }
+
+  @override
+  String get addToBorrowCart => '貸出カートに追加';
+
+  @override
+  String get updateBorrowCart => '貸出カートを更新';
+
+  @override
+  String get editCartItem => '編集';
+
+  @override
+  String get removeFromCart => '削除';
+
+  @override
+  String get quantityMinimumError => '数量は1以上である必要があります。';
+
+  @override
+  String quantityExceedsAvailable(int count) {
+    return '現在利用可能なのは$count冊のみです。';
+  }
+
+  @override
+  String get bookAlreadyInCart => 'この本はすでに貸出カートにあります。';
+
+  @override
+  String get viewBorrowCart => '表示';
 }

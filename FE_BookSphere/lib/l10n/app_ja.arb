@@ -246,5 +246,44 @@
   "browseBooks": "本を見る",
   "bookUnavailable": "この本は現在利用できません。",
   "added": "追加済み",
-  "confirmBorrowLaterNote": "貸出確定は後続タスクで実装されます。"
+  "confirmBorrowLaterNote": "貸出確定は後続タスクで実装されます。",
+  "borrowCart": "貸出カート",
+  "borrowCartQuantity": "{count, plural, =0{貸出リストに本はありません} =1{貸出リストに1冊あります} other{貸出リストに{count}冊あります}}",
+  "@borrowCartQuantity": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "distinctBooks": "{count, plural, =0{0タイトル} =1{1タイトル} other{{count}タイトル}}",
+  "@distinctBooks": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "totalBooks": "{count, plural, =0{合計0冊} =1{合計1冊} other{合計{count}冊}}",
+  "@totalBooks": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "selectedQuantity": "利用可能{available}冊のうち{selected}冊を選択",
+  "@selectedQuantity": {
+    "placeholders": {
+      "selected": { "type": "int" },
+      "available": { "type": "int" }
+    }
+  },
+  "addToBorrowCart": "貸出カートに追加",
+  "updateBorrowCart": "貸出カートを更新",
+  "editCartItem": "編集",
+  "removeFromCart": "削除",
+  "quantityMinimumError": "数量は1以上である必要があります。",
+  "quantityExceedsAvailable": "現在利用可能なのは{count}冊のみです。",
+  "@quantityExceedsAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "bookAlreadyInCart": "この本はすでに貸出カートにあります。",
+  "viewBorrowCart": "表示"
 }

@@ -246,5 +246,44 @@
   "browseBooks": "Browse Books",
   "bookUnavailable": "This book is currently unavailable.",
   "added": "Added",
-  "confirmBorrowLaterNote": "Confirm Borrow will be implemented in a later task."
+  "confirmBorrowLaterNote": "Confirm Borrow will be implemented in a later task.",
+  "borrowCart": "Borrow Cart",
+  "borrowCartQuantity": "{count, plural, =0{No books in borrow list} =1{1 book in borrow list} other{{count} books in borrow list}}",
+  "@borrowCartQuantity": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "distinctBooks": "{count, plural, =0{0 book titles} =1{1 book title} other{{count} book titles}}",
+  "@distinctBooks": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "totalBooks": "{count, plural, =0{0 total books} =1{1 total book} other{{count} total books}}",
+  "@totalBooks": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "selectedQuantity": "{selected} of {available} available copies selected",
+  "@selectedQuantity": {
+    "placeholders": {
+      "selected": { "type": "int" },
+      "available": { "type": "int" }
+    }
+  },
+  "addToBorrowCart": "Add to Borrow Cart",
+  "updateBorrowCart": "Update Borrow Cart",
+  "editCartItem": "Edit",
+  "removeFromCart": "Remove",
+  "quantityMinimumError": "Quantity must be at least 1.",
+  "quantityExceedsAvailable": "Only {count} copies are currently available.",
+  "@quantityExceedsAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "bookAlreadyInCart": "This book is already in your borrow cart.",
+  "viewBorrowCart": "View"
 }

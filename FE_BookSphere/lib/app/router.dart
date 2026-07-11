@@ -4,6 +4,7 @@ import 'package:booksphere_app/features/auth/data/auth_session_service.dart';
 import 'package:booksphere_app/features/auth/presentation/login_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/register_screen.dart';
 import 'package:booksphere_app/features/auth/presentation/splash_screen.dart';
+import 'package:booksphere_app/features/books/presentation/book_detail_route_args.dart';
 import 'package:booksphere_app/features/books/presentation/book_detail_screen.dart';
 import 'package:booksphere_app/features/borrow_cart/presentation/borrow_cart_screen.dart';
 import 'package:booksphere_app/features/borrows/presentation/borrow_create_screen.dart';
@@ -53,7 +54,10 @@ final appRouter = GoRouter(
       name: 'book-detail',
       builder: (context, state) {
         final bookId = state.pathParameters['bookId'] ?? '';
-        return BookDetailScreen(bookId: bookId);
+        final args = state.extra is BookDetailRouteArgs
+            ? state.extra! as BookDetailRouteArgs
+            : const BookDetailRouteArgs(mode: BookDetailMode.add);
+        return BookDetailScreen(bookId: bookId, args: args);
       },
     ),
     GoRoute(

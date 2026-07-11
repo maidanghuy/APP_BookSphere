@@ -113,7 +113,7 @@ class BookCard extends StatelessWidget {
               ),
               if (onAddToBorrowList != null)
                 IconButton(
-                  tooltip: l10n.addToBorrowList,
+                  tooltip: l10n.addToBorrowCart,
                   onPressed: canAdd ? onAddToBorrowList : null,
                   icon: Icon(
                     isInBorrowList

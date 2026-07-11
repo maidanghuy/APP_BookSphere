@@ -8,16 +8,16 @@ class BorrowCartItem {
     required this.title,
     this.author,
     this.coverUrl,
+    required this.quantity,
     required this.availableCopies,
-    this.quantity = 1,
   });
 
   final String bookId;
   final String title;
   final String? author;
   final String? coverUrl;
-  final int availableCopies;
   final int quantity;
+  final int availableCopies;
 
   bool get isAvailable => availableCopies > 0;
 
@@ -26,33 +26,35 @@ class BorrowCartItem {
     String? title,
     String? author,
     String? coverUrl,
-    int? availableCopies,
     int? quantity,
+    int? availableCopies,
   }) {
     return BorrowCartItem(
       bookId: bookId ?? this.bookId,
       title: title ?? this.title,
       author: author ?? this.author,
       coverUrl: coverUrl ?? this.coverUrl,
-      availableCopies: availableCopies ?? this.availableCopies,
       quantity: quantity ?? this.quantity,
+      availableCopies: availableCopies ?? this.availableCopies,
     );
   }
 
-  factory BorrowCartItem.fromBookSummary(BookSummary book) {
+  factory BorrowCartItem.fromBookSummary(BookSummary book, {int quantity = 1}) {
     return BorrowCartItem(
       bookId: book.id,
       title: book.title,
       author: book.author,
+      quantity: quantity,
       availableCopies: book.availableQuantity ?? 0,
     );
   }
 
-  factory BorrowCartItem.fromBookDetail(BookDetail book) {
+  factory BorrowCartItem.fromBookDetail(BookDetail book, {int quantity = 1}) {
     return BorrowCartItem(
       bookId: book.id,
       title: book.title,
       author: book.author,
+      quantity: quantity,
       availableCopies: book.availableQuantity ?? 0,
     );
   }

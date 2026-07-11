@@ -709,4 +709,74 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get confirmBorrowLaterNote =>
       'Confirm Borrow will be implemented in a later task.';
+
+  @override
+  String get borrowCart => 'Borrow Cart';
+
+  @override
+  String borrowCartQuantity(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count books in borrow list',
+      one: '1 book in borrow list',
+      zero: 'No books in borrow list',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String distinctBooks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count book titles',
+      one: '1 book title',
+      zero: '0 book titles',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String totalBooks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count total books',
+      one: '1 total book',
+      zero: '0 total books',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String selectedQuantity(int selected, int available) {
+    return '$selected of $available available copies selected';
+  }
+
+  @override
+  String get addToBorrowCart => 'Add to Borrow Cart';
+
+  @override
+  String get updateBorrowCart => 'Update Borrow Cart';
+
+  @override
+  String get editCartItem => 'Edit';
+
+  @override
+  String get removeFromCart => 'Remove';
+
+  @override
+  String get quantityMinimumError => 'Quantity must be at least 1.';
+
+  @override
+  String quantityExceedsAvailable(int count) {
+    return 'Only $count copies are currently available.';
+  }
+
+  @override
+  String get bookAlreadyInCart => 'This book is already in your borrow cart.';
+
+  @override
+  String get viewBorrowCart => 'View';
 }

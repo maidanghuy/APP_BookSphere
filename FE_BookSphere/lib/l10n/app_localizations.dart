@@ -1443,6 +1443,84 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Xác nhận mượn sẽ được triển khai ở task sau.'**
   String get confirmBorrowLaterNote;
+
+  /// No description provided for @borrowCart.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giỏ mượn'**
+  String get borrowCart;
+
+  /// No description provided for @borrowCartQuantity.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{Chưa có sách trong danh sách mượn} =1{1 sách trong danh sách mượn} other{{count} sách trong danh sách mượn}}'**
+  String borrowCartQuantity(int count);
+
+  /// No description provided for @distinctBooks.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{0 đầu sách} =1{1 đầu sách} other{{count} đầu sách}}'**
+  String distinctBooks(int count);
+
+  /// No description provided for @totalBooks.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{Tổng 0 sách} =1{Tổng 1 sách} other{Tổng {count} sách}}'**
+  String totalBooks(int count);
+
+  /// No description provided for @selectedQuantity.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chọn {selected} / {available} bản còn lại'**
+  String selectedQuantity(int selected, int available);
+
+  /// No description provided for @addToBorrowCart.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm vào giỏ mượn'**
+  String get addToBorrowCart;
+
+  /// No description provided for @updateBorrowCart.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật giỏ mượn'**
+  String get updateBorrowCart;
+
+  /// No description provided for @editCartItem.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa'**
+  String get editCartItem;
+
+  /// No description provided for @removeFromCart.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa'**
+  String get removeFromCart;
+
+  /// No description provided for @quantityMinimumError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số lượng phải ít nhất là 1.'**
+  String get quantityMinimumError;
+
+  /// No description provided for @quantityExceedsAvailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiện chỉ còn {count} bản.'**
+  String quantityExceedsAvailable(int count);
+
+  /// No description provided for @bookAlreadyInCart.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sách này đã có trong giỏ mượn.'**
+  String get bookAlreadyInCart;
+
+  /// No description provided for @viewBorrowCart.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem'**
+  String get viewBorrowCart;
 }
 
 class _AppLocalizationsDelegate

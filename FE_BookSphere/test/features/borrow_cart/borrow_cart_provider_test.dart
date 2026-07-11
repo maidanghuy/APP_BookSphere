@@ -15,114 +15,172 @@ void main() {
   });
 
   BorrowCartNotifier notifier() => container.read(borrowCartProvider.notifier);
-
   BorrowCartState state() => container.read(borrowCartProvider);
 
-  test('cart starts empty', () {
-    expect(state().isEmpty, isTrue);
-    expect(state().itemCount, 0);
-  });
-
-  test('adds available book successfully', () {
-    final added = notifier().addBook(
-      const BorrowCartItem(
+  test('adds item with quantity 1', () {
+    final result = notifier().addBook(
+      item: const BorrowCartItem(
         bookId: '1',
         title: 'Clean Code',
-        author: 'Uncle Bob',
-        availableCopies: 2,
-      ),
-    );
-
-    expect(added, isTrue);
-    expect(state().itemCount, 1);
-    expect(state().contains('1'), isTrue);
-    expect(notifier().containsBook('1'), isTrue);
-  });
-
-  test('allows adding the same book multiple times', () {
-    const item = BorrowCartItem(
-      bookId: '1',
-      title: 'Clean Code',
-      availableCopies: 5,
-    );
-    expect(notifier().addBook(item), isTrue);
-    expect(notifier().addBook(item), isTrue);
-    expect(notifier().addBook(item), isTrue);
-    expect(state().items.length, 1);
-    expect(state().itemCount, 3);
-    expect(state().quantityOf('1'), 3);
-  });
-
-  test('does not add unavailable book', () {
-    final added = notifier().addBook(
-      const BorrowCartItem(
-        bookId: '2',
-        title: 'Out of Stock',
-        availableCopies: 0,
-      ),
-    );
-
-    expect(added, isFalse);
-    expect(state().isEmpty, isTrue);
-  });
-
-  test('removes book and updates count', () {
-    notifier().addBook(
-      const BorrowCartItem(bookId: '1', title: 'A', availableCopies: 1),
-    );
-    notifier().addBook(
-      const BorrowCartItem(bookId: '2', title: 'B', availableCopies: 1),
-    );
-
-    notifier().removeBook('1');
-    expect(state().itemCount, 1);
-    expect(state().contains('1'), isFalse);
-    expect(state().contains('2'), isTrue);
-  });
-
-  test('decrements quantity and removes line at zero', () {
-    const item = BorrowCartItem(
-      bookId: '1',
-      title: 'Clean Code',
-      availableCopies: 5,
-    );
-    notifier().addBook(item);
-    notifier().addBook(item);
-    notifier().addBook(item);
-    expect(state().quantityOf('1'), 3);
-
-    notifier().decrementQuantity('1');
-    expect(state().quantityOf('1'), 2);
-    expect(state().itemCount, 2);
-
-    notifier().decrementQuantity('1');
-    notifier().decrementQuantity('1');
-    expect(state().contains('1'), isFalse);
-    expect(state().isEmpty, isTrue);
-  });
-
-  test('increments quantity from cart controls', () {
-    notifier().addBook(
-      const BorrowCartItem(
-        bookId: '1',
-        title: 'Clean Code',
+        quantity: 1,
         availableCopies: 5,
       ),
     );
-    expect(notifier().incrementQuantity('1'), isTrue);
-    expect(state().quantityOf('1'), 2);
+    expect(result, BorrowCartAddResult.added);
+    expect(state().totalQuantity, 1);
+    expect(state().distinctBookCount, 1);
   });
 
-  test('clear cart empties all items', () {
-    notifier().addBook(
-      const BorrowCartItem(bookId: '1', title: 'A', availableCopies: 1),
+  test('adds item with quantity greater than 1', () {
+    final result = notifier().addBook(
+      item: const BorrowCartItem(
+        bookId: '1',
+        title: 'Clean Code',
+        quantity: 3,
+        availableCopies: 5,
+      ),
     );
+    expect(result, BorrowCartAddResult.added);
+    expect(state().totalQuantity, 3);
+    expect(state().distinctBookCount, 1);
+  });
+
+  test('does not create duplicate bookId', () {
     notifier().addBook(
-      const BorrowCartItem(bookId: '2', title: 'B', availableCopies: 1),
+      item: const BorrowCartItem(
+        bookId: '1',
+        title: 'Clean Code',
+        quantity: 1,
+        availableCopies: 5,
+      ),
+    );
+    final second = notifier().addBook(
+      item: const BorrowCartItem(
+        bookId: '1',
+        title: 'Clean Code',
+        quantity: 2,
+        availableCopies: 5,
+      ),
+    );
+    expect(second, BorrowCartAddResult.alreadyExists);
+    expect(state().distinctBookCount, 1);
+    expect(state().totalQuantity, 1);
+  });
+
+  test('updates quantity', () {
+    notifier().addBook(
+      item: const BorrowCartItem(
+        bookId: '1',
+        title: 'Clean Code',
+        quantity: 1,
+        availableCopies: 5,
+      ),
+    );
+    final result = notifier().updateQuantity(
+      bookId: '1',
+      quantity: 4,
+      availableCopies: 5,
+    );
+    expect(result, BorrowCartUpdateResult.updated);
+    expect(state().totalQuantity, 4);
+  });
+
+  test('rejects quantity less than 1', () {
+    expect(
+      notifier().addBook(
+        item: const BorrowCartItem(
+          bookId: '1',
+          title: 'A',
+          quantity: 0,
+          availableCopies: 5,
+        ),
+      ),
+      BorrowCartAddResult.invalidQuantity,
     );
 
+    notifier().addBook(
+      item: const BorrowCartItem(
+        bookId: '1',
+        title: 'A',
+        quantity: 2,
+        availableCopies: 5,
+      ),
+    );
+    expect(
+      notifier().updateQuantity(bookId: '1', quantity: 0, availableCopies: 5),
+      BorrowCartUpdateResult.invalidQuantity,
+    );
+  });
+
+  test('rejects quantity greater than available', () {
+    expect(
+      notifier().addBook(
+        item: const BorrowCartItem(
+          bookId: '1',
+          title: 'A',
+          quantity: 6,
+          availableCopies: 5,
+        ),
+      ),
+      BorrowCartAddResult.invalidQuantity,
+    );
+
+    notifier().addBook(
+      item: const BorrowCartItem(
+        bookId: '1',
+        title: 'A',
+        quantity: 1,
+        availableCopies: 5,
+      ),
+    );
+    expect(
+      notifier().updateQuantity(bookId: '1', quantity: 9, availableCopies: 5),
+      BorrowCartUpdateResult.invalidQuantity,
+    );
+  });
+
+  test('totalQuantity and distinctBookCount stay correct', () {
+    notifier().addBook(
+      item: const BorrowCartItem(
+        bookId: '1',
+        title: 'A',
+        quantity: 2,
+        availableCopies: 5,
+      ),
+    );
+    notifier().addBook(
+      item: const BorrowCartItem(
+        bookId: '2',
+        title: 'B',
+        quantity: 1,
+        availableCopies: 3,
+      ),
+    );
+    expect(state().distinctBookCount, 2);
+    expect(state().totalQuantity, 3);
+  });
+
+  test('removes item and clears cart', () {
+    notifier().addBook(
+      item: const BorrowCartItem(
+        bookId: '1',
+        title: 'A',
+        quantity: 2,
+        availableCopies: 5,
+      ),
+    );
+    notifier().addBook(
+      item: const BorrowCartItem(
+        bookId: '2',
+        title: 'B',
+        quantity: 1,
+        availableCopies: 3,
+      ),
+    );
+    notifier().removeBook('1');
+    expect(state().distinctBookCount, 1);
+    expect(state().totalQuantity, 1);
     notifier().clearCart();
     expect(state().isEmpty, isTrue);
-    expect(state().itemCount, 0);
   });
 }
