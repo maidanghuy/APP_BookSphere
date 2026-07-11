@@ -1,0 +1,22 @@
+$kind: http-request
+description: Expect 422 if fine already PAID.
+url: "{{fineServiceBaseUrl}}/api/fines/{{fineId}}/pay"
+method: POST
+headers:
+  X-User-Id: "2"
+  X-Username: librarian01
+  X-User-Email: librarian01@booksphere.com
+  X-User-Role: LIBRARIAN
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "paymentMethod": "CASH",
+      "paymentStatus": "SUCCESS"
+    }
+scripts:
+  - type: afterResponse
+    code: pm.test('Status is 200 or 422', function () { pm.expect([200, 422]).to.include(pm.response.code); });
+    language: text/javascript
+order: 5000

@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{fineServiceBaseUrl}}/api/fines/{{fineId}}"
+method: GET
+headers:
+  X-User-Id: "3"
+  X-Username: huy.member
+  X-User-Email: huy@booksphere.com
+  X-User-Role: MEMBER
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 403', function () { pm.response.to.have.status(403); });
+      pm.test('Error code FORBIDDEN', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FORBIDDEN'); });
+    language: text/javascript
+order: 4000

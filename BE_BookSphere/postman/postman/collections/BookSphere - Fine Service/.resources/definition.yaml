@@ -1,0 +1,14 @@
+$kind: collection
+description: |-
+  Postman collection for Fine Service (BS-BE-07).
+
+  Recommended run order:
+  1. 00 - Auth Setup
+  2. 01 - Internal Fine API - Direct Service
+  3. 02 - Fine Query - Via Gateway
+  4. 03 - Payment Flow - Via Gateway
+  5. 04 - Fine API - Direct Service
+  6. 05 - Gateway Security
+
+  Prerequisites: Auth, Borrow, Fine, Gateway running. Seed fine id=1 UNPAID.
+  Note: Payment SUCCESS marks fine as PAID; reset DB to rerun payment folder.

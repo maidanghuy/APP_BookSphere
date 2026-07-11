@@ -1,0 +1,21 @@
+$kind: http-request
+url: "{{gatewayBaseUrl}}/api/fines/{{fineId}}/pay"
+method: POST
+headers:
+  Authorization: Bearer {{accessTokenAdmin}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "paymentMethod": "CASH",
+      "amount": 1,
+      "paymentStatus": "SUCCESS"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 400', function () { pm.response.to.have.status(400); });
+      pm.test('Error code FINE_INVALID_AMOUNT', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FINE_INVALID_AMOUNT'); });
+    language: text/javascript
+order: 3000

@@ -1,0 +1,27 @@
+$kind: http-request
+url: "{{gatewayBaseUrl}}/api/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "username": "{{librarianUsername}}",
+      "password": "{{librarianPassword}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: pm.variables.set('tokenVar', 'accessTokenLibrarian');
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 200', function () { pm.response.to.have.status(200); });
+      if (pm.response.code === 200) {
+          const json = pm.response.json();
+          if (json.data && json.data.accessToken) {
+              pm.environment.set(pm.variables.get('tokenVar'), json.data.accessToken);
+          }
+      }
+    language: text/javascript
+order: 2000

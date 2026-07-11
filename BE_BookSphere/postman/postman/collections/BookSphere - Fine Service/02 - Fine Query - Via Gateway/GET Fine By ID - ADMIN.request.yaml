@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{gatewayBaseUrl}}/api/fines/{{fineId}}"
+method: GET
+headers:
+  Authorization: Bearer {{accessTokenAdmin}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 200', function () { pm.response.to.have.status(200); });
+      pm.test('Fine detail fields', function () { const f = pm.response.json().data; pm.expect(f).to.have.property('amount'); pm.expect(f).to.have.property('createdFrom'); pm.expect(f).to.have.property('createdAt'); });
+      pm.test('Response has no Jackson @class metadata', function () {
+          pm.expect(JSON.stringify(pm.response.json())).to.not.include('@class');
+      });
+    language: text/javascript
+order: 5000

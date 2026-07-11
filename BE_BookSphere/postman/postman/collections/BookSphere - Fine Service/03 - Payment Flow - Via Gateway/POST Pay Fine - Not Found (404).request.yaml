@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{gatewayBaseUrl}}/api/fines/{{invalidFineId}}/pay"
+method: POST
+headers:
+  Authorization: Bearer {{accessTokenAdmin}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "paymentMethod": "CASH",
+      "paymentStatus": "SUCCESS"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 404', function () { pm.response.to.have.status(404); });
+      pm.test('Error code FINE_NOT_FOUND', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FINE_NOT_FOUND'); });
+    language: text/javascript
+order: 9000

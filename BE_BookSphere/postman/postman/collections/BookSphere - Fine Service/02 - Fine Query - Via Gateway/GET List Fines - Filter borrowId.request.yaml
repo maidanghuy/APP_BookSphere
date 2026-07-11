@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{gatewayBaseUrl}}/api/fines?borrowId={{borrowId}}"
+method: GET
+headers:
+  Authorization: Bearer {{accessTokenAdmin}}
+queryParams:
+  borrowId: "{{borrowId}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 200', function () { pm.response.to.have.status(200); });
+      pm.test('borrowId filter applied', function () { pm.response.json().data.content.forEach(function (f) { pm.expect(f.borrowId).to.eql(parseInt(pm.environment.get('borrowId'))); }); });
+    language: text/javascript
+order: 4000

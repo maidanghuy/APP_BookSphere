@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{gatewayBaseUrl}}/api/fines?status=INVALID"
+method: GET
+headers:
+  Authorization: Bearer {{accessTokenAdmin}}
+queryParams:
+  status: INVALID
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 400', function () { pm.response.to.have.status(400); });
+      pm.test('Error code FINE_INVALID_STATUS', function () { pm.expect(pm.response.json().errors[0].code).to.eql('FINE_INVALID_STATUS'); });
+    language: text/javascript
+order: 8000

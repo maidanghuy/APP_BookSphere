@@ -1,0 +1,21 @@
+$kind: http-request
+url: "{{gatewayBaseUrl}}/api/fines?page=0&size=10&sortBy=createdAt&sortDir=desc"
+method: GET
+headers:
+  Authorization: Bearer {{accessTokenAdmin}}
+queryParams:
+  page: "0"
+  size: "10"
+  sortBy: createdAt
+  sortDir: desc
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status is 200', function () { pm.response.to.have.status(200); });
+      pm.test('Paged data present', function () { const d = pm.response.json().data; pm.expect(d.content).to.be.an('array'); pm.expect(d).to.have.property('totalElements'); });
+      if (pm.response.json().data.content.length) { pm.environment.set('fineId', pm.response.json().data.content[0].id); }
+      pm.test('Response has no Jackson @class metadata', function () {
+          pm.expect(JSON.stringify(pm.response.json())).to.not.include('@class');
+      });
+    language: text/javascript
+order: 1000

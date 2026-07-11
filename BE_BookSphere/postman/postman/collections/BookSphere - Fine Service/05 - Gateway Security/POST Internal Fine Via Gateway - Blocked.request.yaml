@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{gatewayBaseUrl}}/internal/fines"
+method: POST
+headers:
+  Authorization: Bearer {{accessTokenAdmin}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "borrowId": 2,
+      "userId": 4,
+      "createdFrom": "LATE_RETURN"
+    }
+scripts:
+  - type: afterResponse
+    code: pm.test('Status is 403 or 404', function () { pm.expect([403, 404]).to.include(pm.response.code); });
+    language: text/javascript
+order: 1000
