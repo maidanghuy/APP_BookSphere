@@ -9,6 +9,7 @@ import 'package:booksphere_app/features/books/presentation/widgets/book_list_ske
 import 'package:booksphere_app/features/books/providers/book_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class BookListScreen extends ConsumerStatefulWidget {
   const BookListScreen({super.key});
@@ -223,8 +224,7 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
                 final book = visibleBooks[index];
                 return BookCard(
                   book: book,
-                  // TODO(BS-APP-13): Navigate to Book Detail Screen.
-                  onTap: null,
+                  onTap: () => context.push('/books/${book.id}'),
                 );
               },
             ),

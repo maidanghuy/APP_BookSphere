@@ -168,5 +168,26 @@
   "loadingMore": "さらに読み込み中...",
   "unknownAuthor": "著者不明",
   "unknownCategory": "未分類",
-  "accessDenied": "このコンテンツを表示する権限がありません。"
+  "accessDenied": "このコンテンツを表示する権限がありません。",
+  "bookDetails": "本の詳細",
+  "author": "著者",
+  "category": "カテゴリ",
+  "isbn": "ISBN",
+  "publisher": "出版社",
+  "publicationYear": "出版年",
+  "description": "説明",
+  "totalCopies": "総冊数",
+  "availableCopies": "貸出可能数",
+  "copiesAvailableOfTotal": "残り {available} / {total} 冊",
+  "@copiesAvailableOfTotal": {
+    "placeholders": {
+      "available": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "bookNotFound": "本が見つかりません。",
+  "bookNotFoundDescription": "本が削除されたか、現在利用できない可能性があります。",
+  "loadBookDetailFailed": "本の詳細を読み込めませんでした。",
+  "noDescriptionAvailable": "説明はありません。",
+  "backToBooks": "本の一覧に戻る"
 }

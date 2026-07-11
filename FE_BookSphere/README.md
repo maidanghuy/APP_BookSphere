@@ -430,3 +430,17 @@ Assignee: Hiển
 - Books tab in Main Tab shows `BookListScreen`.
 - Vietnamese, English, and Japanese localization for Book List texts.
 - Book Detail will be implemented in BS-APP-13.
+
+## BS-APP-13 - Book Detail Screen
+
+Coder: maidanghuy  
+Assignee: Hiển
+
+- Book Detail calls `GET /api/books/{id}` through the API Gateway (`AppConfig.apiBaseUrl` + `ApiEndpoints.bookDetail`).
+- Endpoint and fields follow backend `BookDetailResponse` contract.
+- Displays title, author, category, ISBN, publisher, published year, description, and availability.
+- Cover uses a theme-aware placeholder because backend does not provide a cover URL.
+- Loading skeleton, error, not-found, and retry/refresh states are included.
+- Route: `/books/:bookId` with navigation from Book List.
+- Borrow Flow is not part of BS-APP-13 and remains disabled/out of scope on this screen.
+- Vietnamese, English, and Japanese localization for Book Detail texts.

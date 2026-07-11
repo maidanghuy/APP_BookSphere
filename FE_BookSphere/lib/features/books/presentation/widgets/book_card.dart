@@ -7,8 +7,7 @@ class BookCard extends StatelessWidget {
 
   final BookSummary book;
 
-  /// Optional tap handler.
-  /// TODO(BS-APP-13): Navigate to Book Detail Screen.
+  /// Optional tap handler used to open Book Detail.
   final VoidCallback? onTap;
 
   @override

@@ -482,4 +482,51 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get accessDenied => 'このコンテンツを表示する権限がありません。';
+
+  @override
+  String get bookDetails => '本の詳細';
+
+  @override
+  String get author => '著者';
+
+  @override
+  String get category => 'カテゴリ';
+
+  @override
+  String get isbn => 'ISBN';
+
+  @override
+  String get publisher => '出版社';
+
+  @override
+  String get publicationYear => '出版年';
+
+  @override
+  String get description => '説明';
+
+  @override
+  String get totalCopies => '総冊数';
+
+  @override
+  String get availableCopies => '貸出可能数';
+
+  @override
+  String copiesAvailableOfTotal(int available, int total) {
+    return '残り $available / $total 冊';
+  }
+
+  @override
+  String get bookNotFound => '本が見つかりません。';
+
+  @override
+  String get bookNotFoundDescription => '本が削除されたか、現在利用できない可能性があります。';
+
+  @override
+  String get loadBookDetailFailed => '本の詳細を読み込めませんでした。';
+
+  @override
+  String get noDescriptionAvailable => '説明はありません。';
+
+  @override
+  String get backToBooks => '本の一覧に戻る';
 }
