@@ -510,6 +510,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectPaymentMethod => 'Select Payment Method';
 
   @override
+  String get simulatePaymentResult => 'Simulate Payment Result';
+
+  @override
+  String get paymentResultSuccess => 'Success (payment accepted)';
+
+  @override
+  String get paymentResultPending => 'Pending (processing)';
+
+  @override
+  String get paymentResultFailed => 'Failed (payment rejected)';
+
+  @override
+  String get paymentPendingMessage =>
+      'Payment is being processed. Please check back later.';
+
+  @override
+  String get paymentFailedMessage =>
+      'Payment was rejected. The fine remains unpaid.';
+
+  @override
+  String get paymentSuccessMessage => 'Fine paid successfully!';
+
+  @override
+  String get paymentForbidden => 'You are not allowed to pay this fine.';
+
+  @override
+  String get paymentAlreadyPaid => 'This fine has already been paid.';
+
+  @override
+  String get paymentNotFound => 'Fine not found.';
+
+  @override
+  String get paymentInvalidAmount =>
+      'Payment amount does not match the fine amount.';
+
+  @override
+  String get paymentInvalidMethod => 'Invalid payment method.';
+
+  @override
+  String get paymentInvalidStatus => 'Invalid payment status.';
+
+  @override
+  String get paymentAmountLabel => 'Payment amount';
+
+  @override
+  String get paymentAmountHint => 'Enter amount';
+
+  @override
+  String get paymentAmountMismatch =>
+      'Amount does not match. Please enter the exact fine amount.';
+
+  @override
   String get confirmSelection => 'Confirm';
 
   @override

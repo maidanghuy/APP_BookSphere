@@ -42,11 +42,21 @@ class FineResponse {
 /// Maps to backend FinePaymentRequest DTO.
 class PayFineRequest {
   final String paymentMethod;
+  final String paymentStatus;
+  final double? amount;
 
-  PayFineRequest({required this.paymentMethod});
+  PayFineRequest({
+    required this.paymentMethod,
+    required this.paymentStatus,
+    this.amount,
+  });
 
   Map<String, dynamic> toJson() {
-    return {'paymentMethod': paymentMethod};
+    return {
+      'paymentMethod': paymentMethod,
+      'paymentStatus': paymentStatus,
+      if (amount != null) 'amount': amount,
+    };
   }
 }
 
