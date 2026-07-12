@@ -47,7 +47,10 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.main,
-      builder: (context, state) => const MainTabScreen(),
+      builder: (context, state) {
+        final tab = int.tryParse(state.uri.queryParameters['tab'] ?? '');
+        return MainTabScreen(initialTab: tab);
+      },
     ),
     GoRoute(
       path: AppRoutes.bookDetail,
@@ -69,7 +72,8 @@ final appRouter = GoRouter(
       path: AppRoutes.borrowCreate,
       builder: (context, state) {
         final bookId = int.tryParse(state.uri.queryParameters['bookId'] ?? '');
-        return BorrowCreateScreen(bookId: bookId);
+        final quantity = int.tryParse(state.uri.queryParameters['quantity'] ?? '');
+        return BorrowCreateScreen(bookId: bookId, initialQuantity: quantity);
       },
     ),
     GoRoute(
@@ -89,12 +93,14 @@ final appRouter = GoRouter(
 
     final isBookDetail = matchedLocation.startsWith('/books/');
     final isBorrowCart = matchedLocation == AppRoutes.borrowCart;
+    final isBorrowRoute = matchedLocation.startsWith('/borrows');
     final isProtected =
         matchedLocation == AppRoutes.login ||
         matchedLocation == AppRoutes.register ||
         matchedLocation == AppRoutes.main ||
         isBookDetail ||
-        isBorrowCart;
+        isBorrowCart ||
+        isBorrowRoute;
 
     if (isProtected) {
       final status = await _authSessionService.checkSession();
@@ -104,7 +110,10 @@ final appRouter = GoRouter(
             ? AppRoutes.main
             : null;
       }
-      if (matchedLocation == AppRoutes.main || isBookDetail || isBorrowCart) {
+      if (matchedLocation == AppRoutes.main ||
+          isBookDetail ||
+          isBorrowCart ||
+          isBorrowRoute) {
         return AppRoutes.login;
       }
       return null;
