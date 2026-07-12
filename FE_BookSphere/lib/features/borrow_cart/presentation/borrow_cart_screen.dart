@@ -1,11 +1,18 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
+import 'package:booksphere_app/core/utils/error_message_mapper.dart';
 import 'package:booksphere_app/core/widgets/confirm_dialog.dart';
 import 'package:booksphere_app/features/books/presentation/book_detail_route_args.dart';
+import 'package:booksphere_app/features/books/providers/book_detail_provider.dart' as book_details_prov;
+import 'package:booksphere_app/features/books/providers/book_list_provider.dart' as book_list_prov;
 import 'package:booksphere_app/features/borrow_cart/data/borrow_cart_item.dart';
 import 'package:booksphere_app/features/borrow_cart/providers/borrow_cart_provider.dart';
+import 'package:booksphere_app/features/borrows/data/borrow_models.dart';
+import 'package:booksphere_app/features/borrows/providers/borrow_provider.dart';
+import 'package:booksphere_app/features/notification/providers/notification_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class BorrowCartScreen extends ConsumerWidget {
   const BorrowCartScreen({super.key});
@@ -15,6 +22,8 @@ class BorrowCartScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final colorScheme = Theme.of(context).colorScheme;
     final cart = ref.watch(borrowCartProvider);
+    final borrowCreateState = ref.watch(borrowCreateControllerProvider);
+    final isLoading = borrowCreateState.isLoading;
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -83,18 +92,110 @@ class BorrowCartScreen extends ConsumerWidget {
                 SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    child: Text(
-                      l10n.confirmBorrowLaterNote,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        FilledButton(
+                          onPressed: isLoading
+                              ? null
+                              : () => _handleCheckout(context, ref, cart),
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(l10n.borrowBook),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
     );
+  }
+
+  Future<void> _handleCheckout(
+    BuildContext context,
+    WidgetRef ref,
+    BorrowCartState cart,
+  ) async {
+    final l10n = context.l10n;
+    final colorScheme = Theme.of(context).colorScheme;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    final today = DateTime.now();
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: today,
+      firstDate: today,
+      lastDate: today.add(const Duration(days: 90)),
+    );
+
+    if (selectedDate == null) return;
+
+    if (!context.mounted) return;
+    final dateString = DateFormat('yyyy-MM-dd').format(selectedDate);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => ConfirmDialog(
+        title: l10n.confirmBorrowTitle,
+        content: l10n.confirmBorrowCartMessage(cart.totalQuantity, dateString),
+        confirmText: l10n.confirm,
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final items = cart.items
+        .map(
+          (item) => BorrowItemRequest(
+            bookId: int.parse(item.bookId),
+            quantity: item.quantity,
+          ),
+        )
+        .toList();
+
+    final success = await ref
+        .read(borrowCreateControllerProvider.notifier)
+        .createCartBorrow(items: items, dueDate: selectedDate);
+
+    if (success) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.borrowSuccess),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      ref.invalidate(borrowListProvider);
+      ref.invalidate(book_list_prov.bookListProvider);
+      ref.invalidate(notificationControllerProvider);
+
+      for (final item in cart.items) {
+        ref.invalidate(bookDetailProvider(int.parse(item.bookId)));
+        ref.invalidate(book_details_prov.bookDetailProvider(item.bookId));
+      }
+
+      ref.read(borrowCartProvider.notifier).clearCart();
+
+      if (context.mounted) {
+        context.go('/main?tab=2');
+      }
+    } else {
+      if (context.mounted) {
+        final errorState = ref.read(borrowCreateControllerProvider);
+        final message = ErrorMessageMapper.mapCode(context, errorState.errorCode);
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: colorScheme.error),
+        );
+      }
+    }
   }
 
   Future<void> _confirmClear(BuildContext context, WidgetRef ref) async {

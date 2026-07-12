@@ -123,6 +123,13 @@
       "date": { "type": "String" }
     }
   },
+  "confirmBorrowCartMessage": "Are you sure you want to borrow {quantity} selected book(s) until {date}?",
+  "@confirmBorrowCartMessage": {
+    "placeholders": {
+      "quantity": { "type": "int" },
+      "date": { "type": "String" }
+    }
+  },
   "borrowSuccess": "Borrow request created successfully!",
   "bookOutOfStock": "The requested quantity is no longer available.",
   "bookInactive": "This book is currently unavailable.",

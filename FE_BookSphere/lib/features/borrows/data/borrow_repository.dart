@@ -37,6 +37,22 @@ class BorrowRepository {
     }
   }
 
+  Future<BorrowDetailResponse> createCartBorrow({
+    required List<BorrowItemRequest> items,
+    required DateTime dueDate,
+  }) async {
+    try {
+      final isoDueDate = dueDate.toIso8601String();
+      final request = BorrowCreateRequest(
+        dueDate: isoDueDate,
+        items: items,
+      );
+      return await _borrowApi.createBorrow(request);
+    } on DioException catch (error) {
+      throw _mapDioError(error);
+    }
+  }
+
   Future<BookDetailResponse> getBookDetail(int bookId) async {
     try {
       return await _borrowApi.getBookDetail(bookId);

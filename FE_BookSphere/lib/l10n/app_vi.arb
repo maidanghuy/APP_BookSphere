@@ -123,6 +123,13 @@
       "date": { "type": "String" }
     }
   },
+  "confirmBorrowCartMessage": "Bạn có chắc chắn muốn mượn {quantity} cuốn sách đã chọn đến ngày {date} không?",
+  "@confirmBorrowCartMessage": {
+    "placeholders": {
+      "quantity": { "type": "int" },
+      "date": { "type": "String" }
+    }
+  },
   "borrowSuccess": "Đăng ký mượn sách thành công!",
   "bookOutOfStock": "Số lượng sách yêu cầu không còn đủ.",
   "bookInactive": "Sách này hiện không khả dụng.",

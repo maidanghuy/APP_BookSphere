@@ -91,6 +91,38 @@ class BorrowCreateController extends Notifier<BorrowCreateState> {
     }
   }
 
+  Future<bool> createCartBorrow({
+    required List<BorrowItemRequest> items,
+    required DateTime dueDate,
+  }) async {
+    if (state.isLoading) {
+      return false;
+    }
+
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      await ref.read(borrowRepositoryProvider).createCartBorrow(
+        items: items,
+        dueDate: dueDate,
+      );
+      state = const BorrowCreateState(isSuccess: true);
+      return true;
+    } on BorrowException catch (error) {
+      dev.log('BorrowCreateController.createCartBorrow BorrowException: ${error.code} - ${error.message}');
+      state = BorrowCreateState(
+        errorCode: error.code,
+        errorMessage: error.message,
+        errorStatusCode: error.statusCode,
+      );
+      return false;
+    } catch (error, stackTrace) {
+      dev.log('BorrowCreateController.createCartBorrow Unexpected Error: $error', error: error, stackTrace: stackTrace);
+      state = const BorrowCreateState(errorCode: 'UNKNOWN_ERROR');
+      return false;
+    }
+  }
+
   void clearError() {
     state = state.copyWith(clearError: true);
   }

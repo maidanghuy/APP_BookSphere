@@ -359,6 +359,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String confirmBorrowCartMessage(int quantity, String date) {
+    return '選択した本 $quantity 冊を $date まで借りますか？';
+  }
+
+  @override
   String get borrowSuccess => '貸出申請が正常に作成されました！';
 
   @override
@@ -764,4 +769,52 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get viewBorrowCart => '表示';
+
+  @override
+  String get profileTitle => 'プロフィール';
+
+  @override
+  String get profileUsername => 'ユーザー名';
+
+  @override
+  String get profileFullName => '氏名';
+
+  @override
+  String get profileEmail => 'メール';
+
+  @override
+  String get profilePhone => '電話番号';
+
+  @override
+  String get profileRole => '役割';
+
+  @override
+  String get profileStatus => '状態';
+
+  @override
+  String get profileActive => 'アクティブ';
+
+  @override
+  String get profileInactive => '無効';
+
+  @override
+  String get profileSettings => '設定';
+
+  @override
+  String get profileMemberRole => 'メンバー';
+
+  @override
+  String get profileAdminRole => '管理者';
+
+  @override
+  String get profileLibrarianRole => '司書';
+
+  @override
+  String get settingsTitle => '設定';
+
+  @override
+  String get settingsThemeSection => '表示';
+
+  @override
+  String get settingsLanguageSection => '言語';
 }

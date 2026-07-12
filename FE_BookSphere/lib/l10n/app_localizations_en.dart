@@ -367,6 +367,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String confirmBorrowCartMessage(int quantity, String date) {
+    return 'Are you sure you want to borrow $quantity selected book(s) until $date?';
+  }
+
+  @override
   String get borrowSuccess => 'Borrow request created successfully!';
 
   @override
@@ -779,4 +784,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewBorrowCart => 'View';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileUsername => 'Username';
+
+  @override
+  String get profileFullName => 'Full Name';
+
+  @override
+  String get profileEmail => 'Email';
+
+  @override
+  String get profilePhone => 'Phone';
+
+  @override
+  String get profileRole => 'Role';
+
+  @override
+  String get profileStatus => 'Status';
+
+  @override
+  String get profileActive => 'Active';
+
+  @override
+  String get profileInactive => 'Inactive';
+
+  @override
+  String get profileSettings => 'Settings';
+
+  @override
+  String get profileMemberRole => 'Member';
+
+  @override
+  String get profileAdminRole => 'Admin';
+
+  @override
+  String get profileLibrarianRole => 'Librarian';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsThemeSection => 'Display';
+
+  @override
+  String get settingsLanguageSection => 'Language';
 }
