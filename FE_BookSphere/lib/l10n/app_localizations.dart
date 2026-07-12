@@ -1072,6 +1072,102 @@ abstract class AppLocalizations {
   /// **'Chọn phương thức thanh toán'**
   String get selectPaymentMethod;
 
+  /// No description provided for @simulatePaymentResult.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giả lập kết quả thanh toán'**
+  String get simulatePaymentResult;
+
+  /// No description provided for @paymentResultSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành công (thanh toán được chấp nhận)'**
+  String get paymentResultSuccess;
+
+  /// No description provided for @paymentResultPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang xử lý (chờ xác nhận)'**
+  String get paymentResultPending;
+
+  /// No description provided for @paymentResultFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thất bại (thanh toán bị từ chối)'**
+  String get paymentResultFailed;
+
+  /// No description provided for @paymentPendingMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thanh toán đang được xử lý. Vui lòng kiểm tra lại sau.'**
+  String get paymentPendingMessage;
+
+  /// No description provided for @paymentFailedMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thanh toán thất bại. Tiền phạt vẫn chưa được thanh toán.'**
+  String get paymentFailedMessage;
+
+  /// No description provided for @paymentSuccessMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thanh toán tiền phạt thành công!'**
+  String get paymentSuccessMessage;
+
+  /// No description provided for @paymentForbidden.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không có quyền thanh toán tiền phạt này.'**
+  String get paymentForbidden;
+
+  /// No description provided for @paymentAlreadyPaid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiền phạt này đã được thanh toán.'**
+  String get paymentAlreadyPaid;
+
+  /// No description provided for @paymentNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy tiền phạt.'**
+  String get paymentNotFound;
+
+  /// No description provided for @paymentInvalidAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền thanh toán không khớp với tiền phạt.'**
+  String get paymentInvalidAmount;
+
+  /// No description provided for @paymentInvalidMethod.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phương thức thanh toán không hợp lệ.'**
+  String get paymentInvalidMethod;
+
+  /// No description provided for @paymentInvalidStatus.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trạng thái thanh toán không hợp lệ.'**
+  String get paymentInvalidStatus;
+
+  /// No description provided for @paymentAmountLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền thanh toán'**
+  String get paymentAmountLabel;
+
+  /// No description provided for @paymentAmountHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập số tiền'**
+  String get paymentAmountHint;
+
+  /// No description provided for @paymentAmountMismatch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền không khớp. Vui lòng nhập đúng số tiền phạt.'**
+  String get paymentAmountMismatch;
+
   /// No description provided for @confirmSelection.
   ///
   /// In vi, this message translates to:

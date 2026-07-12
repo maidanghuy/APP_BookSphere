@@ -499,6 +499,54 @@ class AppLocalizationsJa extends AppLocalizations {
   String get selectPaymentMethod => '支払方法を選択';
 
   @override
+  String get simulatePaymentResult => '支払結果をシミュレート';
+
+  @override
+  String get paymentResultSuccess => '成功（支払が承認されました）';
+
+  @override
+  String get paymentResultPending => '保留中（処理中）';
+
+  @override
+  String get paymentResultFailed => '失敗（支払が拒否されました）';
+
+  @override
+  String get paymentPendingMessage => '支払を処理中です。後でご確認ください。';
+
+  @override
+  String get paymentFailedMessage => '支払が拒否されました。罰金は未払いのままです。';
+
+  @override
+  String get paymentSuccessMessage => '罰金の支払が完了しました！';
+
+  @override
+  String get paymentForbidden => 'この罰金を支払う権限がありません。';
+
+  @override
+  String get paymentAlreadyPaid => 'この罰金はすでに支払済みです。';
+
+  @override
+  String get paymentNotFound => '罰金が見つかりません。';
+
+  @override
+  String get paymentInvalidAmount => '支払金額が罰金額と一致しません。';
+
+  @override
+  String get paymentInvalidMethod => '無効な支払方法です。';
+
+  @override
+  String get paymentInvalidStatus => '無効な支払ステータスです。';
+
+  @override
+  String get paymentAmountLabel => '支払金額';
+
+  @override
+  String get paymentAmountHint => '金額を入力';
+
+  @override
+  String get paymentAmountMismatch => '金額が一致しません。正確な罰金額を入力してください。';
+
+  @override
   String get confirmSelection => '確認';
 
   @override

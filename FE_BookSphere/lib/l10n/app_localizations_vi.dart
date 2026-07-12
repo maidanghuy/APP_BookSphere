@@ -511,6 +511,58 @@ class AppLocalizationsVi extends AppLocalizations {
   String get selectPaymentMethod => 'Chọn phương thức thanh toán';
 
   @override
+  String get simulatePaymentResult => 'Giả lập kết quả thanh toán';
+
+  @override
+  String get paymentResultSuccess => 'Thành công (thanh toán được chấp nhận)';
+
+  @override
+  String get paymentResultPending => 'Đang xử lý (chờ xác nhận)';
+
+  @override
+  String get paymentResultFailed => 'Thất bại (thanh toán bị từ chối)';
+
+  @override
+  String get paymentPendingMessage =>
+      'Thanh toán đang được xử lý. Vui lòng kiểm tra lại sau.';
+
+  @override
+  String get paymentFailedMessage =>
+      'Thanh toán thất bại. Tiền phạt vẫn chưa được thanh toán.';
+
+  @override
+  String get paymentSuccessMessage => 'Thanh toán tiền phạt thành công!';
+
+  @override
+  String get paymentForbidden => 'Bạn không có quyền thanh toán tiền phạt này.';
+
+  @override
+  String get paymentAlreadyPaid => 'Tiền phạt này đã được thanh toán.';
+
+  @override
+  String get paymentNotFound => 'Không tìm thấy tiền phạt.';
+
+  @override
+  String get paymentInvalidAmount =>
+      'Số tiền thanh toán không khớp với tiền phạt.';
+
+  @override
+  String get paymentInvalidMethod => 'Phương thức thanh toán không hợp lệ.';
+
+  @override
+  String get paymentInvalidStatus => 'Trạng thái thanh toán không hợp lệ.';
+
+  @override
+  String get paymentAmountLabel => 'Số tiền thanh toán';
+
+  @override
+  String get paymentAmountHint => 'Nhập số tiền';
+
+  @override
+  String get paymentAmountMismatch =>
+      'Số tiền không khớp. Vui lòng nhập đúng số tiền phạt.';
+
+  @override
   String get confirmSelection => 'Xác nhận';
 
   @override

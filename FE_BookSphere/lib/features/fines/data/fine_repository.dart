@@ -2,6 +2,7 @@ import 'package:booksphere_app/core/network/api_exception.dart';
 import 'package:booksphere_app/core/storage/secure_storage_service.dart';
 import 'package:booksphere_app/features/fines/data/fine_api.dart';
 import 'package:booksphere_app/features/fines/data/fine_models.dart';
+import 'package:dio/dio.dart';
 
 class FineRepository {
   const FineRepository({
@@ -36,8 +37,15 @@ class FineRepository {
     String fineId,
     PayFineRequest request,
   ) async {
-    final response = await _fineApi.payFine(fineId, request.toJson());
-    return _parsePayment(response.data);
+    try {
+      final response = await _fineApi.payFine(fineId, request.toJson());
+      return _parsePayment(response.data);
+    } on DioException catch (e) {
+      final apiEx = e.error is ApiException
+          ? e.error as ApiException
+          : ApiException.fromDioException(e);
+      throw FineException(message: apiEx.message, apiException: apiEx);
+    }
   }
 
   // ── Parsers ───────────────────────────────────────────────
