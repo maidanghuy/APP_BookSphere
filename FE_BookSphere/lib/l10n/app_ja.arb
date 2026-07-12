@@ -285,5 +285,21 @@
     }
   },
   "bookAlreadyInCart": "この本はすでに貸出カートにあります。",
-  "viewBorrowCart": "表示"
+  "viewBorrowCart": "表示",
+  "profileTitle": "プロフィール",
+  "profileUsername": "ユーザー名",
+  "profileFullName": "氏名",
+  "profileEmail": "メール",
+  "profilePhone": "電話番号",
+  "profileRole": "役割",
+  "profileStatus": "状態",
+  "profileActive": "アクティブ",
+  "profileInactive": "無効",
+  "profileSettings": "設定",
+  "profileMemberRole": "メンバー",
+  "profileAdminRole": "管理者",
+  "profileLibrarianRole": "司書",
+  "settingsTitle": "設定",
+  "settingsThemeSection": "表示",
+  "settingsLanguageSection": "言語"
 }

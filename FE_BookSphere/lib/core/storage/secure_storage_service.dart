@@ -41,6 +41,22 @@ class SecureStorageService {
     return _read(StorageKeys.userId);
   }
 
+  Future<void> saveUsername(String username) {
+    return _write(StorageKeys.username, username);
+  }
+
+  Future<String?> getUsername() {
+    return _read(StorageKeys.username);
+  }
+
+  Future<void> saveFullName(String fullName) {
+    return _write(StorageKeys.fullName, fullName);
+  }
+
+  Future<String?> getFullName() {
+    return _read(StorageKeys.fullName);
+  }
+
   Future<void> clearAccessToken() {
     return _delete(StorageKeys.accessToken);
   }

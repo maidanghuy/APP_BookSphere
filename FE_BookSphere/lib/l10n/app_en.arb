@@ -285,5 +285,21 @@
     }
   },
   "bookAlreadyInCart": "This book is already in your borrow cart.",
-  "viewBorrowCart": "View"
+  "viewBorrowCart": "View",
+  "profileTitle": "Profile",
+  "profileUsername": "Username",
+  "profileFullName": "Full Name",
+  "profileEmail": "Email",
+  "profilePhone": "Phone",
+  "profileRole": "Role",
+  "profileStatus": "Status",
+  "profileActive": "Active",
+  "profileInactive": "Inactive",
+  "profileSettings": "Settings",
+  "profileMemberRole": "Member",
+  "profileAdminRole": "Admin",
+  "profileLibrarianRole": "Librarian",
+  "settingsTitle": "Settings",
+  "settingsThemeSection": "Display",
+  "settingsLanguageSection": "Language"
 }

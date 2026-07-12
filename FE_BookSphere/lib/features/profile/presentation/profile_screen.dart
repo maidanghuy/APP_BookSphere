@@ -22,7 +22,7 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.profileTitle)),
       body: profileAsync.when(
         loading: () => const AppLoading(),
-        error: (_, err) => AppErrorView(
+        error: (_, __) => AppErrorView(
           message: l10n.unknownError,
           onRetry: () => ref.invalidate(profileProvider),
         ),
@@ -45,24 +45,23 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  if (profile.fullName != null &&
-                      profile.fullName!.isNotEmpty) ...[
+                  if (profile.fullName != null && profile.fullName!.isNotEmpty)
                     Text(
                       profile.fullName!,
-                      style: textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 4),
-                  ],
-                  if (profile.username != null &&
-                      profile.username!.isNotEmpty)
+                  const SizedBox(height: 4),
+                  if (profile.username != null && profile.username!.isNotEmpty)
                     Text(
                       '@${profile.username}',
                       style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
+                  const SizedBox(height: 8),
+                  if (profile.isActive != null)
+                    _StatusBadge(isActive: profile.isActive!),
                 ],
               ),
             ),
@@ -73,17 +72,25 @@ class ProfileScreen extends ConsumerWidget {
             Card(
               child: Column(
                 children: [
-                  if (profile.username != null &&
-                      profile.username!.isNotEmpty)
+                  if (profile.username != null && profile.username!.isNotEmpty)
                     _InfoTile(
                       label: l10n.profileUsername,
                       value: profile.username!,
                     ),
-                  if (profile.fullName != null &&
-                      profile.fullName!.isNotEmpty)
+                  if (profile.fullName != null && profile.fullName!.isNotEmpty)
                     _InfoTile(
                       label: l10n.profileFullName,
                       value: profile.fullName!,
+                    ),
+                  if (profile.email != null && profile.email!.isNotEmpty)
+                    _InfoTile(
+                      label: l10n.profileEmail,
+                      value: profile.email!,
+                    ),
+                  if (profile.phone != null && profile.phone!.isNotEmpty)
+                    _InfoTile(
+                      label: l10n.profilePhone,
+                      value: profile.phone!,
                     ),
                   if (profile.role != null && profile.role!.isNotEmpty)
                     _InfoTile(
@@ -103,9 +110,7 @@ class ProfileScreen extends ConsumerWidget {
                 title: Text(l10n.profileSettings),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const SettingsScreen(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
                 ),
               ),
             ),
@@ -139,6 +144,37 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
+// ── Status badge ──────────────────────────────────────────────
+
+class _StatusBadge extends StatelessWidget {
+  const _StatusBadge({required this.isActive});
+
+  final bool isActive;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final color = isActive ? Colors.green.shade600 : colorScheme.error;
+    final label =
+        isActive ? l10n.profileActive : l10n.profileInactive;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withAlpha(25),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withAlpha(80)),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: color),
+      ),
+    );
+  }
+}
+
 // ── Info tile ─────────────────────────────────────────────────
 
 class _InfoTile extends StatelessWidget {
@@ -164,7 +200,7 @@ class _InfoTile extends StatelessWidget {
           child: Row(
             children: [
               SizedBox(
-                width: 120,
+                width: 130,
                 child: Text(
                   label,
                   style: textTheme.bodyMedium?.copyWith(
@@ -175,10 +211,10 @@ class _InfoTile extends StatelessWidget {
               Expanded(
                 child: Text(
                   value,
-                  style: textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: textTheme.bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.w500),
                   textAlign: TextAlign.end,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

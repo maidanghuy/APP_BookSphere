@@ -285,5 +285,21 @@
     }
   },
   "bookAlreadyInCart": "Sách này đã có trong giỏ mượn.",
-  "viewBorrowCart": "Xem"
+  "viewBorrowCart": "Xem",
+  "profileTitle": "Hồ sơ",
+  "profileUsername": "Tên đăng nhập",
+  "profileFullName": "Họ và tên",
+  "profileEmail": "Email",
+  "profilePhone": "Số điện thoại",
+  "profileRole": "Vai trò",
+  "profileStatus": "Trạng thái",
+  "profileActive": "Đang hoạt động",
+  "profileInactive": "Đã bị khóa",
+  "profileSettings": "Cài đặt",
+  "profileMemberRole": "Thành viên",
+  "profileAdminRole": "Quản trị viên",
+  "profileLibrarianRole": "Thủ thư",
+  "settingsTitle": "Cài đặt",
+  "settingsThemeSection": "Giao diện",
+  "settingsLanguageSection": "Ngôn ngữ"
 }
