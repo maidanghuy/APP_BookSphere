@@ -486,3 +486,24 @@ Assignee: Hiển
 - No success popup/snackbar after add or update; validation errors still show messages.
 - Borrow Cart Screen shows quantity, Edit, and Remove per item.
 - Borrow Cart remains local-only; borrow transaction API is not called.
+
+## BS-APP-15 - Borrow Create Screen
+
+Coder: Antigravity
+
+- **Chức năng**: Cho phép người dùng tạo phiếu mượn sách trực tiếp từ màn hình chi tiết sách (Book Detail).
+- **API sử dụng**: `POST /api/borrows` (với payload: `{ bookId, quantity, dueDate }`).
+- **Validation**:
+  - **Số lượng (Quantity)**: Bắt buộc, phải là số nguyên dương lớn hơn 0 và không vượt quá số lượng sách còn lại (`availableQuantity`).
+  - **Hạn trả (Due Date)**: Không được nhỏ hơn ngày hiện tại (hôm nay).
+- **Error Handling**: Bắt đầy đủ các lỗi API (400, 401, 403, 404, 409, 422, 500, Timeout, Network Error). Xử lý các mã lỗi cụ thể:
+  - `BOOK_OUT_OF_STOCK`: Hiển thị thông báo "Số lượng sách yêu cầu không còn đủ."
+  - `BOOK_INACTIVE`: Hiển thị thông báo "Sách này hiện không khả dụng."
+  - `BORROW_SAGA_FAILED`: Hiển thị thông báo "Không thể tạo yêu cầu mượn sách. Vui lòng thử lại."
+  - Các lỗi khác hiển thị thông báo mặc định.
+- **Luồng hoạt động & Điều hướng**:
+  - Người dùng bấm nút "Mượn sách" tại Book Detail -> Điều hướng sang `BorrowCreateScreen` (`/borrows/create?bookId=...`).
+  - Điền số lượng và hạn trả -> Bấm "Mượn sách" hiển thị dialog xác nhận.
+  - Sau khi xác nhận và submit thành công: hiển thị Snackbar thông báo, tự động reload/invalidate dữ liệu chi tiết sách ở cả hai module, và điều hướng về tab "Sách đang mượn" (My Borrows) (`/main?tab=2`).
+- **Những giới hạn**: Không tự tính toán inventory trên App, không cache borrow, backend xử lý Borrow Saga.
+

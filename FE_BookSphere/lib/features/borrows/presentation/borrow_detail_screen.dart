@@ -1,5 +1,7 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:booksphere_app/core/utils/error_message_mapper.dart';
+import 'package:booksphere_app/features/books/providers/book_detail_provider.dart' as book_details_prov;
+import 'package:booksphere_app/features/books/providers/book_list_provider.dart' as book_list_prov;
 import 'package:booksphere_app/features/borrows/data/borrow_models.dart';
 import 'package:booksphere_app/features/borrows/presentation/widgets/borrow_item_card.dart';
 import 'package:booksphere_app/features/borrows/providers/borrow_provider.dart';
@@ -140,6 +142,17 @@ class BorrowDetailScreen extends ConsumerWidget {
               backgroundColor: Colors.green,
             ),
           );
+          
+          final detailAsync = ref.read(borrowDetailsProvider(borrowId!));
+          detailAsync.whenData((detail) {
+            for (final item in detail.items) {
+              ref.invalidate(bookDetailProvider(item.bookId));
+              ref.invalidate(
+                book_details_prov.bookDetailProvider(item.bookId.toString()),
+              );
+            }
+          });
+          ref.invalidate(book_list_prov.bookListProvider);
           ref.invalidate(borrowDetailsProvider(borrowId!));
           ref.invalidate(borrowListProvider);
         } else if (context.mounted) {

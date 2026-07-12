@@ -1,6 +1,9 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:booksphere_app/core/utils/error_message_mapper.dart';
+import 'package:booksphere_app/features/books/providers/book_detail_provider.dart' as book_details_prov;
+import 'package:booksphere_app/features/books/providers/book_list_provider.dart' as book_list_prov;
 import 'package:booksphere_app/features/borrows/providers/borrow_provider.dart';
+import 'package:booksphere_app/features/notification/providers/notification_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,9 +11,10 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class BorrowCreateScreen extends ConsumerStatefulWidget {
-  const BorrowCreateScreen({required this.bookId, super.key});
+  const BorrowCreateScreen({required this.bookId, this.initialQuantity, super.key});
 
   final int? bookId;
+  final int? initialQuantity;
 
   @override
   ConsumerState<BorrowCreateScreen> createState() => _BorrowCreateScreenState();
@@ -18,12 +22,13 @@ class BorrowCreateScreen extends ConsumerStatefulWidget {
 
 class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _quantityController = TextEditingController(text: '1');
+  late final TextEditingController _quantityController;
   DateTime? _selectedDueDate;
 
   @override
   void initState() {
     super.initState();
+    _quantityController = TextEditingController(text: '${widget.initialQuantity ?? 1}');
     // Default due date to 14 days from today
     _selectedDueDate = DateTime.now().add(const Duration(days: 14));
   }
@@ -35,15 +40,17 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
   }
 
   Future<void> _selectDueDate(BuildContext context) async {
-    final tomorrow = DateTime.now().add(const Duration(days: 1));
-    final initialDate = _selectedDueDate != null && _selectedDueDate!.isAfter(DateTime.now())
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final initialDate = _selectedDueDate != null && !_selectedDueDate!.isBefore(today)
         ? _selectedDueDate!
         : tomorrow;
 
     final picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: tomorrow,
+      firstDate: today,
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
 
@@ -104,6 +111,12 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
 
     if (success) {
       ref.invalidate(bookDetailProvider(widget.bookId!));
+      ref.invalidate(
+        book_details_prov.bookDetailProvider(widget.bookId!.toString()),
+      );
+      ref.invalidate(book_list_prov.bookListProvider);
+      ref.invalidate(borrowListProvider);
+      ref.invalidate(notificationControllerProvider);
 
       scaffoldMessenger.showSnackBar(
         SnackBar(
@@ -113,11 +126,7 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
       );
 
       if (context.mounted) {
-        if (context.canPop()) {
-          context.pop();
-        } else {
-          context.go('/main');
-        }
+        context.go('/main?tab=2');
       }
     } else {
       final errorState = ref.read(borrowCreateControllerProvider);
@@ -258,7 +267,7 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
                                 ),
                                 child: Text(
                                   book.availableQuantity > 0
-                                      ? '${l10n.activeBorrows}: ${book.availableQuantity}'
+                                      ? '${l10n.quantity}: ${book.availableQuantity}'
                                       : l10n.bookOutOfStock,
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     color: book.availableQuantity > 0

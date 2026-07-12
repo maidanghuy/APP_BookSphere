@@ -333,13 +333,37 @@ class _BookDetailLoadedBodyState extends ConsumerState<_BookDetailLoadedBody> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: FilledButton.icon(
-            onPressed: _canSubmit ? _onSubmit : null,
-            icon: Icon(
-              isEdit ? Icons.edit_outlined : Icons.library_add_outlined,
-            ),
-            label: Text(isEdit ? l10n.updateBorrowCart : l10n.addToBorrowCart),
-          ),
+          child: isEdit
+              ? FilledButton.icon(
+                  onPressed: _canSubmit ? _onSubmit : null,
+                  icon: const Icon(Icons.edit_outlined),
+                  label: Text(l10n.updateBorrowCart),
+                )
+              : Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _canSubmit ? _onSubmit : null,
+                        icon: const Icon(Icons.library_add_outlined),
+                        label: Text(l10n.addToBorrowCart),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: _canSubmit
+                            ? () {
+                                context.push(
+                                  '/borrows/create?bookId=${book.id}&quantity=$_quantity',
+                                );
+                              }
+                            : null,
+                        icon: const Icon(Icons.book_outlined),
+                        label: Text(l10n.borrowBook),
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

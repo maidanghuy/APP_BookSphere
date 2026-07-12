@@ -11,14 +11,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MainTabScreen extends ConsumerStatefulWidget {
-  const MainTabScreen({super.key});
+  const MainTabScreen({this.initialTab, super.key});
+
+  final int? initialTab;
 
   @override
   ConsumerState<MainTabScreen> createState() => _MainTabScreenState();
 }
 
 class _MainTabScreenState extends ConsumerState<MainTabScreen> {
-  int currentIndex = 0;
+  late int currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    currentIndex = widget.initialTab ?? 0;
+  }
+
+  @override
+  void didUpdateWidget(MainTabScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialTab != null && widget.initialTab != oldWidget.initialTab) {
+      setState(() {
+        currentIndex = widget.initialTab!;
+      });
+    }
+  }
 
   List<Widget> get pages => [
     HomeScreen(

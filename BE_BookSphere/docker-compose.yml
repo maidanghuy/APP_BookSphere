@@ -57,6 +57,7 @@ services:
     container_name: booksphere-discovery-server
     restart: unless-stopped
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m"
       EUREKA_INSTANCE_HOSTNAME: discovery-server
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
     ports:
@@ -71,6 +72,7 @@ services:
     container_name: booksphere-config-server
     restart: unless-stopped
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m"
       CONFIG_REPO_LOCATION: file:/config-repo
       EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
     ports:
@@ -90,6 +92,7 @@ services:
     container_name: booksphere-auth-service
     restart: unless-stopped
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m"
       SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
       CONFIG_SERVER_URL: http://config-server:8888
       EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
@@ -118,6 +121,7 @@ services:
     container_name: booksphere-book-service
     restart: unless-stopped
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m"
       SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
       CONFIG_SERVER_URL: http://config-server:8888
       EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
@@ -153,6 +157,7 @@ services:
     container_name: booksphere-borrow-service
     restart: unless-stopped
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m"
       SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
       CONFIG_SERVER_URL: http://config-server:8888
       EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
@@ -184,6 +189,7 @@ services:
     container_name: booksphere-fine-service
     restart: unless-stopped
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m"
       SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
       CONFIG_SERVER_URL: http://config-server:8888
       EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
@@ -209,6 +215,7 @@ services:
     container_name: booksphere-notification-service
     restart: unless-stopped
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m"
       SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
       CONFIG_SERVER_URL: http://config-server:8888
       EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
@@ -234,6 +241,7 @@ services:
     container_name: booksphere-api-gateway
     restart: unless-stopped
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m"
       SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
       CONFIG_SERVER_URL: http://config-server:8888
       EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
