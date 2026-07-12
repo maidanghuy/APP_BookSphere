@@ -29,6 +29,16 @@ class AuthRepository {
       await _secureStorageService.saveUserId(userId);
     }
 
+    final responseUsername = response.username;
+    if (responseUsername != null && responseUsername.isNotEmpty) {
+      await _secureStorageService.saveUsername(responseUsername);
+    }
+
+    final responseFullName = response.fullName;
+    if (responseFullName != null && responseFullName.isNotEmpty) {
+      await _secureStorageService.saveFullName(responseFullName);
+    }
+
     return response;
   }
 

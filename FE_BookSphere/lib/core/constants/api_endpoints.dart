@@ -6,6 +6,7 @@ class ApiEndpoints {
   static const String register = '$authBase/register';
   static const String refresh = '$authBase/refresh';
   static const String logout = '$authBase/logout';
+  static const String me = '$authBase/me';
 
   static const String books = '/api/books';
   static const String categories = '/api/categories';

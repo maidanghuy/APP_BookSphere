@@ -4,9 +4,9 @@ import 'package:booksphere_app/features/books/presentation/book_list_screen.dart
 import 'package:booksphere_app/features/borrows/presentation/my_borrow_list_screen.dart';
 import 'package:booksphere_app/features/fines/presentation/my_fine_list_screen.dart';
 import 'package:booksphere_app/features/home/presentation/home_screen.dart';
-import 'package:booksphere_app/features/home/screens/profile_placeholder_screen.dart';
 import 'package:booksphere_app/features/home/widgets/main_bottom_navigation.dart';
 import 'package:booksphere_app/features/notification/presentation/notification_list_screen.dart';
+import 'package:booksphere_app/features/profile/presentation/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,7 +33,7 @@ class _MainTabScreenState extends ConsumerState<MainTabScreen> {
       onOpenBorrow: () => _selectTab(2),
       onOpenFine: () => _selectTab(3),
     ),
-    const ProfilePlaceholderScreen(),
+    const ProfileScreen(),
   ];
 
   void _selectTab(int index) {
