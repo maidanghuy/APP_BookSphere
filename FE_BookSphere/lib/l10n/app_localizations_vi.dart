@@ -366,6 +366,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String confirmBorrowCartMessage(int quantity, String date) {
+    return 'Bạn có chắc chắn muốn mượn $quantity cuốn sách đã chọn đến ngày $date không?';
+  }
+
+  @override
   String get borrowSuccess => 'Đăng ký mượn sách thành công!';
 
   @override
@@ -780,4 +785,52 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get viewBorrowCart => 'Xem';
+
+  @override
+  String get profileTitle => 'Hồ sơ';
+
+  @override
+  String get profileUsername => 'Tên đăng nhập';
+
+  @override
+  String get profileFullName => 'Họ và tên';
+
+  @override
+  String get profileEmail => 'Email';
+
+  @override
+  String get profilePhone => 'Số điện thoại';
+
+  @override
+  String get profileRole => 'Vai trò';
+
+  @override
+  String get profileStatus => 'Trạng thái';
+
+  @override
+  String get profileActive => 'Đang hoạt động';
+
+  @override
+  String get profileInactive => 'Đã bị khóa';
+
+  @override
+  String get profileSettings => 'Cài đặt';
+
+  @override
+  String get profileMemberRole => 'Thành viên';
+
+  @override
+  String get profileAdminRole => 'Quản trị viên';
+
+  @override
+  String get profileLibrarianRole => 'Thủ thư';
+
+  @override
+  String get settingsTitle => 'Cài đặt';
+
+  @override
+  String get settingsThemeSection => 'Giao diện';
+
+  @override
+  String get settingsLanguageSection => 'Ngôn ngữ';
 }

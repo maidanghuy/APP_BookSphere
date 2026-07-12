@@ -123,6 +123,13 @@
       "date": { "type": "String" }
     }
   },
+  "confirmBorrowCartMessage": "選択した本 {quantity} 冊を {date} まで借りますか？",
+  "@confirmBorrowCartMessage": {
+    "placeholders": {
+      "quantity": { "type": "int" },
+      "date": { "type": "String" }
+    }
+  },
   "borrowSuccess": "貸出申請が正常に作成されました！",
   "bookOutOfStock": "要求された数量はもう利用できません。",
   "bookInactive": "この本は現在利用できません。",

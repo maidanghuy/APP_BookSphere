@@ -796,6 +796,12 @@ abstract class AppLocalizations {
   /// **'Bạn có chắc chắn muốn mượn {quantity} cuốn \'{title}\' đến ngày {date} không?'**
   String confirmBorrowMessage(int quantity, String title, String date);
 
+  /// No description provided for @confirmBorrowCartMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có chắc chắn muốn mượn {quantity} cuốn sách đã chọn đến ngày {date} không?'**
+  String confirmBorrowCartMessage(int quantity, String date);
+
   /// No description provided for @borrowSuccess.
   ///
   /// In vi, this message translates to:
@@ -1521,6 +1527,102 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Xem'**
   String get viewBorrowCart;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hồ sơ'**
+  String get profileTitle;
+
+  /// No description provided for @profileUsername.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên đăng nhập'**
+  String get profileUsername;
+
+  /// No description provided for @profileFullName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Họ và tên'**
+  String get profileFullName;
+
+  /// No description provided for @profileEmail.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email'**
+  String get profileEmail;
+
+  /// No description provided for @profilePhone.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số điện thoại'**
+  String get profilePhone;
+
+  /// No description provided for @profileRole.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vai trò'**
+  String get profileRole;
+
+  /// No description provided for @profileStatus.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trạng thái'**
+  String get profileStatus;
+
+  /// No description provided for @profileActive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang hoạt động'**
+  String get profileActive;
+
+  /// No description provided for @profileInactive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã bị khóa'**
+  String get profileInactive;
+
+  /// No description provided for @profileSettings.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cài đặt'**
+  String get profileSettings;
+
+  /// No description provided for @profileMemberRole.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành viên'**
+  String get profileMemberRole;
+
+  /// No description provided for @profileAdminRole.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quản trị viên'**
+  String get profileAdminRole;
+
+  /// No description provided for @profileLibrarianRole.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thủ thư'**
+  String get profileLibrarianRole;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cài đặt'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsThemeSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao diện'**
+  String get settingsThemeSection;
+
+  /// No description provided for @settingsLanguageSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngôn ngữ'**
+  String get settingsLanguageSection;
 }
 
 class _AppLocalizationsDelegate
