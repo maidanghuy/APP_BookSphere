@@ -6,6 +6,7 @@ import 'package:booksphere_app/features/fines/presentation/my_fine_list_screen.d
 import 'package:booksphere_app/features/home/presentation/home_screen.dart';
 import 'package:booksphere_app/features/home/widgets/main_bottom_navigation.dart';
 import 'package:booksphere_app/features/notification/presentation/notification_list_screen.dart';
+import 'package:booksphere_app/features/notification/providers/notification_provider.dart';
 import 'package:booksphere_app/features/profile/presentation/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +32,8 @@ class _MainTabScreenState extends ConsumerState<MainTabScreen> {
   @override
   void didUpdateWidget(MainTabScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialTab != null && widget.initialTab != oldWidget.initialTab) {
+    if (widget.initialTab != null &&
+        widget.initialTab != oldWidget.initialTab) {
       setState(() {
         currentIndex = widget.initialTab!;
       });
@@ -62,6 +64,10 @@ class _MainTabScreenState extends ConsumerState<MainTabScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final unreadCount = ref.watch(
+      notificationControllerProvider.select((state) => state.unreadCount),
+    );
+
     return Scaffold(
       body: Stack(
         children: [
@@ -75,13 +81,17 @@ class _MainTabScreenState extends ConsumerState<MainTabScreen> {
           const SafeArea(
             child: Align(
               alignment: Alignment.topRight,
-              child: Padding(padding: EdgeInsets.all(8), child: LogoutButton()),
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: LogoutButton(compact: true),
+              ),
             ),
           ),
         ],
       ),
       bottomNavigationBar: MainBottomNavigation(
         currentIndex: currentIndex,
+        unreadCount: unreadCount,
         onDestinationSelected: _selectTab,
       ),
     );

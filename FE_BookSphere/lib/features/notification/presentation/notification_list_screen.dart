@@ -54,22 +54,11 @@ class NotificationListScreen extends ConsumerWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l10n.notificationListTitle,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              Badge.count(
-                count: state.unreadCount,
-                isLabelVisible: state.unreadCount > 0,
-                child: const Icon(Icons.notifications),
-              ),
-            ],
+          Text(
+            l10n.notificationListTitle,
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 12),
           SegmentedButton<bool>(
