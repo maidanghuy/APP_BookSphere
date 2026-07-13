@@ -5,24 +5,41 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class LogoutButton extends ConsumerWidget {
-  const LogoutButton({super.key});
+  const LogoutButton({super.key, this.compact = false});
+
+  final bool compact;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final logoutState = ref.watch(logoutControllerProvider);
 
+    final onPressed = logoutState.isLoading
+        ? null
+        : () => _confirmAndLogout(context, ref);
+    final icon = logoutState.isLoading
+        ? const SizedBox.square(
+            dimension: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+        : const Icon(Icons.logout);
+
+    if (compact) {
+      return IconButton.filledTonal(
+        tooltip: l10n.logout,
+        onPressed: onPressed,
+        icon: icon,
+        style: IconButton.styleFrom(
+          minimumSize: const Size.square(48),
+          maximumSize: const Size.square(48),
+          padding: EdgeInsets.zero,
+        ),
+      );
+    }
+
     return FilledButton.icon(
-      onPressed: logoutState.isLoading
-          ? null
-          : () => _confirmAndLogout(context, ref),
-      icon: logoutState.isLoading
-          ? const SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : const Icon(Icons.logout),
+      onPressed: onPressed,
+      icon: icon,
       label: Text(l10n.logout),
     );
   }
