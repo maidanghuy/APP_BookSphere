@@ -1,5 +1,8 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:booksphere_app/core/utils/error_message_mapper.dart';
+import 'package:booksphere_app/core/widgets/app_empty_state.dart';
+import 'package:booksphere_app/core/widgets/app_error_view.dart';
+import 'package:booksphere_app/core/widgets/app_loading.dart';
 import 'package:booksphere_app/features/borrows/presentation/widgets/borrow_card.dart';
 import 'package:booksphere_app/features/borrows/providers/borrow_provider.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +12,11 @@ import 'package:go_router/go_router.dart';
 class MyBorrowListScreen extends ConsumerWidget {
   const MyBorrowListScreen({super.key});
 
-  Widget _buildFilterChips(BuildContext context, WidgetRef ref, String? selectedStatus) {
+  Widget _buildFilterChips(
+    BuildContext context,
+    WidgetRef ref,
+    String? selectedStatus,
+  ) {
     final l10n = context.l10n;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -38,16 +45,22 @@ class MyBorrowListScreen extends ConsumerWidget {
               label: Text(
                 filter['label'] ?? '',
                 style: TextStyle(
-                  color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+                  color: isSelected
+                      ? colorScheme.onPrimary
+                      : colorScheme.onSurface,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
               selected: isSelected,
               selectedColor: colorScheme.primary,
-              backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              backgroundColor: colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.5,
+              ),
               onSelected: (selected) {
                 if (selected) {
-                  ref.read(borrowListProvider.notifier).changeFilter(filter['value']);
+                  ref
+                      .read(borrowListProvider.notifier)
+                      .changeFilter(filter['value']);
                 }
               },
             ),
@@ -64,6 +77,16 @@ class MyBorrowListScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final state = ref.watch(borrowListProvider);
 
+    ref.listen(borrowListProvider, (previous, next) {
+      if (next.errorCode != null &&
+          next.borrows.isNotEmpty &&
+          next.errorCode != previous?.errorCode) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.refreshFailed)));
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.myBorrow),
@@ -75,82 +98,51 @@ class MyBorrowListScreen extends ConsumerWidget {
         children: [
           _buildFilterChips(context, ref, state.selectedStatus),
           Expanded(
-            child: state.isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
+            child: state.isLoading && state.borrows.isEmpty
+                ? AppLoading(message: l10n.loadingData)
+                : state.errorCode != null && state.borrows.isEmpty
+                ? AppErrorView(
+                    title: l10n.somethingWentWrong,
+                    message: ErrorMessageMapper.mapCode(
+                      context,
+                      state.errorCode,
+                    ),
+                    onRetry: () =>
+                        ref.read(borrowListProvider.notifier).loadBorrows(),
                   )
-                : state.errorCode != null
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                : RefreshIndicator(
+                    onRefresh: () =>
+                        ref.read(borrowListProvider.notifier).refresh(),
+                    child: state.borrows.isEmpty
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             children: [
-                              Icon(Icons.error_outline, size: 64, color: colorScheme.error),
-                              const SizedBox(height: 16),
-                              Text(
-                                ErrorMessageMapper.mapCode(context, state.errorCode),
-                                style: theme.textTheme.titleMedium,
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: () => ref.read(borrowListProvider.notifier).loadBorrows(),
-                                child: Text(l10n.retry),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.5,
+                                child: AppEmptyState(
+                                  icon: Icons.library_books_outlined,
+                                  title: l10n.noBorrows,
+                                  description: l10n.noBorrowsDescription,
+                                ),
                               ),
                             ],
-                          ),
-                        ),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: () => ref.read(borrowListProvider.notifier).refresh(),
-                        child: state.borrows.isEmpty
-                            ? ListView(
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                children: [
-                                  SizedBox(
-                                    height: MediaQuery.of(context).size.height * 0.5,
-                                    child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(24),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.library_books_outlined,
-                                              size: 72,
-                                              color: colorScheme.outline.withValues(alpha: 0.6),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            Text(
-                                              l10n.noBorrowRecords,
-                                              style: theme.textTheme.titleMedium?.copyWith(
-                                                color: colorScheme.onSurfaceVariant,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : ListView.builder(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                itemCount: state.borrows.length,
-                                itemBuilder: (context, index) {
-                                  final borrow = state.borrows[index];
-                                  return BorrowCard(
-                                    borrow: borrow,
-                                    onTap: () {
-                                      context.push('/borrows/${borrow.id}');
-                                    },
-                                  );
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            itemCount: state.borrows.length,
+                            itemBuilder: (context, index) {
+                              final borrow = state.borrows[index];
+                              return BorrowCard(
+                                borrow: borrow,
+                                onTap: () {
+                                  context.push('/borrows/${borrow.id}');
                                 },
-                              ),
-                      ),
+                              );
+                            },
+                          ),
+                  ),
           ),
         ],
       ),

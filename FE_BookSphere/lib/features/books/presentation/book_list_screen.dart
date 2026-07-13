@@ -1,13 +1,14 @@
 import 'package:booksphere_app/core/constants/app_message_keys.dart';
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:booksphere_app/core/utils/error_message_mapper.dart';
+import 'package:booksphere_app/core/widgets/app_empty_state.dart';
+import 'package:booksphere_app/core/widgets/app_error_view.dart';
+import 'package:booksphere_app/core/widgets/app_loading.dart';
 import 'package:booksphere_app/features/books/data/models/book_summary.dart';
 import 'package:booksphere_app/features/books/presentation/book_detail_route_args.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/active_filter_chips.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/book_card.dart';
-import 'package:booksphere_app/features/books/presentation/widgets/book_empty_state.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/book_filter_bottom_sheet.dart';
-import 'package:booksphere_app/features/books/presentation/widgets/book_list_skeleton.dart';
 import 'package:booksphere_app/features/books/presentation/widgets/book_search_filter_bar.dart';
 import 'package:booksphere_app/features/books/providers/book_list_provider.dart';
 import 'package:booksphere_app/features/borrow_cart/presentation/widgets/floating_borrow_cart.dart';
@@ -115,6 +116,16 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
     final visibleBooks = state.visibleBooks;
     final hasFloatingCart = !cart.isEmpty;
 
+    ref.listen(bookListProvider, (previous, next) {
+      if (next.hasError &&
+          next.books.isNotEmpty &&
+          next.errorCode != previous?.errorCode) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.refreshFailed)));
+      }
+    });
+
     if (state.searchKeyword.isEmpty && _searchController.text.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted &&
@@ -186,43 +197,17 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
     required bool hasFloatingCart,
   }) {
     final l10n = context.l10n;
-    final colorScheme = Theme.of(context).colorScheme;
     final bottomPadding = hasFloatingCart ? 96.0 : 24.0;
 
     if (state.isLoading && state.books.isEmpty) {
-      return const BookListSkeleton();
+      return AppLoading(message: l10n.loadingData);
     }
 
     if (state.hasError && state.books.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 64, color: colorScheme.error),
-              const SizedBox(height: 16),
-              Text(
-                _friendlyError(context, state),
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.checkConnectionAndRetry,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: notifier.retry,
-                child: Text(l10n.retry),
-              ),
-            ],
-          ),
-        ),
+      return AppErrorView(
+        title: l10n.somethingWentWrong,
+        message: _friendlyError(context, state),
+        onRetry: notifier.retry,
       );
     }
 
@@ -234,13 +219,25 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
               children: [
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.45,
-                  child: BookEmptyState(
-                    hasActiveFilters: state.hasActiveFilters,
-                    filter: state.filter,
-                    onClearFilters: () {
-                      _searchController.clear();
-                      notifier.resetFilters();
-                    },
+                  child: AppEmptyState(
+                    icon: state.hasActiveFilters
+                        ? Icons.search_off_outlined
+                        : Icons.menu_book_outlined,
+                    title: state.hasActiveFilters
+                        ? state.filter.hasOnlyKeyword
+                              ? l10n.noSearchResults
+                              : l10n.noFilterResults
+                        : l10n.noBooks,
+                    description: state.hasActiveFilters
+                        ? l10n.tryDifferentSearch
+                        : l10n.noBooksDescription,
+                    actionLabel: state.hasActiveFilters ? l10n.clearAll : null,
+                    onAction: state.hasActiveFilters
+                        ? () {
+                            _searchController.clear();
+                            notifier.resetFilters();
+                          }
+                        : null,
                   ),
                 ),
               ],

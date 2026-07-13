@@ -1,4 +1,5 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
+import 'package:booksphere_app/core/widgets/app_loading_button.dart';
 import 'package:booksphere_app/features/auth/providers/logout_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,18 +13,13 @@ class LogoutButton extends ConsumerWidget {
     final l10n = context.l10n;
     final logoutState = ref.watch(logoutControllerProvider);
 
-    return FilledButton.icon(
+    return AppLoadingButton(
+      label: l10n.logout,
+      icon: Icons.logout,
+      isLoading: logoutState.isLoading,
       onPressed: logoutState.isLoading
           ? null
           : () => _confirmAndLogout(context, ref),
-      icon: logoutState.isLoading
-          ? const SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : const Icon(Icons.logout),
-      label: Text(l10n.logout),
     );
   }
 

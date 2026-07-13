@@ -98,7 +98,7 @@ void main() {
     expect(find.byIcon(Icons.tune), findsOneWidget);
   });
 
-  testWidgets('shows skeleton while loading', (tester) async {
+  testWidgets('shows shared loading state while loading', (tester) async {
     await tester.pumpWidget(
       _wrap(
         const BookListScreen(),
@@ -106,8 +106,8 @@ void main() {
       ),
     );
 
-    expect(find.byType(CircularProgressIndicator), findsNothing);
-    expect(find.byType(ListView), findsWidgets);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.text('Loading data...'), findsOneWidget);
   });
 
   testWidgets('shows empty state', (tester) async {

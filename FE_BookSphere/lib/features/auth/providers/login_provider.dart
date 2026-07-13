@@ -78,6 +78,8 @@ class LoginController extends Notifier<LoginState> {
     } on Object {
       state = const LoginState(errorCode: AppMessageKeys.unknownError);
       return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 

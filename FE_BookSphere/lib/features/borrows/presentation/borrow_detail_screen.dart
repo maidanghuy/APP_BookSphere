@@ -1,7 +1,12 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
+import 'package:booksphere_app/core/widgets/app_loading_button.dart';
+import 'package:booksphere_app/core/widgets/app_error_view.dart';
+import 'package:booksphere_app/core/widgets/app_loading.dart';
 import 'package:booksphere_app/core/utils/error_message_mapper.dart';
-import 'package:booksphere_app/features/books/providers/book_detail_provider.dart' as book_details_prov;
-import 'package:booksphere_app/features/books/providers/book_list_provider.dart' as book_list_prov;
+import 'package:booksphere_app/features/books/providers/book_detail_provider.dart'
+    as book_details_prov;
+import 'package:booksphere_app/features/books/providers/book_list_provider.dart'
+    as book_list_prov;
 import 'package:booksphere_app/features/borrows/data/borrow_models.dart';
 import 'package:booksphere_app/features/borrows/presentation/widgets/borrow_item_card.dart';
 import 'package:booksphere_app/features/borrows/providers/borrow_provider.dart';
@@ -54,7 +59,11 @@ class BorrowDetailScreen extends ConsumerWidget {
     };
   }
 
-  void _handleReturn(BuildContext context, WidgetRef ref, BorrowDetailResponse borrow) {
+  void _handleReturn(
+    BuildContext context,
+    WidgetRef ref,
+    BorrowDetailResponse borrow,
+  ) {
     if (borrowId == null) return;
     final l10n = context.l10n;
     final theme = Theme.of(context);
@@ -76,7 +85,9 @@ class BorrowDetailScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                  color: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.5,
+                  ),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: colorScheme.outlineVariant),
                 ),
@@ -84,11 +95,20 @@ class BorrowDetailScreen extends ConsumerWidget {
                   children: [
                     _DialogInfoRow(label: 'Borrow ID', value: '#${borrow.id}'),
                     const SizedBox(height: 8),
-                    _DialogInfoRow(label: 'Borrow Date', value: _formatDate(borrow.borrowDate)),
+                    _DialogInfoRow(
+                      label: 'Borrow Date',
+                      value: _formatDate(borrow.borrowDate),
+                    ),
                     const SizedBox(height: 8),
-                    _DialogInfoRow(label: 'Due Date', value: _formatDate(borrow.dueDate)),
+                    _DialogInfoRow(
+                      label: 'Due Date',
+                      value: _formatDate(borrow.dueDate),
+                    ),
                     const SizedBox(height: 8),
-                    _DialogInfoRow(label: 'Status', value: _getStatusText(context, status)),
+                    _DialogInfoRow(
+                      label: 'Status',
+                      value: _getStatusText(context, status),
+                    ),
                   ],
                 ),
               ),
@@ -99,11 +119,17 @@ class BorrowDetailScreen extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: colorScheme.errorContainer,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: colorScheme.error.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: colorScheme.error.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.warning_amber_rounded, color: colorScheme.error, size: 20),
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        color: colorScheme.error,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -134,7 +160,9 @@ class BorrowDetailScreen extends ConsumerWidget {
       ),
     ).then((confirmed) async {
       if (confirmed == true) {
-        final success = await ref.read(borrowReturnControllerProvider.notifier).returnBorrow(borrowId!);
+        final success = await ref
+            .read(borrowReturnControllerProvider.notifier)
+            .returnBorrow(borrowId!);
         if (success && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -142,7 +170,7 @@ class BorrowDetailScreen extends ConsumerWidget {
               backgroundColor: Colors.green,
             ),
           );
-          
+
           final detailAsync = ref.read(borrowDetailsProvider(borrowId!));
           detailAsync.whenData((detail) {
             for (final item in detail.items) {
@@ -159,7 +187,9 @@ class BorrowDetailScreen extends ConsumerWidget {
           final errorState = ref.read(borrowReturnControllerProvider);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(ErrorMessageMapper.mapCode(context, errorState.errorCode)),
+              content: Text(
+                ErrorMessageMapper.mapCode(context, errorState.errorCode),
+              ),
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
@@ -203,7 +233,9 @@ class BorrowDetailScreen extends ConsumerWidget {
             data: (borrow) {
               final status = borrow.borrowStatus;
               final isOverdue = status == BorrowStatus.overdue;
-              final canReturn = status == BorrowStatus.borrowing || status == BorrowStatus.overdue;
+              final canReturn =
+                  status == BorrowStatus.borrowing ||
+                  status == BorrowStatus.overdue;
 
               return Column(
                 children: [
@@ -224,15 +256,20 @@ class BorrowDetailScreen extends ConsumerWidget {
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.warning_amber_rounded, color: colorScheme.error, size: 28),
+                                Icon(
+                                  Icons.warning_amber_rounded,
+                                  color: colorScheme.error,
+                                  size: 28,
+                                ),
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Text(
                                     l10n.overdueWarning,
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      color: colorScheme.onErrorContainer,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          color: colorScheme.onErrorContainer,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
                                 ),
                               ],
@@ -244,7 +281,9 @@ class BorrowDetailScreen extends ConsumerWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                             side: BorderSide(
-                              color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
                             ),
                           ),
                           child: Padding(
@@ -253,29 +292,44 @@ class BorrowDetailScreen extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       'Information',
-                                      style: theme.textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: _getStatusContainerColor(context, status),
+                                        color: _getStatusContainerColor(
+                                          context,
+                                          status,
+                                        ),
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(
-                                          color: _getStatusColor(context, status).withValues(alpha: 0.3),
+                                          color: _getStatusColor(
+                                            context,
+                                            status,
+                                          ).withValues(alpha: 0.3),
                                         ),
                                       ),
                                       child: Text(
                                         _getStatusText(context, status),
-                                        style: theme.textTheme.labelSmall?.copyWith(
-                                          color: _getStatusColor(context, status),
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                              color: _getStatusColor(
+                                                context,
+                                                status,
+                                              ),
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                     ),
                                   ],
@@ -283,18 +337,29 @@ class BorrowDetailScreen extends ConsumerWidget {
                                 const Divider(height: 24),
                                 _InfoRow(
                                   label: 'Member Name',
-                                  value: borrow.memberName.isNotEmpty ? borrow.memberName : 'Member #${borrow.userId}',
+                                  value: borrow.memberName.isNotEmpty
+                                      ? borrow.memberName
+                                      : 'Member #${borrow.userId}',
                                 ),
                                 const SizedBox(height: 12),
                                 _InfoRow(
                                   label: 'Username',
-                                  value: borrow.username.isNotEmpty ? borrow.username : 'User #${borrow.userId}',
+                                  value: borrow.username.isNotEmpty
+                                      ? borrow.username
+                                      : 'User #${borrow.userId}',
                                 ),
                                 const SizedBox(height: 12),
-                                _InfoRow(label: 'Borrow Date', value: _formatDate(borrow.borrowDate)),
+                                _InfoRow(
+                                  label: 'Borrow Date',
+                                  value: _formatDate(borrow.borrowDate),
+                                ),
                                 const SizedBox(height: 12),
-                                _InfoRow(label: 'Due Date', value: _formatDate(borrow.dueDate)),
-                                if (borrow.returnDate != null && borrow.returnDate!.isNotEmpty) ...[
+                                _InfoRow(
+                                  label: 'Due Date',
+                                  value: _formatDate(borrow.dueDate),
+                                ),
+                                if (borrow.returnDate != null &&
+                                    borrow.returnDate!.isNotEmpty) ...[
                                   const SizedBox(height: 12),
                                   _InfoRow(
                                     label: 'Return Date',
@@ -314,7 +379,9 @@ class BorrowDetailScreen extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        ...borrow.items.map((item) => BorrowItemCard(item: item)),
+                        ...borrow.items.map(
+                          (item) => BorrowItemCard(item: item),
+                        ),
                       ],
                     ),
                   ),
@@ -323,30 +390,13 @@ class BorrowDetailScreen extends ConsumerWidget {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: returnState.isLoading ? null : () => _handleReturn(context, ref, borrow),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.primary,
-                            foregroundColor: colorScheme.onPrimary,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: returnState.isLoading
-                              ? SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    color: colorScheme.onPrimary,
-                                  ),
-                                )
-                              : Text(
-                                  l10n.returnBook,
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                ),
+                        child: AppLoadingButton(
+                          label: l10n.returnBook,
+                          icon: Icons.assignment_return_outlined,
+                          isLoading: returnState.isLoading,
+                          onPressed: returnState.isLoading
+                              ? null
+                              : () => _handleReturn(context, ref, borrow),
                         ),
                       ),
                     ),
@@ -354,38 +404,16 @@ class BorrowDetailScreen extends ConsumerWidget {
                 ],
               );
             },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, _) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline, size: 64, color: colorScheme.error),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.networkError,
-                      style: theme.textTheme.titleMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => ref.invalidate(borrowDetailsProvider(borrowId!)),
-                      child: Text(l10n.retry),
-                    ),
-                  ],
-                ),
-              ),
+            loading: () => AppLoading(message: l10n.loadingData),
+            error: (error, _) => AppErrorView(
+              title: l10n.somethingWentWrong,
+              message: l10n.networkError,
+              onRetry: () => ref.invalidate(borrowDetailsProvider(borrowId!)),
             ),
           ),
           if (returnState.isLoading) ...[
-            const ModalBarrier(
-              dismissible: false,
-              color: Colors.black12,
-            ),
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
+            const ModalBarrier(dismissible: false, color: Colors.black12),
+            const Center(child: CircularProgressIndicator()),
           ],
         ],
       ),
@@ -423,11 +451,7 @@ class _DialogInfoRow extends StatelessWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.label,
-    required this.value,
-    this.valueColor,
-  });
+  const _InfoRow({required this.label, required this.value, this.valueColor});
 
   final String label;
   final String value;

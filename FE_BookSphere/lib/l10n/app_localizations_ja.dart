@@ -865,4 +865,43 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsLanguageSection => '言語';
+
+  @override
+  String get loading => '読み込み中...';
+
+  @override
+  String get loadingData => 'データを読み込み中...';
+
+  @override
+  String get somethingWentWrong => 'エラーが発生しました';
+
+  @override
+  String get noData => 'データがありません';
+
+  @override
+  String get noBooksDescription => '下に引いて新しい本を確認してください。';
+
+  @override
+  String get noBorrows => '貸出記録がありません';
+
+  @override
+  String get noBorrowsDescription => '貸出記録はここに表示されます。';
+
+  @override
+  String get noFines => '罰金はありません';
+
+  @override
+  String get noFinesDescription => '現在、罰金はありません。';
+
+  @override
+  String get noNotificationsDescription => '新しい通知はここに表示されます。';
+
+  @override
+  String get submitting => '送信中...';
+
+  @override
+  String get refreshFailed => '更新できませんでした。利用可能な最新データを表示しています。';
+
+  @override
+  String get confirmFinePayment => 'この支払いを実行してもよろしいですか？';
 }

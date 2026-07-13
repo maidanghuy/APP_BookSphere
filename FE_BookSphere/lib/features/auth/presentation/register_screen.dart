@@ -1,6 +1,7 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:booksphere_app/core/utils/error_message_mapper.dart';
 import 'package:booksphere_app/core/widgets/app_top_left_actions.dart';
+import 'package:booksphere_app/core/widgets/app_loading_button.dart';
 import 'package:booksphere_app/features/auth/providers/register_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -290,18 +291,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           _RegisterErrorMessage(message: errorMessage),
                         ],
                         const SizedBox(height: 24),
-                        FilledButton.icon(
+                        AppLoadingButton(
+                          label: l10n.register,
+                          icon: Icons.person_add_alt_1,
+                          isLoading: registerState.isLoading,
                           onPressed: registerState.isLoading ? null : _submit,
-                          icon: registerState.isLoading
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.person_add_alt_1),
-                          label: Text(l10n.register),
                         ),
                         const SizedBox(height: 16),
                         Wrap(

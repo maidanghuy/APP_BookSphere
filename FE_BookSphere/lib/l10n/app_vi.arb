@@ -324,5 +324,18 @@
   "profileLibrarianRole": "Thủ thư",
   "settingsTitle": "Cài đặt",
   "settingsThemeSection": "Giao diện",
-  "settingsLanguageSection": "Ngôn ngữ"
+  "settingsLanguageSection": "Ngôn ngữ",
+  "loading": "Đang tải...",
+  "loadingData": "Đang tải dữ liệu...",
+  "somethingWentWrong": "Đã xảy ra lỗi",
+  "noData": "Không có dữ liệu",
+  "noBooksDescription": "Kéo xuống để kiểm tra sách mới.",
+  "noBorrows": "Không có phiếu mượn",
+  "noBorrowsDescription": "Các phiếu mượn của bạn sẽ hiển thị tại đây.",
+  "noFines": "Không có khoản phạt",
+  "noFinesDescription": "Hiện tại bạn không có khoản phạt nào.",
+  "noNotificationsDescription": "Thông báo mới sẽ hiển thị tại đây.",
+  "submitting": "Đang gửi...",
+  "refreshFailed": "Không thể làm mới. Đang hiển thị dữ liệu gần nhất.",
+  "confirmFinePayment": "Bạn có chắc chắn muốn thực hiện thanh toán này không?"
 }

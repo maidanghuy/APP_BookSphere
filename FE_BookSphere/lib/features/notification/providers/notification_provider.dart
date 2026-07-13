@@ -62,6 +62,8 @@ class NotificationState {
 }
 
 class NotificationController extends Notifier<NotificationState> {
+  bool _isFetchInFlight = false;
+
   @override
   NotificationState build() {
     Future.microtask(load);
@@ -69,13 +71,23 @@ class NotificationController extends Notifier<NotificationState> {
   }
 
   Future<void> load() async {
+    if (_isFetchInFlight) {
+      return;
+    }
     state = state.copyWith(isLoading: true, clearError: true);
     await _fetch(isRefresh: false);
   }
 
-  Future<void> refresh() => _fetch(isRefresh: true);
+  Future<void> refresh() {
+    if (_isFetchInFlight) {
+      return Future.value();
+    }
+    return _fetch(isRefresh: true);
+  }
 
   Future<void> _fetch({required bool isRefresh}) async {
+    if (_isFetchInFlight) return;
+    _isFetchInFlight = true;
     if (isRefresh) state = state.copyWith(isRefreshing: true, clearError: true);
     try {
       final items = await ref
@@ -88,11 +100,12 @@ class NotificationController extends Notifier<NotificationState> {
         clearError: true,
       );
     } on DioException catch (error) {
-      state = state.copyWith(
-        isLoading: false,
-        isRefreshing: false,
-        errorCode: _errorCode(error),
-      );
+      state = state.copyWith(errorCode: _errorCode(error));
+    } catch (_) {
+      state = state.copyWith(errorCode: AppMessageKeys.unknownError);
+    } finally {
+      _isFetchInFlight = false;
+      state = state.copyWith(isLoading: false, isRefreshing: false);
     }
   }
 
@@ -118,10 +131,11 @@ class NotificationController extends Notifier<NotificationState> {
       );
       return true;
     } on DioException {
+      return false;
+    } finally {
       state = state.copyWith(
         markingAsReadIds: {...state.markingAsReadIds}..remove(id),
       );
-      return false;
     }
   }
 

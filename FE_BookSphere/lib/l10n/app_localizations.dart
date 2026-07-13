@@ -1719,6 +1719,84 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Ngôn ngữ'**
   String get settingsLanguageSection;
+
+  /// No description provided for @loading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải...'**
+  String get loading;
+
+  /// No description provided for @loadingData.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải dữ liệu...'**
+  String get loadingData;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xảy ra lỗi'**
+  String get somethingWentWrong;
+
+  /// No description provided for @noData.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có dữ liệu'**
+  String get noData;
+
+  /// No description provided for @noBooksDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kéo xuống để kiểm tra sách mới.'**
+  String get noBooksDescription;
+
+  /// No description provided for @noBorrows.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có phiếu mượn'**
+  String get noBorrows;
+
+  /// No description provided for @noBorrowsDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các phiếu mượn của bạn sẽ hiển thị tại đây.'**
+  String get noBorrowsDescription;
+
+  /// No description provided for @noFines.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có khoản phạt'**
+  String get noFines;
+
+  /// No description provided for @noFinesDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiện tại bạn không có khoản phạt nào.'**
+  String get noFinesDescription;
+
+  /// No description provided for @noNotificationsDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo mới sẽ hiển thị tại đây.'**
+  String get noNotificationsDescription;
+
+  /// No description provided for @submitting.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang gửi...'**
+  String get submitting;
+
+  /// No description provided for @refreshFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể làm mới. Đang hiển thị dữ liệu gần nhất.'**
+  String get refreshFailed;
+
+  /// No description provided for @confirmFinePayment.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có chắc chắn muốn thực hiện thanh toán này không?'**
+  String get confirmFinePayment;
 }
 
 class _AppLocalizationsDelegate

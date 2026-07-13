@@ -142,6 +142,9 @@ class BookListNotifier extends Notifier<BookListState> {
   }
 
   Future<void> refresh() async {
+    if (state.isLoading || state.isRefreshing || state.isLoadingMore) {
+      return;
+    }
     await _loadPage(page: 0, replace: true, isRefreshing: true);
   }
 
@@ -362,7 +365,11 @@ class BookListNotifier extends Notifier<BookListState> {
           isLoading: false,
           isRefreshing: false,
           isLoadingMore: false,
-          books: replace ? const [] : state.books,
+          books: isRefreshing
+              ? state.books
+              : replace
+              ? const []
+              : state.books,
           errorMessage: error.message,
           errorCode: error.code,
           errorStatusCode: error.statusCode,
@@ -383,7 +390,11 @@ class BookListNotifier extends Notifier<BookListState> {
           isLoading: false,
           isRefreshing: false,
           isLoadingMore: false,
-          books: replace ? const [] : state.books,
+          books: isRefreshing
+              ? state.books
+              : replace
+              ? const []
+              : state.books,
           errorCode: 'UNKNOWN_ERROR',
           errorMessage: 'Unable to load books.',
         );

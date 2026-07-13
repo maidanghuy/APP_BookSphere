@@ -26,13 +26,15 @@ final fineRepositoryProvider = Provider<FineRepository>((ref) {
 
 final myFinesProvider =
     NotifierProvider<MyFinesNotifier, AsyncValue<List<FineResponse>>>(
-  MyFinesNotifier.new,
-);
+      MyFinesNotifier.new,
+    );
 
 class MyFinesNotifier extends Notifier<AsyncValue<List<FineResponse>>> {
   String? _currentFilter;
+  bool _isRequestInFlight = false;
 
   String? get currentFilter => _currentFilter;
+  bool get isRequestInFlight => _isRequestInFlight;
 
   @override
   AsyncValue<List<FineResponse>> build() {
@@ -40,18 +42,33 @@ class MyFinesNotifier extends Notifier<AsyncValue<List<FineResponse>>> {
     return const AsyncValue.loading();
   }
 
-  Future<void> loadFines({String? status}) async {
-    state = const AsyncValue.loading();
+  Future<void> loadFines({String? status, bool isRefresh = false}) async {
+    if (_isRequestInFlight) {
+      return;
+    }
+    _isRequestInFlight = true;
+    final previousFines = state.value;
+    if (!isRefresh) {
+      state = const AsyncValue.loading();
+    }
     _currentFilter = status;
     try {
-      final fines = await ref.read(fineRepositoryProvider).getMyFines(status: status);
+      final fines = await ref
+          .read(fineRepositoryProvider)
+          .getMyFines(status: status);
       state = AsyncValue.data(fines);
     } catch (e, st) {
+      if (isRefresh && previousFines != null) {
+        state = AsyncValue.data(previousFines);
+        rethrow;
+      }
       state = AsyncValue.error(e, st);
+    } finally {
+      _isRequestInFlight = false;
     }
   }
 
-  Future<void> refresh() => loadFines(status: _currentFilter);
+  Future<void> refresh() => loadFines(status: _currentFilter, isRefresh: true);
 }
 
 // ── Fine detail ───────────────────────────────────────────────

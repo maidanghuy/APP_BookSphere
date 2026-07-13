@@ -885,4 +885,46 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get settingsLanguageSection => 'Ngôn ngữ';
+
+  @override
+  String get loading => 'Đang tải...';
+
+  @override
+  String get loadingData => 'Đang tải dữ liệu...';
+
+  @override
+  String get somethingWentWrong => 'Đã xảy ra lỗi';
+
+  @override
+  String get noData => 'Không có dữ liệu';
+
+  @override
+  String get noBooksDescription => 'Kéo xuống để kiểm tra sách mới.';
+
+  @override
+  String get noBorrows => 'Không có phiếu mượn';
+
+  @override
+  String get noBorrowsDescription =>
+      'Các phiếu mượn của bạn sẽ hiển thị tại đây.';
+
+  @override
+  String get noFines => 'Không có khoản phạt';
+
+  @override
+  String get noFinesDescription => 'Hiện tại bạn không có khoản phạt nào.';
+
+  @override
+  String get noNotificationsDescription => 'Thông báo mới sẽ hiển thị tại đây.';
+
+  @override
+  String get submitting => 'Đang gửi...';
+
+  @override
+  String get refreshFailed =>
+      'Không thể làm mới. Đang hiển thị dữ liệu gần nhất.';
+
+  @override
+  String get confirmFinePayment =>
+      'Bạn có chắc chắn muốn thực hiện thanh toán này không?';
 }

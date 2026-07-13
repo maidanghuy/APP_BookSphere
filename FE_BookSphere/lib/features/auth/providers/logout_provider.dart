@@ -45,6 +45,8 @@ class LogoutController extends Notifier<LogoutState> {
     } on Object {
       state = const LogoutState(errorCode: AppMessageKeys.logoutFailed);
       return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 
