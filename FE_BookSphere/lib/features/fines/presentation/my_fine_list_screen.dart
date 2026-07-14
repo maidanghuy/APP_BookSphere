@@ -30,52 +30,79 @@ class _MyFineListScreenState extends ConsumerState<MyFineListScreen> {
       appBar: AppBar(title: Text(l10n.myFines)),
       body: Column(
         children: [
-          _FilterBar(
-            selected: _selectedStatus,
-            onSelected: _onFilterSelected,
-          ),
-          Expanded(
-            child: finesAsync.when(
-              loading: () => const AppLoading(),
-              error: (error, _) => AppErrorView(
-                message: l10n.loadFinesFailed,
-                onRetry: () =>
-                    ref.read(myFinesProvider.notifier).refresh(),
-              ),
-              data: (fines) {
-                if (fines.isEmpty) {
-                  return AppEmptyState(
-                    message: l10n.noFinesFound,
-                    icon: Icons.receipt_long_outlined,
-                  );
-                }
-                return RefreshIndicator(
-                  onRefresh: () =>
-                      ref.read(myFinesProvider.notifier).refresh(),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: fines.length,
-                    itemBuilder: (context, index) {
-                      final fine = fines[index];
-                      return FineCard(
-                        fine: fine,
-                        onTap: () => _openDetail(fine),
-                        onPay: fine.status == 'UNPAID'
-                            ? () => _openPayment(fine)
-                            : null,
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
+          _FilterBar(selected: _selectedStatus, onSelected: _onFilterSelected),
+          Expanded(child: _buildBody(context, finesAsync)),
         ],
       ),
     );
   }
 
+  Widget _buildBody(
+    BuildContext context,
+    AsyncValue<List<FineResponse>> finesAsync,
+  ) {
+    final l10n = context.l10n;
+    final notifier = ref.read(myFinesProvider.notifier);
+
+    if (finesAsync.isLoading && !finesAsync.hasValue) {
+      return AppLoading(message: l10n.loadingData);
+    }
+    if (finesAsync.hasError && !finesAsync.hasValue) {
+      return AppErrorView(
+        title: l10n.somethingWentWrong,
+        message: l10n.loadFinesFailed,
+        onRetry: () => notifier.loadFines(status: notifier.currentFilter),
+      );
+    }
+
+    final fines = finesAsync.value ?? const <FineResponse>[];
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: fines.isEmpty
+          ? ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(
+                  height: MediaQuery.sizeOf(context).height * 0.55,
+                  child: AppEmptyState(
+                    title: l10n.noFines,
+                    description: l10n.noFinesDescription,
+                    icon: Icons.receipt_long_outlined,
+                  ),
+                ),
+              ],
+            )
+          : ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              itemCount: fines.length,
+              itemBuilder: (context, index) {
+                final fine = fines[index];
+                return FineCard(
+                  fine: fine,
+                  onTap: () => _openDetail(fine),
+                  onPay: fine.status == 'UNPAID'
+                      ? () => _openPayment(fine)
+                      : null,
+                );
+              },
+            ),
+    );
+  }
+
+  Future<void> _refresh() async {
+    try {
+      await ref.read(myFinesProvider.notifier).refresh();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.refreshFailed)));
+    }
+  }
+
   void _onFilterSelected(String? status) {
+    if (ref.read(myFinesProvider.notifier).isRequestInFlight) return;
     setState(() => _selectedStatus = status);
     ref.read(myFinesProvider.notifier).loadFines(status: status);
   }
@@ -87,7 +114,7 @@ class _MyFineListScreenState extends ConsumerState<MyFineListScreen> {
             builder: (_) => FineDetailScreen(fineId: fine.id.toString()),
           ),
         )
-        .then((_) => ref.read(myFinesProvider.notifier).refresh());
+        .then((_) => _refresh());
   }
 
   void _openPayment(FineResponse fine) {
@@ -100,7 +127,7 @@ class _MyFineListScreenState extends ConsumerState<MyFineListScreen> {
             ),
           ),
         )
-        .then((_) => ref.read(myFinesProvider.notifier).refresh());
+        .then((_) => _refresh());
   }
 }
 

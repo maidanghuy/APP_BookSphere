@@ -1,6 +1,7 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
 import 'package:booksphere_app/core/utils/error_message_mapper.dart';
 import 'package:booksphere_app/core/widgets/app_top_left_actions.dart';
+import 'package:booksphere_app/core/widgets/app_loading_button.dart';
 import 'package:booksphere_app/features/auth/providers/login_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -170,18 +171,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           _LoginErrorMessage(message: errorMessage),
                         ],
                         const SizedBox(height: 24),
-                        FilledButton.icon(
+                        AppLoadingButton(
+                          label: l10n.login,
+                          icon: Icons.login,
+                          isLoading: loginState.isLoading,
                           onPressed: loginState.isLoading ? null : _submit,
-                          icon: loginState.isLoading
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.login),
-                          label: Text(l10n.login),
                         ),
                         const SizedBox(height: 16),
                         TextButton.icon(

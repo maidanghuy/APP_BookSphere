@@ -73,6 +73,8 @@ class RegisterController extends Notifier<RegisterState> {
     } on Object {
       state = const RegisterState(errorCode: AppMessageKeys.unknownError);
       return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 

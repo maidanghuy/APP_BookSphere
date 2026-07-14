@@ -361,6 +361,17 @@ flutter run \
   --dart-define=API_BASE_URL=http://192.168.1.10:8080
 ```
 
+## BS-APP-27 - Loading, Empty State và Pull-to-Refresh
+
+Coder: nguyenminhhuong
+
+- `AppLoading` is used for initial API loading.
+- `AppEmptyState` is used when a list is empty.
+- `AppErrorView` shows mapped API errors with retry actions.
+- `AppLoadingButton` disables actions and prevents duplicate submissions.
+- Book List, My Borrows, My Fines, and Notifications support pull-to-refresh.
+- Existing action buttons are disabled while their requests are submitting.
+
 ## BS-APP-15 - Borrow Create Screen
 
 Coder: Codex

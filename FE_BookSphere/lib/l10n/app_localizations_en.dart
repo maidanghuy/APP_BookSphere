@@ -884,4 +884,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsLanguageSection => 'Language';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get loadingData => 'Loading data...';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong';
+
+  @override
+  String get noData => 'No data available';
+
+  @override
+  String get noBooksDescription => 'Pull down to check for new books.';
+
+  @override
+  String get noBorrows => 'No borrow records';
+
+  @override
+  String get noBorrowsDescription => 'Your borrow records will appear here.';
+
+  @override
+  String get noFines => 'No fines';
+
+  @override
+  String get noFinesDescription => 'You currently have no fines.';
+
+  @override
+  String get noNotificationsDescription =>
+      'New notifications will appear here.';
+
+  @override
+  String get submitting => 'Submitting...';
+
+  @override
+  String get refreshFailed =>
+      'Could not refresh. Showing the latest available data.';
+
+  @override
+  String get confirmFinePayment =>
+      'Are you sure you want to proceed with this payment?';
 }

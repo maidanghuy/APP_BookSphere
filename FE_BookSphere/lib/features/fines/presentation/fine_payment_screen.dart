@@ -1,7 +1,7 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
-import 'package:booksphere_app/core/network/api_exception.dart';
 import 'package:booksphere_app/core/utils/currency_utils.dart';
 import 'package:booksphere_app/core/widgets/confirm_dialog.dart';
+import 'package:booksphere_app/core/widgets/app_loading_button.dart';
 import 'package:booksphere_app/features/fines/data/fine_models.dart';
 import 'package:booksphere_app/features/fines/data/fine_repository.dart';
 import 'package:booksphere_app/features/fines/presentation/widgets/payment_method_sheet.dart';
@@ -69,8 +69,9 @@ class _FinePaymentScreenState extends ConsumerState<FinePaymentScreen> {
                     children: [
                       Text(
                         'Total Amount to Pay',
-                        style: theme.textTheme.titleMedium
-                            ?.copyWith(color: Colors.grey.shade600),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -92,7 +93,9 @@ class _FinePaymentScreenState extends ConsumerState<FinePaymentScreen> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _amountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: false,
+                ),
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   hintText: l10n.paymentAmountHint,
@@ -103,14 +106,19 @@ class _FinePaymentScreenState extends ConsumerState<FinePaymentScreen> {
               const SizedBox(height: 24),
 
               // Payment method picker
-              Text(l10n.selectPaymentMethod, style: theme.textTheme.titleMedium),
+              Text(
+                l10n.selectPaymentMethod,
+                style: theme.textTheme.titleMedium,
+              ),
               const SizedBox(height: 8),
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.payment),
-                  title: Text(_selectedMethod != null
-                      ? _labelForMethod(l10n, _selectedMethod!)
-                      : l10n.selectPaymentMethod),
+                  title: Text(
+                    _selectedMethod != null
+                        ? _labelForMethod(l10n, _selectedMethod!)
+                        : l10n.selectPaymentMethod,
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: _showPaymentMethodSheet,
                 ),
@@ -118,8 +126,10 @@ class _FinePaymentScreenState extends ConsumerState<FinePaymentScreen> {
               const SizedBox(height: 24),
 
               // Simulate result picker
-              Text(l10n.simulatePaymentResult,
-                  style: theme.textTheme.titleMedium),
+              Text(
+                l10n.simulatePaymentResult,
+                style: theme.textTheme.titleMedium,
+              ),
               const SizedBox(height: 8),
               Card(
                 child: Column(
@@ -140,23 +150,13 @@ class _FinePaymentScreenState extends ConsumerState<FinePaymentScreen> {
               ),
               const SizedBox(height: 32),
 
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: (_selectedMethod != null && !_isSubmitting)
-                      ? _submitPayment
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: _isSubmitting
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.confirm),
-                ),
+              AppLoadingButton(
+                label: l10n.confirm,
+                icon: Icons.payment,
+                isLoading: _isSubmitting,
+                onPressed: (_selectedMethod != null && !_isSubmitting)
+                    ? _submitPayment
+                    : null,
               ),
             ],
           ),
@@ -215,22 +215,22 @@ class _FinePaymentScreenState extends ConsumerState<FinePaymentScreen> {
   }
 
   Future<void> _submitPayment() async {
+    if (_isSubmitting) return;
+    setState(() => _isSubmitting = true);
     final l10n = context.l10n;
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => ConfirmDialog(
-        title: l10n.payFine,
-        content: 'Are you sure you want to proceed with this payment?',
-        confirmText: l10n.confirm,
-      ),
-    );
-
-    if (confirmed != true || !mounted) return;
-
-    setState(() => _isSubmitting = true);
-
     try {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (_) => ConfirmDialog(
+          title: l10n.payFine,
+          content: l10n.confirmFinePayment,
+          confirmText: l10n.confirm,
+        ),
+      );
+
+      if (confirmed != true || !mounted) return;
+
       final repository = ref.read(fineRepositoryProvider);
       final enteredAmount = double.tryParse(_amountController.text.trim());
       final response = await repository.payFine(
@@ -281,9 +281,9 @@ class _FinePaymentScreenState extends ConsumerState<FinePaymentScreen> {
         400 => _resolve400Message(l10n, e),
         _ => e.message,
       };
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(msg), backgroundColor: Colors.red),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

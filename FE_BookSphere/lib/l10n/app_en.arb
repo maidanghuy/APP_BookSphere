@@ -324,5 +324,18 @@
   "profileLibrarianRole": "Librarian",
   "settingsTitle": "Settings",
   "settingsThemeSection": "Display",
-  "settingsLanguageSection": "Language"
+  "settingsLanguageSection": "Language",
+  "loading": "Loading...",
+  "loadingData": "Loading data...",
+  "somethingWentWrong": "Something went wrong",
+  "noData": "No data available",
+  "noBooksDescription": "Pull down to check for new books.",
+  "noBorrows": "No borrow records",
+  "noBorrowsDescription": "Your borrow records will appear here.",
+  "noFines": "No fines",
+  "noFinesDescription": "You currently have no fines.",
+  "noNotificationsDescription": "New notifications will appear here.",
+  "submitting": "Submitting...",
+  "refreshFailed": "Could not refresh. Showing the latest available data.",
+  "confirmFinePayment": "Are you sure you want to proceed with this payment?"
 }

@@ -1,7 +1,12 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
+import 'package:booksphere_app/core/widgets/app_loading_button.dart';
+import 'package:booksphere_app/core/widgets/app_error_view.dart';
+import 'package:booksphere_app/core/widgets/app_loading.dart';
 import 'package:booksphere_app/core/utils/error_message_mapper.dart';
-import 'package:booksphere_app/features/books/providers/book_detail_provider.dart' as book_details_prov;
-import 'package:booksphere_app/features/books/providers/book_list_provider.dart' as book_list_prov;
+import 'package:booksphere_app/features/books/providers/book_detail_provider.dart'
+    as book_details_prov;
+import 'package:booksphere_app/features/books/providers/book_list_provider.dart'
+    as book_list_prov;
 import 'package:booksphere_app/features/borrows/providers/borrow_provider.dart';
 import 'package:booksphere_app/features/notification/providers/notification_provider.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +16,11 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class BorrowCreateScreen extends ConsumerStatefulWidget {
-  const BorrowCreateScreen({required this.bookId, this.initialQuantity, super.key});
+  const BorrowCreateScreen({
+    required this.bookId,
+    this.initialQuantity,
+    super.key,
+  });
 
   final int? bookId;
   final int? initialQuantity;
@@ -28,7 +37,9 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
   @override
   void initState() {
     super.initState();
-    _quantityController = TextEditingController(text: '${widget.initialQuantity ?? 1}');
+    _quantityController = TextEditingController(
+      text: '${widget.initialQuantity ?? 1}',
+    );
     // Default due date to 14 days from today
     _selectedDueDate = DateTime.now().add(const Duration(days: 14));
   }
@@ -43,7 +54,8 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(const Duration(days: 1));
-    final initialDate = _selectedDueDate != null && !_selectedDueDate!.isBefore(today)
+    final initialDate =
+        _selectedDueDate != null && !_selectedDueDate!.isBefore(today)
         ? _selectedDueDate!
         : tomorrow;
 
@@ -56,18 +68,29 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
 
     if (picked != null && mounted) {
       setState(() {
-        _selectedDueDate = DateTime(picked.year, picked.month, picked.day, 23, 59, 59);
+        _selectedDueDate = DateTime(
+          picked.year,
+          picked.month,
+          picked.day,
+          23,
+          59,
+          59,
+        );
       });
     }
   }
 
-  void _submitBorrow(BuildContext context, int availableQuantity, String bookTitle) async {
+  void _submitBorrow(
+    BuildContext context,
+    int availableQuantity,
+    String bookTitle,
+  ) async {
     if (widget.bookId == null) return;
     if (!_formKey.currentState!.validate()) return;
     if (_selectedDueDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.dueDateRequired)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.dueDateRequired)));
       return;
     }
 
@@ -103,7 +126,9 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final l10n = context.l10n;
 
-    final success = await ref.read(borrowCreateControllerProvider.notifier).createBorrow(
+    final success = await ref
+        .read(borrowCreateControllerProvider.notifier)
+        .createBorrow(
           bookId: widget.bookId!,
           quantity: quantity,
           dueDate: _selectedDueDate!,
@@ -178,7 +203,11 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.block_outlined, size: 64, color: colorScheme.error),
+                    Icon(
+                      Icons.block_outlined,
+                      size: 64,
+                      color: colorScheme.error,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       l10n.bookInactive,
@@ -199,7 +228,9 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
                 // Book Information Card
                 Card(
                   elevation: 0,
-                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                  color: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.4,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                     side: BorderSide(
@@ -244,12 +275,14 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
                                   color: colorScheme.onSurfaceVariant,
                                 ),
                               ),
-                              if (book.isbn != null && book.isbn!.isNotEmpty) ...[
+                              if (book.isbn != null &&
+                                  book.isbn!.isNotEmpty) ...[
                                 const SizedBox(height: 6),
                                 Text(
                                   'ISBN: ${book.isbn}',
                                   style: theme.textTheme.labelMedium?.copyWith(
-                                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                                    color: colorScheme.onSurfaceVariant
+                                        .withValues(alpha: 0.8),
                                   ),
                                 ),
                               ],
@@ -289,7 +322,9 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
                 // Form title
                 Text(
                   l10n.borrowBook,
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
 
@@ -305,9 +340,7 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return l10n.quantityRequired;
@@ -326,17 +359,25 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
 
                 // Due Date Picker Field
                 InkWell(
-                  onTap: controllerState.isLoading ? null : () => _selectDueDate(context),
+                  onTap: controllerState.isLoading
+                      ? null
+                      : () => _selectDueDate(context),
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 16,
+                    ),
                     decoration: BoxDecoration(
                       border: Border.all(color: colorScheme.outline),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.calendar_today_outlined, color: colorScheme.primary),
+                        Icon(
+                          Icons.calendar_today_outlined,
+                          color: colorScheme.primary,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -351,7 +392,9 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 _selectedDueDate != null
-                                    ? DateFormat('yyyy-MM-dd').format(_selectedDueDate!)
+                                    ? DateFormat(
+                                        'yyyy-MM-dd',
+                                      ).format(_selectedDueDate!)
                                     : l10n.selectDueDate,
                                 style: theme.textTheme.titleMedium,
                               ),
@@ -366,61 +409,28 @@ class _BorrowCreateScreenState extends ConsumerState<BorrowCreateScreen> {
                 const SizedBox(height: 40),
 
                 // Submit Button
-                ElevatedButton(
-                  onPressed: controllerState.isLoading || book.availableQuantity <= 0
+                AppLoadingButton(
+                  label: l10n.borrowBook,
+                  icon: Icons.menu_book_outlined,
+                  isLoading: controllerState.isLoading,
+                  onPressed:
+                      controllerState.isLoading || book.availableQuantity <= 0
                       ? null
-                      : () => _submitBorrow(context, book.availableQuantity, book.title),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: controllerState.isLoading
-                      ? SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: colorScheme.onPrimary,
-                          ),
-                        )
-                      : Text(
-                          l10n.borrowBook,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      : () => _submitBorrow(
+                          context,
+                          book.availableQuantity,
+                          book.title,
                         ),
                 ),
               ],
             ),
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (error, _) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.error_outline, size: 64, color: colorScheme.error),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.networkError,
-                  style: theme.textTheme.titleMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => ref.invalidate(bookDetailProvider(widget.bookId!)),
-                  child: Text(l10n.retry),
-                ),
-              ],
-            ),
-          ),
+        loading: () => AppLoading(message: l10n.loadingData),
+        error: (error, _) => AppErrorView(
+          title: l10n.somethingWentWrong,
+          message: l10n.networkError,
+          onRetry: () => ref.invalidate(bookDetailProvider(widget.bookId!)),
         ),
       ),
     );

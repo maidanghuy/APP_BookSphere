@@ -14,9 +14,10 @@ final borrowRepositoryProvider = Provider<BorrowRepository>((ref) {
   return BorrowRepository(ref.watch(borrowApiProvider));
 });
 
-final bookDetailProvider = FutureProvider.family.autoDispose<BookDetailResponse, int>((ref, bookId) async {
-  return ref.read(borrowRepositoryProvider).getBookDetail(bookId);
-});
+final bookDetailProvider = FutureProvider.family
+    .autoDispose<BookDetailResponse, int>((ref, bookId) async {
+      return ref.read(borrowRepositoryProvider).getBookDetail(bookId);
+    });
 
 class BorrowCreateState {
   const BorrowCreateState({
@@ -46,7 +47,9 @@ class BorrowCreateState {
       isSuccess: isSuccess ?? this.isSuccess,
       errorCode: clearError ? null : errorCode ?? this.errorCode,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
-      errorStatusCode: clearError ? null : errorStatusCode ?? this.errorStatusCode,
+      errorStatusCode: clearError
+          ? null
+          : errorStatusCode ?? this.errorStatusCode,
     );
   }
 }
@@ -69,15 +72,15 @@ class BorrowCreateController extends Notifier<BorrowCreateState> {
     state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      await ref.read(borrowRepositoryProvider).createBorrow(
-        bookId: bookId,
-        quantity: quantity,
-        dueDate: dueDate,
-      );
+      await ref
+          .read(borrowRepositoryProvider)
+          .createBorrow(bookId: bookId, quantity: quantity, dueDate: dueDate);
       state = const BorrowCreateState(isSuccess: true);
       return true;
     } on BorrowException catch (error) {
-      dev.log('BorrowCreateController.createBorrow BorrowException: ${error.code} - ${error.message}');
+      dev.log(
+        'BorrowCreateController.createBorrow BorrowException: ${error.code} - ${error.message}',
+      );
       state = BorrowCreateState(
         errorCode: error.code,
         errorMessage: error.message,
@@ -85,9 +88,15 @@ class BorrowCreateController extends Notifier<BorrowCreateState> {
       );
       return false;
     } catch (error, stackTrace) {
-      dev.log('BorrowCreateController.createBorrow Unexpected Error: $error', error: error, stackTrace: stackTrace);
+      dev.log(
+        'BorrowCreateController.createBorrow Unexpected Error: $error',
+        error: error,
+        stackTrace: stackTrace,
+      );
       state = const BorrowCreateState(errorCode: 'UNKNOWN_ERROR');
       return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 
@@ -102,14 +111,15 @@ class BorrowCreateController extends Notifier<BorrowCreateState> {
     state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      await ref.read(borrowRepositoryProvider).createCartBorrow(
-        items: items,
-        dueDate: dueDate,
-      );
+      await ref
+          .read(borrowRepositoryProvider)
+          .createCartBorrow(items: items, dueDate: dueDate);
       state = const BorrowCreateState(isSuccess: true);
       return true;
     } on BorrowException catch (error) {
-      dev.log('BorrowCreateController.createCartBorrow BorrowException: ${error.code} - ${error.message}');
+      dev.log(
+        'BorrowCreateController.createCartBorrow BorrowException: ${error.code} - ${error.message}',
+      );
       state = BorrowCreateState(
         errorCode: error.code,
         errorMessage: error.message,
@@ -117,9 +127,15 @@ class BorrowCreateController extends Notifier<BorrowCreateState> {
       );
       return false;
     } catch (error, stackTrace) {
-      dev.log('BorrowCreateController.createCartBorrow Unexpected Error: $error', error: error, stackTrace: stackTrace);
+      dev.log(
+        'BorrowCreateController.createCartBorrow Unexpected Error: $error',
+        error: error,
+        stackTrace: stackTrace,
+      );
       state = const BorrowCreateState(errorCode: 'UNKNOWN_ERROR');
       return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 
@@ -130,8 +146,8 @@ class BorrowCreateController extends Notifier<BorrowCreateState> {
 
 final borrowCreateControllerProvider =
     NotifierProvider<BorrowCreateController, BorrowCreateState>(
-  BorrowCreateController.new,
-);
+      BorrowCreateController.new,
+    );
 
 class BorrowListState {
   final bool isLoading;
@@ -164,7 +180,9 @@ class BorrowListState {
       isLoading: isLoading ?? this.isLoading,
       isRefreshing: isRefreshing ?? this.isRefreshing,
       borrows: borrows ?? this.borrows,
-      selectedStatus: clearStatus ? null : selectedStatus ?? this.selectedStatus,
+      selectedStatus: clearStatus
+          ? null
+          : selectedStatus ?? this.selectedStatus,
       errorCode: clearError ? null : errorCode ?? this.errorCode,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
     );
@@ -179,6 +197,9 @@ class BorrowListNotifier extends Notifier<BorrowListState> {
   }
 
   Future<void> loadBorrows({bool isRefreshing = false}) async {
+    if (state.isLoading || state.isRefreshing) {
+      return;
+    }
     state = state.copyWith(
       isLoading: !isRefreshing,
       isRefreshing: isRefreshing,
@@ -186,10 +207,9 @@ class BorrowListNotifier extends Notifier<BorrowListState> {
     );
 
     try {
-      final response = await ref.read(borrowRepositoryProvider).searchBorrows(
-        status: state.selectedStatus,
-        size: 50,
-      );
+      final response = await ref
+          .read(borrowRepositoryProvider)
+          .searchBorrows(status: state.selectedStatus, size: 50);
       state = state.copyWith(
         isLoading: false,
         isRefreshing: false,
@@ -204,7 +224,11 @@ class BorrowListNotifier extends Notifier<BorrowListState> {
         errorMessage: error.message,
       );
     } catch (error, stackTrace) {
-      dev.log('BorrowListNotifier.loadBorrows Unexpected Error: $error', error: error, stackTrace: stackTrace);
+      dev.log(
+        'BorrowListNotifier.loadBorrows Unexpected Error: $error',
+        error: error,
+        stackTrace: stackTrace,
+      );
       state = state.copyWith(
         isLoading: false,
         isRefreshing: false,
@@ -214,6 +238,7 @@ class BorrowListNotifier extends Notifier<BorrowListState> {
   }
 
   Future<void> changeFilter(String? status) async {
+    if (state.isLoading || state.isRefreshing) return;
     if (state.selectedStatus == status) return;
     state = state.copyWith(
       selectedStatus: status,
@@ -228,13 +253,15 @@ class BorrowListNotifier extends Notifier<BorrowListState> {
   }
 }
 
-final borrowListProvider = NotifierProvider<BorrowListNotifier, BorrowListState>(
-  BorrowListNotifier.new,
-);
+final borrowListProvider =
+    NotifierProvider<BorrowListNotifier, BorrowListState>(
+      BorrowListNotifier.new,
+    );
 
-final borrowDetailsProvider = FutureProvider.family.autoDispose<BorrowDetailResponse, int>((ref, id) async {
-  return ref.read(borrowRepositoryProvider).getBorrowDetail(id);
-});
+final borrowDetailsProvider = FutureProvider.family
+    .autoDispose<BorrowDetailResponse, int>((ref, id) async {
+      return ref.read(borrowRepositoryProvider).getBorrowDetail(id);
+    });
 
 class BorrowReturnState {
   final bool isLoading;
@@ -248,6 +275,20 @@ class BorrowReturnState {
     this.errorCode,
     this.errorMessage,
   });
+
+  BorrowReturnState copyWith({
+    bool? isLoading,
+    bool? isSuccess,
+    String? errorCode,
+    String? errorMessage,
+  }) {
+    return BorrowReturnState(
+      isLoading: isLoading ?? this.isLoading,
+      isSuccess: isSuccess ?? this.isSuccess,
+      errorCode: errorCode ?? this.errorCode,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
 }
 
 class BorrowReturnController extends Notifier<BorrowReturnState> {
@@ -265,20 +306,29 @@ class BorrowReturnController extends Notifier<BorrowReturnState> {
       state = const BorrowReturnState(isSuccess: true);
       return true;
     } on BorrowException catch (error) {
-      dev.log('BorrowReturnController.returnBorrow BorrowException: ${error.code}');
+      dev.log(
+        'BorrowReturnController.returnBorrow BorrowException: ${error.code}',
+      );
       state = BorrowReturnState(
         errorCode: error.code,
         errorMessage: error.message,
       );
       return false;
     } catch (error, stackTrace) {
-      dev.log('BorrowReturnController.returnBorrow Unexpected Error: $error', error: error, stackTrace: stackTrace);
+      dev.log(
+        'BorrowReturnController.returnBorrow Unexpected Error: $error',
+        error: error,
+        stackTrace: stackTrace,
+      );
       state = const BorrowReturnState(errorCode: 'UNKNOWN_ERROR');
       return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 }
 
-final borrowReturnControllerProvider = NotifierProvider<BorrowReturnController, BorrowReturnState>(
-  BorrowReturnController.new,
-);
+final borrowReturnControllerProvider =
+    NotifierProvider<BorrowReturnController, BorrowReturnState>(
+      BorrowReturnController.new,
+    );
