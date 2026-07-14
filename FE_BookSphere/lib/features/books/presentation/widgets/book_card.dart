@@ -1,4 +1,6 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
+import 'package:booksphere_app/core/theme/app_radius.dart';
+import 'package:booksphere_app/core/theme/app_spacing.dart';
 import 'package:booksphere_app/features/books/data/models/book_summary.dart';
 import 'package:flutter/material.dart';
 
@@ -45,20 +47,18 @@ class BookCard extends StatelessWidget {
     final canAdd = book.isAvailable;
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 0,
-      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.lgBorder, side: BorderSide(color: colorScheme.outlineVariant.withValues(alpha: .7))),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.lgBorder,
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _BookCoverPlaceholder(colorScheme: colorScheme),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +71,7 @@ class BookCard extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       author,
                       maxLines: 1,
@@ -100,13 +100,8 @@ class BookCard extends StatelessWidget {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 8),
-                    Text(
-                      availabilityLabel,
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: availabilityColor,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(children: [Icon(book.isAvailable ? Icons.check_circle_outline : Icons.do_not_disturb_alt_outlined, size: 18, color: availabilityColor), const SizedBox(width: AppSpacing.xs), Flexible(child: Text(availabilityLabel, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelLarge?.copyWith(color: availabilityColor, fontWeight: FontWeight.w600))),],
                     ),
                   ],
                 ),
@@ -146,7 +141,7 @@ class _BookCoverPlaceholder extends StatelessWidget {
       height: 88,
       decoration: BoxDecoration(
         color: colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.smBorder,
       ),
       child: Icon(
         Icons.menu_book_outlined,
