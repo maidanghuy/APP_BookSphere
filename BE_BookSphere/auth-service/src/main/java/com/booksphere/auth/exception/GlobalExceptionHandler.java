@@ -49,11 +49,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(Throwable.class)
     public ResponseEntity<ApiResponse<Void>> handleUnexpectedException(
-            Exception exception,
+            Throwable exception,
             HttpServletRequest request
     ) {
+        exception.printStackTrace();
         List<ErrorResponse> errors = List.of(
                 new ErrorResponse("INTERNAL_SERVER_ERROR", "Unexpected server error.")
         );
