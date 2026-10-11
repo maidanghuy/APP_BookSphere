@@ -1,4 +1,7 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
+import 'package:booksphere_app/core/theme/app_colors.dart';
+import 'package:booksphere_app/core/theme/app_radius.dart';
+import 'package:booksphere_app/core/theme/app_spacing.dart';
 import 'package:booksphere_app/core/utils/currency_utils.dart';
 import 'package:booksphere_app/core/utils/date_utils.dart';
 import 'package:booksphere_app/features/fines/data/fine_models.dart';
@@ -20,16 +23,15 @@ class FineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.lgBorder,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -48,11 +50,7 @@ class FineCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           CurrencyUtils.formatVND(fine.amount),
-                          style: TextStyle(
-                            color: colorScheme.error,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
+                          style: textTheme.titleMedium?.copyWith(color: AppColors.error),
                         ),
                       ],
                     ),
@@ -83,11 +81,7 @@ class FineCard extends StatelessWidget {
                   child: FilledButton(
                     onPressed: onPay,
                     style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      minimumSize: Size.zero,
+                      minimumSize: const Size(120, 48),
                     ),
                     child: Text(l10n.payNow),
                   ),

@@ -1,4 +1,7 @@
 import 'package:booksphere_app/features/borrows/data/borrow_models.dart';
+import 'package:booksphere_app/core/theme/app_spacing.dart';
+import 'package:booksphere_app/core/theme/app_radius.dart';
+import 'package:booksphere_app/core/widgets/status_chip.dart';
 import 'package:booksphere_app/shared/enums/borrow_status.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -18,26 +21,6 @@ class BorrowCard extends StatelessWidget {
     }
   }
 
-  Color _getStatusColor(BuildContext context, BorrowStatus status) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return switch (status) {
-      BorrowStatus.borrowing => Colors.blue,
-      BorrowStatus.overdue => colorScheme.error,
-      BorrowStatus.returned => Colors.green,
-      BorrowStatus.cancelled => colorScheme.outline,
-    };
-  }
-
-  Color _getStatusContainerColor(BuildContext context, BorrowStatus status) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return switch (status) {
-      BorrowStatus.borrowing => Colors.blue.withValues(alpha: 0.15),
-      BorrowStatus.overdue => colorScheme.errorContainer,
-      BorrowStatus.returned => Colors.green.withValues(alpha: 0.15),
-      BorrowStatus.cancelled => colorScheme.surfaceContainerHighest,
-    };
-  }
-
   String _getStatusText(BuildContext context, BorrowStatus status) {
     return switch (status) {
       BorrowStatus.borrowing => 'BORROWING',
@@ -54,25 +37,25 @@ class BorrowCard extends StatelessWidget {
     final status = borrow.borrowStatus;
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 0,
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.lgBorder,
         side: BorderSide(
           color: colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.lgBorder,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header row with Borrow ID and Status Chip
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                runSpacing: AppSpacing.sm,
+                spacing: AppSpacing.sm,
                 children: [
                   Text(
                     'Borrow #${borrow.id}',
@@ -81,57 +64,30 @@ class BorrowCard extends StatelessWidget {
                       color: colorScheme.primary,
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _getStatusContainerColor(context, status),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: _getStatusColor(context, status).withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Text(
-                      _getStatusText(context, status),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _getStatusColor(context, status),
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
+                  StatusChip(status: _getStatusText(context, status)),
                 ],
               ),
               const Divider(height: 24, thickness: 0.5),
 
               // Date Details
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _DateItem(
+              LayoutBuilder(builder: (context, constraints) {
+                final compact = constraints.maxWidth < 320;
+                final items = [
+                  _DateItem(
                           label: 'Borrow Date',
                           value: _formatDate(borrow.borrowDate),
                           icon: Icons.calendar_today_outlined,
                         ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _DateItem(
+                  _DateItem(
                           label: 'Due Date',
                           value: _formatDate(borrow.dueDate),
                           icon: Icons.assignment_late_outlined,
                         ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ];
+                return compact
+                    ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [items.first, const SizedBox(height: AppSpacing.sm), items.last])
+                    : Row(children: [Expanded(child: items.first), const SizedBox(width: AppSpacing.sm), Expanded(child: items.last)]);
+              }),
 
               // Return Date (if present)
               if (borrow.returnDate != null && borrow.returnDate!.isNotEmpty) ...[
@@ -140,7 +96,7 @@ class BorrowCard extends StatelessWidget {
                   label: 'Return Date',
                   value: _formatDate(borrow.returnDate!),
                   icon: Icons.assignment_turned_in_outlined,
-                  color: Colors.green,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ],
 
@@ -191,7 +147,7 @@ class _DateItem extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: displayColor.withValues(alpha: 0.7)),
         const SizedBox(width: 8),
-        Column(
+        Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -209,7 +165,7 @@ class _DateItem extends StatelessWidget {
               ),
             ),
           ],
-        ),
+        )),
       ],
     );
   }

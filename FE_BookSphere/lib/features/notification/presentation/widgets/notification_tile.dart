@@ -1,4 +1,6 @@
 import 'package:booksphere_app/core/localization/l10n_extension.dart';
+import 'package:booksphere_app/core/theme/app_radius.dart';
+import 'package:booksphere_app/core/theme/app_spacing.dart';
 import 'package:booksphere_app/features/notification/data/notification_models.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -21,8 +23,11 @@ class NotificationTile extends StatelessWidget {
     final locale = Localizations.localeOf(context).toLanguageTag();
     final date = notification.createdAt;
     return Card(
-      color: notification.isRead ? null : colors.primaryContainer,
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      color: notification.isRead ? null : colors.primaryContainer.withValues(alpha: .45),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.lgBorder, side: BorderSide(color: notification.isRead ? colors.outlineVariant : colors.primary.withValues(alpha: .3))),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
         onTap: isMarkingAsRead ? null : onTap,
         leading: CircleAvatar(child: Icon(_icon(notification.type))),
         title: Row(
@@ -52,7 +57,7 @@ class NotificationTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Text(notification.content),
+            Text(notification.content, maxLines: 3, overflow: TextOverflow.ellipsis),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
